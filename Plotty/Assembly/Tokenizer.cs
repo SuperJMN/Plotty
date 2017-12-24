@@ -1,0 +1,81 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Text;
+using Superpower;
+using Superpower.Model;
+using Superpower.Parsers;
+
+namespace Plotty.Assembly
+{
+    public class Tokenizer : Tokenizer<AsmToken>
+    {
+        private readonly IDictionary<char, AsmToken> charToTokenDict =
+            new Dictionary<char, AsmToken>()
+            {
+                {',', AsmToken.Comma},
+                {'R', AsmToken.Register},
+                {'\n', AsmToken.NewLine},
+            };
+
+        private readonly IDictionary<string, AsmToken> words = new Dictionary<string, AsmToken>()
+            {{"LOAD", AsmToken.Load}, {"STORE", AsmToken.Store}, {"ADD", AsmToken.Add}};
+
+        protected override IEnumerable<Result<AsmToken>> Tokenize(TextSpan span)
+        {
+            var cursor = SkipWhiteSpace(span);
+
+            do
+            {
+                if (charToTokenDict.TryGetValue(cursor.Value, out var token))
+                {
+                    yield return Result.Value(token, cursor.Location, cursor.Remainder);
+                    cursor = cursor.Remainder.ConsumeChar();
+                }
+                else
+                if (char.IsWhiteSpace(cursor.Value))
+                {
+                    yield return Result.Value(AsmToken.Whitespace, cursor.Location, cursor.Remainder);
+                    cursor = cursor.Remainder.ConsumeChar();
+                }
+                else if (char.IsDigit(cursor.Value))
+                {
+                    var integer = Numerics.Integer(cursor.Location);
+                    yield return Result.Value(AsmToken.Number, integer.Location, integer.Remainder);
+                    cursor = integer.Remainder.ConsumeChar();
+                }
+                else if (char.IsLetter(cursor.Value))
+                {
+                    var keywordBuilder = new StringBuilder();
+                    var start = cursor.Location;
+                    keywordBuilder.Append(cursor.Value);
+
+                    do
+                    {
+                        cursor = cursor.Remainder.ConsumeChar();
+                        if (char.IsLetter(cursor.Value))
+                        {
+                            keywordBuilder.Append(cursor.Value);
+                        }
+
+                    } while (!words.Keys.Contains(keywordBuilder.ToString()) && cursor.HasValue &&
+                             char.IsLetter(cursor.Value));
+
+                    cursor = cursor.Remainder.ConsumeChar();
+
+                    var keyword = keywordBuilder.ToString();
+
+                    if (words.Keys.Contains(keyword))
+                    {
+                        yield return Result.Value(words[keyword], start, cursor.Location);
+                    }
+                    else
+                    {
+                        yield return Result.Empty<AsmToken>(start, $"Unexpected keyword {keyword}");
+                    }
+                }
+
+            } while (cursor.HasValue);
+        }
+    }
+}
