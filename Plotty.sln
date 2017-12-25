@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plotty", "Plotty\Plotty.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plotty.Test", "Plotty.Test\Plotty.Test.csproj", "{5ADBBC34-FE80-4C29-8FFB-FD8DF72B9D01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlottyMachine", "PlottyMachine\PlottyMachine.csproj", "{3560012B-012F-4B68-B787-052DAB6FA328}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5ADBBC34-FE80-4C29-8FFB-FD8DF72B9D01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ADBBC34-FE80-4C29-8FFB-FD8DF72B9D01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5ADBBC34-FE80-4C29-8FFB-FD8DF72B9D01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3560012B-012F-4B68-B787-052DAB6FA328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3560012B-012F-4B68-B787-052DAB6FA328}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3560012B-012F-4B68-B787-052DAB6FA328}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3560012B-012F-4B68-B787-052DAB6FA328}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

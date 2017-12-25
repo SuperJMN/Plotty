@@ -3,6 +3,7 @@
     public enum OpCodes
     {
         Load,
-        Store
+        Store,
+        Add
     }
 }

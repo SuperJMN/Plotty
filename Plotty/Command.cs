@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Plotty
+﻿namespace Plotty
 {
-    public class Command
+    public abstract class Command
     {
-        public OpCodes OpCode { get; set; }
-        public Register FirstRegister => Registers.First();
-        public int Address { get; set; }
-        public IList<Register> Registers { get; set; }
+        protected PlottyCore PlottyCore { get; }
+
+        public Command(PlottyCore plottyCore)
+        {
+            this.PlottyCore = plottyCore;
+        }
+
+        public abstract void Execute();
     }
 }
