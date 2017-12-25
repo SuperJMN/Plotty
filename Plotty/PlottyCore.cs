@@ -6,7 +6,7 @@ namespace Plotty
 {
     public class PlottyCore
     {
-        public uint[] Registers { get; set; } = new uint[8];
+        public uint[] Registers { get; } = new uint[8];
 
         private IList<Instruction> Instructions { get; set; }
 
@@ -14,10 +14,9 @@ namespace Plotty
         {
             this.Instructions = cmds.ToList();
             CurrentInstruction = cmds.First();
-            Memory[0] = 124;
         }
 
-        private Instruction CurrentInstruction { get; set; }
+        public Instruction CurrentInstruction { get; set; }
 
         private int InstructionIndex { get; set; }
         public uint[] Memory { get; } = new uint[64 * 1024];

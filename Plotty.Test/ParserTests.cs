@@ -1,5 +1,4 @@
-﻿using Plotty.Assembly;
-using Xunit;
+﻿using Xunit;
 
 namespace Plotty.Test
 {

@@ -7,7 +7,7 @@ namespace Plotty
     {
         public OpCodes OpCode { get; set; }
         public Register FirstRegister => Registers.First();
-        public int Address { get; set; }
+        public LoadParam Address { get; set; }
         public IList<Register> Registers { get; set; }      
     }
 }

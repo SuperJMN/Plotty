@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using Plotty.Assembly;
+using System.Security.Cryptography;
 using Superpower;
+using Superpower.Model;
 using Superpower.Parsers;
 
 namespace Plotty
@@ -13,27 +14,40 @@ namespace Plotty
         public static readonly TokenListParser<AsmToken, Instruction> Load =
             from keyword in Token.EqualTo(AsmToken.Load)
             from white in Token.EqualTo(AsmToken.Whitespace)
-            from register in Register            
+            from register in Register
             from comma in Token.EqualTo(AsmToken.Comma)
-            from address in Number
+            from address in LoadParameter
             select new Instruction()
             {
                 OpCode = OpCodes.Load,
-                Registers = new List<Register>() {register},
+                Registers = new List<Register>() { register },
                 Address = address,
             };
 
+
+        private static readonly TokenListParser<AsmToken, LoadParam> AddressParameter = from number in Number select new LoadParam() { Address = number };
+
+        private static readonly TokenListParser<AsmToken, LoadParam> DirectParameter =
+            from token in Token.EqualTo(AsmToken.Hash)
+            from number in Number
+            select new LoadParam { Value = (uint)number, IsDirect = true };
+
+        private static readonly TokenListParser<AsmToken, LoadParam> LoadParameter =
+            DirectParameter.Or(AddressParameter);
+
+
+
         public static TokenListParser<AsmToken, Instruction> Store =
-            from keyword in Token.EqualTo(AsmToken.Load)
+            from keyword in Token.EqualTo(AsmToken.Store)
             from white in Token.EqualTo(AsmToken.Whitespace)
-            from register in Register            
+            from register in Register
             from comma in Token.EqualTo(AsmToken.Comma)
             from address in Number
             select new Instruction()
             {
                 OpCode = OpCodes.Store,
-                Registers = new List<Register>() {register},
-                Address = address,
+                Registers = new List<Register>() { register },
+                Address = new LoadParam() { Address = address },
             };
 
         public static TokenListParser<AsmToken, Instruction> Add =
@@ -52,8 +66,8 @@ namespace Plotty
             select new Register(number);
 
         public static readonly TokenListParser<AsmToken, Register[]> Registers =
-            Register.ManyDelimitedBy(Token.EqualTo(AsmToken.Comma));      
-        
+            Register.ManyDelimitedBy(Token.EqualTo(AsmToken.Comma));
+
         public static readonly TokenListParser<AsmToken, Instruction> Instructions =
             Load.Or(Store).Or(Add);
 

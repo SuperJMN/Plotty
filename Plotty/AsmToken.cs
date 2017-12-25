@@ -1,4 +1,4 @@
-﻿namespace Plotty.Assembly
+﻿namespace Plotty
 {
     public enum AsmToken
     {
@@ -9,6 +9,7 @@
         NewLine,
         Comma,
         Whitespace,
-        Add
+        Add,
+        Hash,
     }
 }

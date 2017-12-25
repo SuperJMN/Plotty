@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Collections.Generic;
 using System.Text;
 using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
 
-namespace Plotty.Assembly
+namespace Plotty
 {
     public class Tokenizer : Tokenizer<AsmToken>
     {
         private readonly IDictionary<char, AsmToken> charToTokenDict =
             new Dictionary<char, AsmToken>()
             {
+                {'#', AsmToken.Hash},
                 {',', AsmToken.Comma},
                 {'R', AsmToken.Register},
                 {'\n', AsmToken.NewLine},

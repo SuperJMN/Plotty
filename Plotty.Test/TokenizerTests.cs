@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Plotty.Assembly;
 using Superpower.Model;
 using Xunit;
 

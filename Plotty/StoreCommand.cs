@@ -8,7 +8,10 @@
 
         public override void Execute()
         {
-            throw new System.NotImplementedException();
+            var registerId = PlottyCore.CurrentInstruction.FirstRegister.Number;
+            var memId = PlottyCore.CurrentInstruction.Address.Address;
+            PlottyCore.Memory[memId] = PlottyCore.Registers[registerId];
+            PlottyCore.Next();
         }
     }
 }
