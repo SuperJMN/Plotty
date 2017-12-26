@@ -2,31 +2,25 @@
 {
     public class LoadCommand : Command
     {
-        private readonly Register register;
-        private readonly LoadParam address;
-
         public LoadCommand(PlottyCore plottyCore) : base(plottyCore)
         {
         }
 
-        public LoadCommand(PlottyCore plottyCore, Register register, LoadParam address) : base(plottyCore)
-        {
-            this.register = register;
-            this.address = address;
-        }
-
         public override void Execute()
         {
-            if (address.IsDirect)
+            var inst = (LoadInstruction)PlottyCore.CurrentInstruction;
+
+            switch (inst.Source)
             {
-                PlottyCore.Registers[register.Number] = address.Value;
+                case ImmediateSource im:
+                    PlottyCore.Registers[inst.Destination.Id] = im.Immediate;
+                    break;
+                case RegisterSource reg:
+                    PlottyCore.Registers[inst.Destination.Id] = PlottyCore.Registers[reg.Register.Id];
+                    break;
             }
-            else
-            {
-                PlottyCore.Registers[register.Number] = PlottyCore.Memory[address.Address];
-            }
-            
-            PlottyCore.Next();
+
+            PlottyCore.GoToNext();
         }
     }
 }

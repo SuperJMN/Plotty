@@ -2,11 +2,11 @@
 {
     public class Register
     {
-        public int Number { get; }
+        public int Id { get; }
 
-        public Register(int number)
+        public Register(int id)
         {
-            Number = number;
+            Id = id;
         }
     }
 }

@@ -4,6 +4,7 @@
     {
         Load,
         Store,
-        Add
+        Add,
+        Branch
     }
 }

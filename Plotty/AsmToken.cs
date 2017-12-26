@@ -11,5 +11,9 @@
         Whitespace,
         Add,
         Hash,
+        Branch,
+        GoTo,
+        Text,
+        Colon,
     }
 }

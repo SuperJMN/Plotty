@@ -1,5 +1,6 @@
 ﻿namespace Plotty
 {
+    
     public abstract class Command
     {
         protected PlottyCore PlottyCore { get; }

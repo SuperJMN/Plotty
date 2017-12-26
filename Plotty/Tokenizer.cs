@@ -11,18 +11,26 @@ namespace Plotty
         private readonly IDictionary<char, AsmToken> charToTokenDict =
             new Dictionary<char, AsmToken>()
             {
+                {':', AsmToken.Colon},
                 {'#', AsmToken.Hash},
                 {',', AsmToken.Comma},
                 {'R', AsmToken.Register},
-                {'\n', AsmToken.NewLine},
+                {'\n', AsmToken.NewLine},                
             };
 
         private readonly IDictionary<string, AsmToken> words = new Dictionary<string, AsmToken>()
-            {{"LOAD", AsmToken.Load}, {"STORE", AsmToken.Store}, {"ADD", AsmToken.Add}};
+        {
+            {"LOAD", AsmToken.Load},
+            {"STORE", AsmToken.Store},
+            {"ADD", AsmToken.Add},
+            {"BRANCH", AsmToken.Branch},
+            {"GOTO", AsmToken.GoTo}
+        };
 
         protected override IEnumerable<Result<AsmToken>> Tokenize(TextSpan span)
         {
-            var cursor = SkipWhiteSpace(span);
+            var filtered = new TextSpan(span.Source.Replace("\r\n", "\n"));
+            var cursor = SkipWhiteSpace(filtered);
 
             do
             {
@@ -31,11 +39,10 @@ namespace Plotty
                     yield return Result.Value(token, cursor.Location, cursor.Remainder);
                     cursor = cursor.Remainder.ConsumeChar();
                 }
-                else
-                if (char.IsWhiteSpace(cursor.Value))
+                else if (char.IsWhiteSpace(cursor.Value))
                 {
                     yield return Result.Value(AsmToken.Whitespace, cursor.Location, cursor.Remainder);
-                    cursor = cursor.Remainder.ConsumeChar();
+                    cursor = SkipWhiteSpace(cursor.Remainder);
                 }
                 else if (char.IsDigit(cursor.Value))
                 {
@@ -52,15 +59,18 @@ namespace Plotty
                     do
                     {
                         cursor = cursor.Remainder.ConsumeChar();
-                        if (char.IsLetter(cursor.Value))
+
+                        if (cursor.HasValue && char.IsLetter(cursor.Value))
                         {
                             keywordBuilder.Append(cursor.Value);
                         }
-
                     } while (!words.Keys.Contains(keywordBuilder.ToString()) && cursor.HasValue &&
                              char.IsLetter(cursor.Value));
 
-                    cursor = cursor.Remainder.ConsumeChar();
+                    if (cursor.HasValue && char.IsLetter(cursor.Value))
+                    {
+                        cursor = cursor.Remainder.ConsumeChar();
+                    }
 
                     var keyword = keywordBuilder.ToString();
 
@@ -70,7 +80,7 @@ namespace Plotty
                     }
                     else
                     {
-                        yield return Result.Empty<AsmToken>(start, $"Unexpected keyword {keyword}");
+                        yield return Result.Value(AsmToken.Text, start, cursor.Location);
                     }
                 }
 

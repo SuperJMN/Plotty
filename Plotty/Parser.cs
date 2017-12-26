@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Security.Cryptography;
+﻿using System.Threading;
 using Superpower;
-using Superpower.Model;
 using Superpower.Parsers;
 
 namespace Plotty
@@ -11,53 +9,52 @@ namespace Plotty
         public static readonly TokenListParser<AsmToken, int> Number =
             Token.EqualTo(AsmToken.Number).Apply(Numerics.IntegerInt32);
 
-        public static readonly TokenListParser<AsmToken, Instruction> Load =
-            from keyword in Token.EqualTo(AsmToken.Load)
-            from white in Token.EqualTo(AsmToken.Whitespace)
-            from register in Register
-            from comma in Token.EqualTo(AsmToken.Comma)
-            from address in LoadParameter
-            select new Instruction()
-            {
-                OpCode = OpCodes.Load,
-                Registers = new List<Register>() { register },
-                Address = address,
-            };
+        public static readonly TokenListParser<AsmToken, Label> InstructionLabel =
+            from text in Token.EqualTo(AsmToken.Text)
+            from colon in Token.EqualTo(AsmToken.Colon)
+            from white in Token.EqualTo(AsmToken.Whitespace).OptionalOrDefault()
+            select new Label(text.ToStringValue());
 
-
-        private static readonly TokenListParser<AsmToken, LoadParam> AddressParameter = from number in Number select new LoadParam() { Address = number };
-
-        private static readonly TokenListParser<AsmToken, LoadParam> DirectParameter =
+        public static readonly TokenListParser<AsmToken, Source> ImmediateSource =
             from token in Token.EqualTo(AsmToken.Hash)
             from number in Number
-            select new LoadParam { Value = (uint)number, IsDirect = true };
+            select (Source)new ImmediateSource(number);
 
-        private static readonly TokenListParser<AsmToken, LoadParam> LoadParameter =
-            DirectParameter.Or(AddressParameter);
+        public static readonly TokenListParser<AsmToken, Source> RegisterSource =
+            from reg in Parse.Ref(() => Register)
+            select (Source)new RegisterSource(reg);
 
+        public static readonly TokenListParser<AsmToken, Source> Source =
+            ImmediateSource.Or(RegisterSource);
 
-
-        public static TokenListParser<AsmToken, Instruction> Store =
-            from keyword in Token.EqualTo(AsmToken.Store)
+        public static readonly TokenListParser<AsmToken, Instruction> Load =
+            from label in InstructionLabel.OptionalOrDefault()
+            from keyword in Token.EqualTo(AsmToken.Load)
             from white in Token.EqualTo(AsmToken.Whitespace)
-            from register in Register
+            from destination in Register
             from comma in Token.EqualTo(AsmToken.Comma)
-            from address in Number
-            select new Instruction()
+            from source in Source
+            select (Instruction)new LoadInstruction
             {
-                OpCode = OpCodes.Store,
-                Registers = new List<Register>() { register },
-                Address = new LoadParam() { Address = address },
+                Label = label,
+                Destination = destination,
+                Source = source,
             };
 
-        public static TokenListParser<AsmToken, Instruction> Add =
+        public static readonly TokenListParser<AsmToken, Instruction> Add =
+            from label in InstructionLabel.OptionalOrDefault()
             from keyword in Token.EqualTo(AsmToken.Add)
             from white in Token.EqualTo(AsmToken.Whitespace)
-            from registers in Registers
-            select new Instruction()
+            from first in Register
+            from comma in Token.EqualTo(AsmToken.Comma)
+            from second in Source
+            from third in Register.OptionalOrDefault()
+            select (Instruction)new ArithmeticInstruction()
             {
-                OpCode = OpCodes.Add,
-                Registers = registers,
+                Label = label,
+                Source = first,
+                Addend = second,
+                Destination = third ?? first,
             };
 
         public static readonly TokenListParser<AsmToken, Register> Register =
@@ -65,13 +62,40 @@ namespace Plotty
             from number in Number
             select new Register(number);
 
-        public static readonly TokenListParser<AsmToken, Register[]> Registers =
-            Register.ManyDelimitedBy(Token.EqualTo(AsmToken.Comma));
+        public static readonly TokenListParser<AsmToken, JumpTarget> LabelTarget =
+            from text in Token.EqualTo(AsmToken.Text)
+            select new JumpTarget(text.ToStringValue());
 
-        public static readonly TokenListParser<AsmToken, Instruction> Instructions =
-            Load.Or(Store).Or(Add);
+        public static readonly TokenListParser<AsmToken, JumpTarget> RelativeTarget =
+            from number in Number
+            select new JumpTarget(number);
 
-        public static readonly TokenListParser<AsmToken, Instruction[]> AsmParser =
-            Instructions.ManyDelimitedBy(Token.EqualTo(AsmToken.NewLine));
+        public static readonly TokenListParser<AsmToken, JumpTarget> JumpTarget =
+            LabelTarget.Or(RelativeTarget);
+
+        public static readonly TokenListParser<AsmToken, Instruction> Branch =
+            from label in InstructionLabel.OptionalOrDefault()
+            from token in Token.EqualTo(AsmToken.Branch)
+            from white in Token.EqualTo(AsmToken.Whitespace)
+            from r1 in Register
+            from c1 in Token.EqualTo(AsmToken.Comma)
+            from r2 in Register
+            from c2 in Token.EqualTo(AsmToken.Comma)
+            from target in JumpTarget
+            select (Instruction)new BranchInstruction
+            {
+                Label = label,
+                One = r1,
+                Another = r2,
+                Target = target,
+            };
+
+        public static readonly TokenListParser<AsmToken, Instruction> Instruction = 
+            from wh in Token.EqualTo(AsmToken.Whitespace).OptionalOrDefault()
+            from ins in Add.Or(Load).Or(Branch)
+            select ins; 
+
+        public static readonly TokenListParser<AsmToken, Instruction[]> AsmParser = 
+            Instruction.ManyDelimitedBy(Token.EqualTo(AsmToken.NewLine));
     }
 }

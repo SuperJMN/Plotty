@@ -4,6 +4,6 @@
     {
         public bool IsDirect { get; set; }
         public int Address { get; set; }
-        public uint Value { get; set; }
+        public int Value { get; set; }
     }
 }
