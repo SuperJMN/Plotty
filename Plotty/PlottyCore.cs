@@ -13,6 +13,8 @@ namespace Plotty
         public void Load(Line[] cmds)
         {
             Instructions = cmds.ToList();
+            InstructionIndex = 0;
+            Status = Status.Running;
             CurrentLine = cmds.First();
         }
 

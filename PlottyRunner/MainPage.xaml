@@ -1,0 +1,55 @@
+﻿<Page
+    x:Class="PlottyRunner.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PlottyRunner"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:monaco="using:Monaco"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    mc:Ignorable="d">
+
+    <Page.DataContext>
+        <local:MainViewModel />
+    </Page.DataContext>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel>
+                <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20" Command="{Binding ParseAndExecute}" Content="Play" />
+            </StackPanel>
+            <monaco:CodeEditor Grid.Row="1" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray" BorderThickness="1" />
+            <TextBlock Foreground="Red" TextWrapping="Wrap" Grid.Row="2" Text="{Binding Error}" />
+        </Grid>
+
+        <controls:GridSplitter
+            Width="11"
+            Background="Gray"
+            GripperCursor="Default"
+            HorizontalAlignment="Left"
+            Grid.Column="1"
+            ResizeDirection="Auto"
+            ResizeBehavior="BasedOnAlignment"
+            CursorBehavior="ChangeOnSplitterHover"
+            GripperForeground="White">
+        </controls:GridSplitter>
+        <StackPanel Grid.Column="2">
+            <ListView ItemsSource="{Binding CoreViewModel.Registers}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding Tag}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </Grid>
+</Page>
