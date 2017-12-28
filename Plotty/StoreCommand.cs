@@ -8,8 +8,8 @@
 
         public override void Execute()
         {
-            //var registerId = PlottyCore.CurrentInstruction.FirstRegister.Id;
-            //var memId = PlottyCore.CurrentInstruction.Address.Address;
+            //var registerId = PlottyCore.CurrentLine.FirstRegister.Id;
+            //var memId = PlottyCore.CurrentLine.Address.Address;
             //PlottyCore.Memory[memId] = PlottyCore.Registers[registerId];
 
             PlottyCore.GoToNext();

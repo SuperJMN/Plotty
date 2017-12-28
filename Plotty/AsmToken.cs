@@ -15,5 +15,6 @@
         GoTo,
         Text,
         Colon,
+        Halt
     }
 }

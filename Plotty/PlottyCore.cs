@@ -8,25 +8,32 @@ namespace Plotty
     {
         public int[] Registers { get; } = new int[8];
 
-        private IList<Instruction> Instructions { get; set; }
+        private List<Line> Instructions { get; set; }
 
-        public void Load(IList<Instruction> cmds)
+        public void Load(Line[] cmds)
         {
             Instructions = cmds.ToList();
-            CurrentInstruction = cmds.First();
+            CurrentLine = cmds.First();
         }
 
-        public Instruction CurrentInstruction { get; set; }
+        public Line CurrentLine { get; set; }
 
         private int InstructionIndex { get; set; }
         public int[] Memory { get; } = new int[64 * 1024];
+        public Status Status { get; set; } = Status.Running;
+        public bool CanExecute => CurrentLine != null && Status != Status.Halted;
 
         public void Execute()
         {
-            if (CurrentInstruction != null)
+            if (!CanExecute)
+            {
+                throw new InvalidOperationException("Cannot execute in the current state");
+            }
+
+            if (CurrentLine != null)
             {
                 Command cmd;
-                switch (CurrentInstruction)
+                switch (CurrentLine.Instruction)
                 {
                     case LoadInstruction _:
                         cmd = new LoadCommand(this);
@@ -37,10 +44,13 @@ namespace Plotty
                     case BranchInstruction _:
                         cmd = new BranchCommand(this);
                         break;
+                    case HaltInstruction _:
+                        cmd = new HaltCommand(this);
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                
+
                 cmd.Execute();
             }
         }
@@ -59,25 +69,25 @@ namespace Plotty
         {
             if (InstructionIndex + count >= Instructions.Count)
             {
-                CurrentInstruction = null;
+                CurrentLine = null;
                 return;
             }
 
             InstructionIndex += count;
-            CurrentInstruction = Instructions[InstructionIndex];
+            CurrentLine = Instructions[InstructionIndex];
         }
 
         public void GoTo(string labelName)
         {
             var inst = Instructions.Single(x => x.Label != null && x.Label.Name == labelName);
             var index = Instructions.IndexOf(inst);
-            CurrentInstruction = inst;
+            CurrentLine = inst;
             InstructionIndex = index;
         }
 
         public void GoTo(int id)
         {
-            CurrentInstruction = Instructions[id];
+            CurrentLine = Instructions[id];
         }
     }
 }

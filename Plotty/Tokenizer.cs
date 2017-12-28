@@ -24,7 +24,7 @@ namespace Plotty
             {"STORE", AsmToken.Store},
             {"ADD", AsmToken.Add},
             {"BRANCH", AsmToken.Branch},
-            {"GOTO", AsmToken.GoTo}
+            {"HALT", AsmToken.Halt}
         };
 
         protected override IEnumerable<Result<AsmToken>> Tokenize(TextSpan span)

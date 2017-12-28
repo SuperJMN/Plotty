@@ -8,7 +8,7 @@
 
         public override void Execute()
         {
-            var inst = (LoadInstruction)PlottyCore.CurrentInstruction;
+            var inst = (LoadInstruction)PlottyCore.CurrentLine.Instruction;
 
             switch (inst.Source)
             {

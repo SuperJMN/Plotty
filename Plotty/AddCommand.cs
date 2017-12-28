@@ -8,7 +8,7 @@
 
         public override void Execute()
         {
-            var inst = (ArithmeticInstruction)PlottyCore.CurrentInstruction;
+            var inst = (ArithmeticInstruction)PlottyCore.CurrentLine.Instruction;
             var origin = inst.Source.Id;
             var destination = inst.Destination.Id;
 

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Security.Cryptography;
+using System.Threading;
 using Superpower;
 using Superpower.Parsers;
 
@@ -28,7 +29,6 @@ namespace Plotty
             ImmediateSource.Or(RegisterSource);
 
         public static readonly TokenListParser<AsmToken, Instruction> Load =
-            from label in InstructionLabel.OptionalOrDefault()
             from keyword in Token.EqualTo(AsmToken.Load)
             from white in Token.EqualTo(AsmToken.Whitespace)
             from destination in Register
@@ -36,13 +36,15 @@ namespace Plotty
             from source in Source
             select (Instruction)new LoadInstruction
             {
-                Label = label,
                 Destination = destination,
                 Source = source,
             };
 
+        public static readonly TokenListParser<AsmToken, Instruction> Halt =
+            from keyword in Token.EqualTo(AsmToken.Halt)
+            select (Instruction)new HaltInstruction();
+
         public static readonly TokenListParser<AsmToken, Instruction> Add =
-            from label in InstructionLabel.OptionalOrDefault()
             from keyword in Token.EqualTo(AsmToken.Add)
             from white in Token.EqualTo(AsmToken.Whitespace)
             from first in Register
@@ -51,7 +53,6 @@ namespace Plotty
             from third in Register.OptionalOrDefault()
             select (Instruction)new ArithmeticInstruction()
             {
-                Label = label,
                 Source = first,
                 Addend = second,
                 Destination = third ?? first,
@@ -74,7 +75,6 @@ namespace Plotty
             LabelTarget.Or(RelativeTarget);
 
         public static readonly TokenListParser<AsmToken, Instruction> Branch =
-            from label in InstructionLabel.OptionalOrDefault()
             from token in Token.EqualTo(AsmToken.Branch)
             from white in Token.EqualTo(AsmToken.Whitespace)
             from r1 in Register
@@ -84,18 +84,26 @@ namespace Plotty
             from target in JumpTarget
             select (Instruction)new BranchInstruction
             {
-                Label = label,
                 One = r1,
                 Another = r2,
                 Target = target,
             };
 
-        public static readonly TokenListParser<AsmToken, Instruction> Instruction = 
+        public static readonly TokenListParser<AsmToken, Instruction> Action = 
             from wh in Token.EqualTo(AsmToken.Whitespace).OptionalOrDefault()
-            from ins in Add.Or(Load).Or(Branch)
-            select ins; 
+            from ins in Add.Or(Load).Or(Branch).Or(Halt)
+            select ins;
 
-        public static readonly TokenListParser<AsmToken, Instruction[]> AsmParser = 
-            Instruction.ManyDelimitedBy(Token.EqualTo(AsmToken.NewLine));
+        public static readonly TokenListParser<AsmToken, Line> Line =
+            from label in InstructionLabel.OptionalOrDefault()
+            from instruction in Action
+            select new Line(label, instruction);
+            
+        public static readonly TokenListParser<AsmToken, Line[]> AsmParser = 
+            Line.ManyDelimitedBy(Token.EqualTo(AsmToken.NewLine));
+    }
+
+    public class HaltInstruction : Instruction
+    {
     }
 }
