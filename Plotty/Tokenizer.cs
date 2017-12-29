@@ -83,6 +83,10 @@ namespace Plotty
                         yield return Result.Value(AsmToken.Text, start, cursor.Location);
                     }
                 }
+                else
+                {
+                    yield return Result.Empty<AsmToken>(cursor.Location, "Unexpected token");
+                }
 
             } while (cursor.HasValue);
         }
