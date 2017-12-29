@@ -121,7 +121,9 @@ namespace PlottyRunner
             Value = value;
         }
 
-        public string Tag => $"R{Index} - {Value}";
+        public string Name => $"R{Index}";
+
+        public string Tag => $"{Name} - {Value}";
 
         public int Index { get; }
 

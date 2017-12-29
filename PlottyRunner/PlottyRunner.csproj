@@ -108,6 +108,7 @@
     <None Include="PlottyRunner_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="play.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -146,11 +147,6 @@
       <Project>{DB8947FD-8E81-4D6F-A28C-DA32A113206D}</Project>
       <Name>Plotty</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Superpower">
-      <HintPath>C:\Users\super\.nuget\packages\superpower\1.1.0\lib\netstandard1.0\Superpower.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

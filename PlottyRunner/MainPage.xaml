@@ -26,14 +26,14 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="20" >
                 <Button Command="{Binding PlayCommand}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Play"></TextBlock>
-                        <SymbolIcon Symbol="Play" />
+                        <TextBlock Text="Play" VerticalAlignment="Center" />
+                        <SymbolIcon Symbol="Play" Margin="4,0,0,0" />
                     </StackPanel>
                 </Button>
                 <Button Command="{Binding CancelCommand}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Stop"></TextBlock>
-                        <SymbolIcon Symbol="Stop" />
+                        <TextBlock Text="Stop"  VerticalAlignment="Center" />
+                        <SymbolIcon Symbol="Stop" Margin="4,0,0,0" />
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -41,14 +41,42 @@
             <TextBlock Foreground="Red" TextWrapping="Wrap" Grid.Row="2" Text="{Binding Error}" />
             <controls:Loading Grid.Row="1" IsLoading="{Binding IsBusy}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
                 <Grid>
-                    <Border Background="Black" Opacity="0.3"></Border>
-                    <ProgressRing Width="120" Foreground="Blue" Height="120" IsActive="True" />
+                    <controls:TileControl AnimationDuration="15"
+                                          AnimationStepX="1"
+                                          AnimationStepY="1"
+                                          Background="#FFDDDDDD"
+                                          ImageAlignment="Bottom"
+                                          ImageSource="ms-appx:///play.png"
+                                          IsAnimated="True"
+                                          Opacity="0.2"
+                                          OffsetX="0"
+                                          OffsetY="0"                                          
+                                          ScrollOrientation="Both"/>
                 </Grid>
             </controls:Loading>
         </Grid>
 
+
+        <StackPanel Grid.Column="1" Margin="10">
+            <controls:AdaptiveGridView ItemsSource="{Binding CoreViewModel.Registers}" DesiredWidth="120">
+                <controls:AdaptiveGridView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="Blue" CornerRadius="5" BorderThickness="2" BorderBrush="CornflowerBlue" HorizontalAlignment="Stretch">
+                            <Grid>
+                                <TextBlock FontSize="10" Margin="4" Foreground="LightGray" VerticalAlignment="Top"
+                                           HorizontalAlignment="Left" Text="{Binding Name}">
+                                </TextBlock>
+                                <TextBlock Foreground="White" VerticalAlignment="Center" TextAlignment="Center"
+                                           Text="{Binding Value}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </controls:AdaptiveGridView.ItemTemplate>
+            </controls:AdaptiveGridView>
+        </StackPanel>
+
         <controls:GridSplitter
-            Width="11"
+            Width="8"
             Background="Gray"
             GripperCursor="Default"
             HorizontalAlignment="Left"
@@ -58,14 +86,5 @@
             CursorBehavior="ChangeOnSplitterHover"
             GripperForeground="White">
         </controls:GridSplitter>
-        <StackPanel Grid.Column="1">
-            <controls:AdaptiveGridView ItemsSource="{Binding CoreViewModel.Registers}" DesiredWidth="120">
-                <controls:AdaptiveGridView.ItemTemplate>
-                    <DataTemplate>
-                        <Button Content="{Binding Tag}"  HorizontalAlignment="Stretch"/>
-                    </DataTemplate>
-                </controls:AdaptiveGridView.ItemTemplate>
-            </controls:AdaptiveGridView>
-        </StackPanel>
     </Grid>
 </Page>
