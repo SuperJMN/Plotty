@@ -12,6 +12,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Monaco;
+using Monaco.Editor;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -24,7 +26,7 @@ namespace PlottyRunner
     {
         public MainPage()
         {
-            this.InitializeComponent();
-        }
+            this.InitializeComponent();           
+        }        
     }
 }

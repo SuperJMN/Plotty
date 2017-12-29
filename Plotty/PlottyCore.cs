@@ -6,9 +6,19 @@ namespace Plotty
 {
     public class PlottyCore
     {
-        public int[] Registers { get; } = new int[8];
+        private const int RegCount = 8;
+        private const int MemoryCount = 64 * 1024;
+
+        public int[] Registers { get; private set; } = new int[RegCount];
 
         private List<Line> Instructions { get; set; }
+
+        public Line CurrentLine { get; set; }
+
+        public int InstructionIndex { get; private set; }
+        public int[] Memory { get; private set; } = new int[MemoryCount];
+        public Status Status { get; set; } = Status.Running;
+        public bool CanExecute => CurrentLine != null && Status != Status.Halted;
 
         public void Load(Line[] cmds)
         {
@@ -16,14 +26,14 @@ namespace Plotty
             InstructionIndex = 0;
             Status = Status.Running;
             CurrentLine = cmds.First();
+            ClearMemory();
         }
 
-        public Line CurrentLine { get; set; }
-
-        private int InstructionIndex { get; set; }
-        public int[] Memory { get; } = new int[64 * 1024];
-        public Status Status { get; set; } = Status.Running;
-        public bool CanExecute => CurrentLine != null && Status != Status.Halted;
+        private void ClearMemory()
+        {
+            Registers = Enumerable.Repeat(0, RegCount).ToArray();
+            Memory = Enumerable.Repeat(0, MemoryCount).ToArray();
+        }
 
         public void Execute()
         {

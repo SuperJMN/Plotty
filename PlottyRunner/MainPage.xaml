@@ -15,7 +15,6 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <Grid Margin="10">
@@ -24,11 +23,28 @@
                 <RowDefinition />
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel>
-                <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20" Command="{Binding ParseAndExecute}" Content="Play" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="20" >
+                <Button Command="{Binding PlayCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Play"></TextBlock>
+                        <SymbolIcon Symbol="Play" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding CancelCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Stop"></TextBlock>
+                        <SymbolIcon Symbol="Stop" />
+                    </StackPanel>
+                </Button>
             </StackPanel>
             <monaco:CodeEditor Grid.Row="1" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray" BorderThickness="1" />
             <TextBlock Foreground="Red" TextWrapping="Wrap" Grid.Row="2" Text="{Binding Error}" />
+            <controls:Loading Grid.Row="1" IsLoading="{Binding IsBusy}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <Grid>
+                    <Border Background="Black" Opacity="0.3"></Border>
+                    <ProgressRing Width="120" Foreground="Blue" Height="120" IsActive="True" />
+                </Grid>
+            </controls:Loading>
         </Grid>
 
         <controls:GridSplitter
@@ -42,14 +58,14 @@
             CursorBehavior="ChangeOnSplitterHover"
             GripperForeground="White">
         </controls:GridSplitter>
-        <StackPanel Grid.Column="2">
-            <ListView ItemsSource="{Binding CoreViewModel.Registers}">
-                <ListView.ItemTemplate>
+        <StackPanel Grid.Column="1">
+            <controls:AdaptiveGridView ItemsSource="{Binding CoreViewModel.Registers}" DesiredWidth="120">
+                <controls:AdaptiveGridView.ItemTemplate>
                     <DataTemplate>
-                        <Button Content="{Binding Tag}" />
+                        <Button Content="{Binding Tag}"  HorizontalAlignment="Stretch"/>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </controls:AdaptiveGridView.ItemTemplate>
+            </controls:AdaptiveGridView>
         </StackPanel>
     </Grid>
 </Page>

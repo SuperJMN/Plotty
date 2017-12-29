@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Plotty;
 using ReactiveUI;
 using Superpower;
@@ -11,14 +14,24 @@ namespace PlottyRunner
     public class MainViewModel : ReactiveObject
     {
         private string error;
+        private readonly ObservableAsPropertyHelper<bool> isBusyOH;
 
         public MainViewModel()
         {
             Source = "LOAD\tR1,#5\r\npepito:ADD\tR2,#1\r\n\tBRANCH\tR1,R2,end\r\n        BRANCH\tR0,R0,pepito\r\nend:\tHALT";
             CoreViewModel = new CoreViewModel(new PlottyCore());
-            ParseAndExecute = ReactiveCommand.Create(() => Parse());
-            ParseAndExecute.ThrownExceptions.Subscribe(ex => { Error = ex.Message; });
+            PlayCommand = ReactiveCommand.CreateFromObservable(() => Observable
+                .StartAsync(Play)
+                .TakeUntil(CancelCommand));
+            PlayCommand.ThrownExceptions.Subscribe(ex => { Error = ex.Message; });
+            CancelCommand = ReactiveCommand.Create(
+                () => { },
+                PlayCommand.IsExecuting);
+
+            isBusyOH = PlayCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
         }
+
+        public ReactiveCommand<Unit, Unit> CancelCommand { get; set; }
 
         public string Error
         {
@@ -26,42 +39,59 @@ namespace PlottyRunner
             set { this.RaiseAndSetIfChanged(ref error, value); }
         }
 
-        public ReactiveCommand<Unit, Unit> ParseAndExecute { get; set; }
+        public ReactiveCommand<Unit, Unit> PlayCommand { get; }
 
-        private void Parse()
+        private async Task Play(CancellationToken cancellationToken)
         {
             Error = string.Empty;
             var instructions = Parser.AsmParser.Parse(new Tokenizer().Tokenize(Source));
             CoreViewModel.Lines = instructions;
-            CoreViewModel.Execute();
+            await CoreViewModel.Execute(cancellationToken);
         }
 
         public string Source { get; set; }
         public CoreViewModel CoreViewModel { get; set; }
+
+        public bool IsBusy => isBusyOH.Value;
     }
 
     public class CoreViewModel : ReactiveObject
     {
-        private IEnumerable<RegisterViewModel> registers;
+        private IList<RegisterViewModel> registers;
         private IEnumerable<Line> lines;
+        private int currentLine;
         public PlottyCore PlottyCore { get; }
 
         public CoreViewModel(PlottyCore plottyCore)
         {
             PlottyCore = plottyCore;
-            ExecuteCommand = ReactiveCommand.Create(() => Execute());
+            Registers = PlottyCore.Registers.Select((value, index) => new RegisterViewModel(index, value)).ToList();
         }
 
-        public ReactiveCommand<Unit, Unit> ExecuteCommand { get; set; }
-
-        public void Execute()
+        public async Task Execute(CancellationToken ct)
         {
             while (PlottyCore.CanExecute)
             {
+                await Task.Delay(1000, ct);
                 PlottyCore.Execute();
-            }
+                RefreshRegister();
+                CurrentLine = PlottyCore.InstructionIndex;
+                ct.ThrowIfCancellationRequested();
+            }            
+        }
 
-            Registers = PlottyCore.Registers.Select((value, index) => new RegisterViewModel(index, value));
+        private void RefreshRegister()
+        {
+            for (int i = 0; i < PlottyCore.Registers.Length; i++)
+            {
+                Registers[i].Value = PlottyCore.Registers[i];
+            }
+        }
+
+        public int CurrentLine
+        {
+            get { return currentLine; }
+            set { this.RaiseAndSetIfChanged(ref currentLine, value); }
         }
 
         public IEnumerable<Line> Lines
@@ -74,7 +104,7 @@ namespace PlottyRunner
             }
         }
 
-        public IEnumerable<RegisterViewModel> Registers
+        public IList<RegisterViewModel> Registers
         {
             get { return registers; }
             set { this.RaiseAndSetIfChanged(ref registers, value); }
@@ -83,6 +113,8 @@ namespace PlottyRunner
 
     public class RegisterViewModel : ReactiveObject
     {
+        private int val;
+
         public RegisterViewModel(int index, int value)
         {
             Index = index;
@@ -92,6 +124,15 @@ namespace PlottyRunner
         public string Tag => $"R{Index} - {Value}";
 
         public int Index { get; }
-        public int Value { get; }
+
+        public int Value
+        {
+            get { return val; }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref val, value);
+                this.RaisePropertyChanged(nameof(Tag));
+            }
+        }
     }
 }
