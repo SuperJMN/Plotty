@@ -10,7 +10,7 @@ namespace PlottyMachine
         {
             Console.WriteLine("Hello World!");
 
-            var text1 = @"LOAD	R1,#5
+            var text1 = @"MOVE	R1,#5
 pepito:ADD	R2,#1
 	BRANCH	R1,R2,end
         BRANCH	R0,R0,pepito

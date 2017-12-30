@@ -47,7 +47,7 @@ namespace Plotty
                 Command cmd;
                 switch (CurrentLine.Instruction)
                 {
-                    case LoadInstruction _:
+                    case MoveInstruction _:
                         cmd = new LoadCommand(this);
                         break;
                     case ArithmeticInstruction _:

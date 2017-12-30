@@ -19,6 +19,7 @@ namespace Plotty
 
         private readonly IDictionary<string, AsmToken> words = new Dictionary<string, AsmToken>()
         {
+            {"MOVE", AsmToken.Move},
             {"LOAD", AsmToken.Load},
             {"STORE", AsmToken.Store},
             {"ADD", AsmToken.Add},

@@ -26,13 +26,13 @@ namespace Plotty
         public static readonly TokenListParser<AsmToken, Source> Source =
             ImmediateSource.Or(RegisterSource);
 
-        public static readonly TokenListParser<AsmToken, Instruction> Load =
-            from keyword in Token.EqualTo(AsmToken.Load)
+        public static readonly TokenListParser<AsmToken, Instruction> Move =
+            from keyword in Token.EqualTo(AsmToken.Move)
             from white in Token.EqualTo(AsmToken.Whitespace)
             from destination in Register
             from comma in Token.EqualTo(AsmToken.Comma)
             from source in Source
-            select (Instruction)new LoadInstruction
+            select (Instruction)new MoveInstruction
             {
                 Destination = destination,
                 Source = source,
@@ -92,7 +92,7 @@ namespace Plotty
 
         public static readonly TokenListParser<AsmToken, Instruction> Action = 
             from wh in Token.EqualTo(AsmToken.Whitespace).OptionalOrDefault()
-            from ins in Add.Or(Load).Or(Branch).Or(Halt)
+            from ins in Add.Or(Move).Or(Branch).Or(Halt)
             select ins;
 
         public static readonly TokenListParser<AsmToken, Line> Line =

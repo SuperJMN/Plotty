@@ -1,13 +1,13 @@
 ﻿namespace Plotty
 {
-    internal class LoadInstruction : Instruction
+    internal class MoveInstruction : Instruction
     {
         public Register Destination { get; set; }
         public Source Source { get; set; }
 
         public override string ToString()
         {
-            return $"Load {Source} into {Destination}";
+            return $"Move {Source} into {Destination}";
         }
     }
 }

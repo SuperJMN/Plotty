@@ -16,7 +16,7 @@ namespace PlottyRunner
 
         public MainViewModel()
         {
-            Source = "LOAD\tR1,#5\r\nstart:\tADD\tR2,#1\r\n\tBRANCH\tR1,R2,end\r\n        BRANCH\tR0,R0,start\r\nend:\tHALT";
+            Source = "MOVE\tR1,#5\r\nstart:\tADD\tR2,#1\r\n\tBRANCH\tR1,R2,end\r\n        BRANCH\tR0,R0,start\r\nend:\tHALT";
             CoreViewModel = new CoreViewModel(new PlottyCore());
             PlayCommand = ReactiveCommand.CreateFromObservable(() => Observable
                 .StartAsync(Play)
