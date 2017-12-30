@@ -8,7 +8,9 @@
     xmlns:monaco="using:Monaco"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d">
-
+    <Page.Resources>
+       
+    </Page.Resources>
     <Page.DataContext>
         <local:MainViewModel />
     </Page.DataContext>
@@ -17,25 +19,37 @@
             <ColumnDefinition Width="3*" />
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
-        <Grid Margin="10">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="20" >
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8" >
                 <Button Command="{Binding PlayCommand}">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F5" />
+                    </Button.KeyboardAccelerators>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Play" VerticalAlignment="Center" />
                         <SymbolIcon Symbol="Play" Margin="4,0,0,0" />
                     </StackPanel>
                 </Button>
                 <Button Command="{Binding CancelCommand}">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F5" Modifiers="Shift" />
+                    </Button.KeyboardAccelerators>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Stop"  VerticalAlignment="Center" />
                         <SymbolIcon Symbol="Stop" Margin="4,0,0,0" />
                     </StackPanel>
                 </Button>
+                <StackPanel Orientation="Horizontal">
+                    <Slider Margin="10,0" Header="Per-instruction delay" Value="{Binding Delay, Mode=TwoWay}"
+                            SmallChange="100" LargeChange="500" Minimum="0" Maximum="2000" SnapsTo="Ticks"
+                            TickFrequency="100" />
+                    <TextBlock Text="{Binding DelayTag}" VerticalAlignment="Center" />
+                </StackPanel>
             </StackPanel>
             <monaco:CodeEditor Grid.Row="1" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray" BorderThickness="1" />
             <TextBlock Foreground="Red" TextWrapping="Wrap" Grid.Row="2" Text="{Binding Error}" />
@@ -57,23 +71,7 @@
         </Grid>
 
 
-        <StackPanel Grid.Column="1" Margin="10">
-            <controls:AdaptiveGridView ItemsSource="{Binding CoreViewModel.Registers}" DesiredWidth="120">
-                <controls:AdaptiveGridView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Background="Blue" CornerRadius="5" BorderThickness="2" BorderBrush="CornflowerBlue" HorizontalAlignment="Stretch">
-                            <Grid>
-                                <TextBlock FontSize="10" Margin="4" Foreground="LightGray" VerticalAlignment="Top"
-                                           HorizontalAlignment="Left" Text="{Binding Name}">
-                                </TextBlock>
-                                <TextBlock Foreground="White" VerticalAlignment="Center" TextAlignment="Center"
-                                           Text="{Binding Value}" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </controls:AdaptiveGridView.ItemTemplate>
-            </controls:AdaptiveGridView>
-        </StackPanel>
+        <local:StatusControl Grid.Column="1" Margin="10" DataContext="{Binding CoreViewModel}" />
 
         <controls:GridSplitter
             Width="8"

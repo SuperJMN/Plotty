@@ -1,6 +1,6 @@
 ﻿namespace Plotty
 {
-    public class Source
+    public abstract class Source
     {
     }
 }

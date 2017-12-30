@@ -8,5 +8,10 @@
         {
             Register = register;
         }
+
+        public override string ToString()
+        {
+            return $"Register {Register}";
+        }
     }
 }

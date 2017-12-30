@@ -8,5 +8,10 @@
         {
             Immediate = immediate;
         }
+
+        public override string ToString()
+        {
+            return $"immediate {Immediate}";
+        }
     }
 }

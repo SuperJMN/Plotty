@@ -8,7 +8,7 @@ namespace Plotty
         Load,
         [Token(Category = "keyword", Example = "STORE")]
         Store,
-        [Token(Category = "prefix", Example = "R", Description = "Used to indicate a register number, like a source or destination in an operation")]
+        [Token(Category = "prefix", Example = "R1", Description = "Register")]
         Register,
         [Token(Category = "keyword", Example = "LOAD")]
         Number,

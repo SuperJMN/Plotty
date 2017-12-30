@@ -5,4 +5,8 @@
     xmlns:local="using:PlottyRunner"
     RequestedTheme="Light">
 
+    <Application.Resources>
+        <local:NullToEmptyStringConverter x:Key="NullToEmptyStringConverter" />
+        <local:IsNullConverter x:Key="IsNullConverter" />
+    </Application.Resources>
 </Application>

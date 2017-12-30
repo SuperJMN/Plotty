@@ -14,7 +14,6 @@ namespace Plotty
                 {':', AsmToken.Colon},
                 {'#', AsmToken.Hash},
                 {',', AsmToken.Comma},
-                {'R', AsmToken.Register},
                 {'\n', AsmToken.NewLine},                
             };
 
@@ -34,7 +33,12 @@ namespace Plotty
 
             do
             {
-                if (charToTokenDict.TryGetValue(cursor.Value, out var token))
+                if (cursor.Value == 'R')
+                {
+                    var regNum = Numerics.Integer(cursor.Remainder);
+                    yield return Result.Value(AsmToken.Register, cursor.Location, regNum.Remainder);
+                    cursor = regNum.Remainder.ConsumeChar();
+                } else if (charToTokenDict.TryGetValue(cursor.Value, out var token))
                 {
                     yield return Result.Value(token, cursor.Location, cursor.Remainder);
                     cursor = cursor.Remainder.ConsumeChar();

@@ -1,0 +1,125 @@
+﻿<UserControl
+    x:Class="PlottyRunner.StatusControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PlottyRunner"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400" d:DataContext="{d:DesignInstance local:CoreViewModel}">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="LineTemplate" x:DataType="local:LineViewModel">
+            <RichTextBlock IsTextSelectionEnabled="False">
+                <Paragraph>
+                    <Run Foreground="DarkBlue" FontWeight="Bold" Text="{Binding Index}" /> :
+                    <Run Text="{Binding Description}" />
+                </Paragraph>
+            </RichTextBlock>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.Setters>
+                        <Setter Target="CurrentLineControl.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{Binding CurrentLine, Converter={StaticResource IsNullConverter}}" />
+                    </VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition  />
+            <RowDefinition Height="Auto"  />
+        </Grid.RowDefinitions>
+
+        <controls:HeaderedContentControl Margin="8,0" Header="Current line" MinHeight="80" x:Name="CurrentLineControl" Content="{Binding CurrentLine}" ContentTemplate="{StaticResource LineTemplate}" />
+
+        <controls:AdaptiveGridView Grid.Row="1" ItemsSource="{Binding Registers}" DesiredWidth="120">
+            <controls:AdaptiveGridView.ItemTemplate>
+                <DataTemplate>
+                    <UserControl>
+
+                        <Grid>
+
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup>
+                                    <VisualState>
+                                        <VisualState.Setters>
+                                            <Setter Target="Border.Background" Value="Red" />
+                                        </VisualState.Setters>
+                                        <VisualState.StateTriggers>
+                                            <StateTrigger IsActive="{Binding HasChanged}" />
+                                        </VisualState.StateTriggers>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <Border Background="Blue" x:Name="Border" CornerRadius="5" BorderThickness="2" BorderBrush="CornflowerBlue"
+                                    HorizontalAlignment="Stretch">
+                                <Grid>
+                                    <TextBlock FontSize="10" Margin="4" Foreground="LightGray" VerticalAlignment="Top"
+                                               HorizontalAlignment="Left" Text="{Binding Name}">
+                                    </TextBlock>
+                                    <TextBlock Foreground="White" VerticalAlignment="Center" TextAlignment="Center"
+                                               Text="{Binding Value}" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </UserControl>
+                </DataTemplate>
+            </controls:AdaptiveGridView.ItemTemplate>
+        </controls:AdaptiveGridView>
+
+        <controls:Expander Header="Execution History" Grid.Row="2" MaxHeight="250" HorizontalContentAlignment="Stretch">
+            <ListView ItemsSource="{Binding History}" ItemTemplate="{StaticResource LineTemplate}" HorizontalContentAlignment="Stretch">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel
+                                ItemsUpdatingScrollMode="KeepLastItemInView" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
+        </controls:Expander>
+    </Grid>
+</UserControl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

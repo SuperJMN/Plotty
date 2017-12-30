@@ -10,5 +10,10 @@
             Label = label;
             Instruction = instruction;
         }
+
+        public override string ToString()
+        {
+            return $"{Instruction}";
+        }
     }
 }

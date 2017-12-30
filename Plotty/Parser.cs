@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Threading;
-using Superpower;
+﻿using Superpower;
 using Superpower.Parsers;
 
 namespace Plotty
@@ -58,10 +56,13 @@ namespace Plotty
                 Destination = third ?? first,
             };
 
-        public static readonly TokenListParser<AsmToken, Register> Register =
-            from registerPrefix in Token.EqualTo(AsmToken.Register)
-            from number in Number
-            select new Register(number);
+        private static readonly TextParser<string> RegisterParser = Character.EqualTo('R')
+            .IgnoreThen(Character.Digit.AtLeastOnce())
+            .Select(c => new string(c)); 
+
+        private static TokenListParser<AsmToken, Register> Register =
+            from r in Token.EqualTo(AsmToken.Register).Apply(RegisterParser)
+            select new Register(int.Parse(r));
 
         public static readonly TokenListParser<AsmToken, JumpTarget> LabelTarget =
             from text in Token.EqualTo(AsmToken.Text)
@@ -101,9 +102,5 @@ namespace Plotty
             
         public static readonly TokenListParser<AsmToken, Line[]> AsmParser = 
             Line.ManyDelimitedBy(Token.EqualTo(AsmToken.NewLine));
-    }
-
-    public class HaltInstruction : Instruction
-    {
     }
 }
