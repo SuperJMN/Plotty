@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -14,11 +15,13 @@ namespace PlottyRunner
         private IEnumerable<Line> lines;
         private LineViewModel currentLine;
         public PlottyCore PlottyCore { get; }
+        public ConsoleHandler Console { get; set; }
 
         public CoreViewModel(PlottyCore plottyCore)
         {
             PlottyCore = plottyCore;
             Registers = PlottyCore.Registers.Select((value, index) => new RegisterViewModel(index, value)).ToList();
+            Console = new ConsoleHandler(PlottyCore.Memory, 80, 80);
         }
 
         public async Task Execute(CancellationToken ct)
@@ -26,12 +29,23 @@ namespace PlottyRunner
             History.Clear();
             while (PlottyCore.CanExecute)
             {
-                CurrentLine = new LineViewModel(PlottyCore.InstructionIndex, PlottyCore.CurrentLine);
-                await Task.Delay(Delay, ct);
+                CurrentLine = new LineViewModel(PlottyCore.LineNumber, PlottyCore.CurrentLine);
                 PlottyCore.Execute();
                 RefreshRegisters();
+
+                if (CurrentLine?.Line?.Instruction is StoreInstruction)
+                {
+                    RefreshConsole();
+                }
+
                 ct.ThrowIfCancellationRequested();
-            }            
+                await Task.Delay(Delay, ct);
+            }
+        }
+
+        private void RefreshConsole()
+        {
+            Console.Update();
         }
 
         private void RefreshRegisters()

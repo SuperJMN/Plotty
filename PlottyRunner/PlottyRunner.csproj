@@ -95,6 +95,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ConsoleHandler.cs" />
+    <Compile Include="Controls\ConsoleControl.xaml.cs">
+      <DependentUpon>ConsoleControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CoreViewModel.cs" />
     <Compile Include="IsNullConverter.cs" />
     <Compile Include="LineViewModel.cs" />
@@ -131,6 +135,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\ConsoleControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -152,6 +160,9 @@
     </PackageReference>
     <PackageReference Include="ReactiveUI">
       <Version>8.0.0-alpha0117</Version>
+    </PackageReference>
+    <PackageReference Include="Win2D.uwp">
+      <Version>1.21.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

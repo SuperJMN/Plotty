@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:controls1="using:PlottyRunner.Controls"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400" d:DataContext="{d:DesignInstance local:CoreViewModel}">
@@ -39,12 +40,15 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition  />
+            <RowDefinition  />
             <RowDefinition Height="Auto"  />
         </Grid.RowDefinitions>
 
         <controls:HeaderedContentControl Margin="8,0" Header="Current line" MinHeight="80" x:Name="CurrentLineControl" Content="{Binding CurrentLine}" ContentTemplate="{StaticResource LineTemplate}" />
 
-        <controls:AdaptiveGridView Grid.Row="1" ItemsSource="{Binding Registers}" DesiredWidth="120">
+        <controls1:ConsoleControl Grid.Row="1" CharMatrix="{Binding Console.Screen, Mode=TwoWay}" />
+
+        <controls:AdaptiveGridView Grid.Row="2" ItemsSource="{Binding Registers}" DesiredWidth="120">
             <controls:AdaptiveGridView.ItemTemplate>
                 <DataTemplate>
                     <UserControl>
@@ -80,7 +84,7 @@
             </controls:AdaptiveGridView.ItemTemplate>
         </controls:AdaptiveGridView>
 
-        <controls:Expander Header="Execution History" Grid.Row="2" MaxHeight="250" HorizontalContentAlignment="Stretch">
+        <controls:Expander Header="Execution History" Grid.Row="3" MaxHeight="250" HorizontalContentAlignment="Stretch">
             <ListView ItemsSource="{Binding History}" ItemTemplate="{StaticResource LineTemplate}" HorizontalContentAlignment="Stretch">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -92,6 +96,38 @@
         </controls:Expander>
     </Grid>
 </UserControl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

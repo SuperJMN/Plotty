@@ -26,6 +26,30 @@ namespace Plotty
         public static readonly TokenListParser<AsmToken, Source> Source =
             ImmediateSource.Or(RegisterSource);
 
+        public static readonly TokenListParser<AsmToken, Instruction> Load =
+            from keyword in Token.EqualTo(AsmToken.Load)
+            from white in Token.EqualTo(AsmToken.Whitespace)
+            from destination in Register
+            from comma in Token.EqualTo(AsmToken.Comma)
+            from address in Number
+            select (Instruction)new LoadInstruction
+            {
+                Address = address,
+                Destination = destination,
+            };
+
+        public static readonly TokenListParser<AsmToken, Instruction> Store =
+            from keyword in Token.EqualTo(AsmToken.Store)
+            from white in Token.EqualTo(AsmToken.Whitespace)
+            from source in Source
+            from comma in Token.EqualTo(AsmToken.Comma)
+            from address in Number
+            select (Instruction)new StoreInstruction
+            {
+                Source = source,
+                Address = address,
+            };
+
         public static readonly TokenListParser<AsmToken, Instruction> Move =
             from keyword in Token.EqualTo(AsmToken.Move)
             from white in Token.EqualTo(AsmToken.Whitespace)
@@ -60,7 +84,7 @@ namespace Plotty
             .IgnoreThen(Character.Digit.AtLeastOnce())
             .Select(c => new string(c)); 
 
-        private static TokenListParser<AsmToken, Register> Register =
+        private static readonly TokenListParser<AsmToken, Register> Register =
             from r in Token.EqualTo(AsmToken.Register).Apply(RegisterParser)
             select new Register(int.Parse(r));
 
@@ -90,14 +114,14 @@ namespace Plotty
                 Target = target,
             };
 
-        public static readonly TokenListParser<AsmToken, Instruction> Action = 
+        public static readonly TokenListParser<AsmToken, Instruction> Instruction = 
             from wh in Token.EqualTo(AsmToken.Whitespace).OptionalOrDefault()
-            from ins in Add.Or(Move).Or(Branch).Or(Halt)
+            from ins in Add.Or(Move).Or(Branch).Or(Halt).Or(Load).Or(Store)
             select ins;
 
         public static readonly TokenListParser<AsmToken, Line> Line =
             from label in InstructionLabel.OptionalOrDefault()
-            from instruction in Action
+            from instruction in Instruction
             select new Line(label, instruction);
             
         public static readonly TokenListParser<AsmToken, Line[]> AsmParser = 

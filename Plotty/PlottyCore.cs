@@ -15,7 +15,7 @@ namespace Plotty
 
         public Line CurrentLine { get; set; }
 
-        public int InstructionIndex { get; private set; }
+        public int LineNumber { get; private set; }
         public int[] Memory { get; private set; } = new int[MemoryCount];
         public Status Status { get; set; } = Status.Running;
         public bool CanExecute => CurrentLine != null && Status != Status.Halted;
@@ -23,7 +23,7 @@ namespace Plotty
         public void Load(Line[] cmds)
         {
             Instructions = cmds.ToList();
-            InstructionIndex = 0;
+            LineNumber = 0;
             Status = Status.Running;
             CurrentLine = cmds.First();
             ClearMemory();
@@ -31,8 +31,8 @@ namespace Plotty
 
         private void ClearMemory()
         {
-            Registers = Enumerable.Repeat(0, RegCount).ToArray();
-            Memory = Enumerable.Repeat(0, MemoryCount).ToArray();
+            Array.Clear(Registers, 0, RegCount);
+            Array.Clear(Memory, 0, MemoryCount);
         }
 
         public void Execute()
@@ -59,6 +59,11 @@ namespace Plotty
                     case HaltInstruction _:
                         cmd = new HaltCommand(this);
                         break;
+
+                    case StoreInstruction _:
+                        cmd = new StoreCommand(this);
+                        break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -79,14 +84,14 @@ namespace Plotty
 
         private void Skip(int count = 1)
         {
-            if (InstructionIndex + count >= Instructions.Count)
+            if (LineNumber + count >= Instructions.Count)
             {
                 CurrentLine = null;
                 return;
             }
 
-            InstructionIndex += count;
-            CurrentLine = Instructions[InstructionIndex];
+            LineNumber += count;
+            CurrentLine = Instructions[LineNumber];
         }
 
         public void GoTo(string labelName)
@@ -94,7 +99,7 @@ namespace Plotty
             var inst = Instructions.Single(x => x.Label != null && x.Label.Name == labelName);
             var index = Instructions.IndexOf(inst);
             CurrentLine = inst;
-            InstructionIndex = index;
+            LineNumber = index;
         }
 
         public void GoTo(int id)

@@ -20,7 +20,7 @@ namespace Plotty
         Comma,
         [Token(Category = "separator", Example = " ")]
         Whitespace,
-        [Token(Category = "keyword", Example = "STORE")]
+        [Token(Category = "keyword", Example = "ADD")]
         Add,
         [Token(Category = "separator", Example = "#")]
         Hash,
