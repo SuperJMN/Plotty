@@ -26,11 +26,11 @@ end:	HALT
 ```
 
 # Reference
-- MOVE destination, source: Moves values between registers. The source argument can be a number
-- STORE source,destination: Stores a value in memory. 
-- ADD source, value[, destination]: Adds a value. If the destination isn't specified, the source will be the destination (implicit destination)
-- BRANCH register1, register2, target: Compares the values of register1 and register2. If both are equal, the execution jumps to the specified target (label or line)
-- HALT: halts the execution.
+- **MOVE** destination, source: Moves values between registers. The source argument can be a number
+- **STORE** source,destination: Stores a value in memory. 
+- **ADD** source, value[, destination]: Adds a value. If the destination isn't specified, the source will be the destination (implicit destination)
+- **BRANCH** register1, register2, target: Compares the values of register1 and register2. If both are equal, the execution jumps to the specified target (label or line)
+- **HALT**: halts the execution.
 
 ## NOTICE: 
 - Immediate values are prefixed with **#** (hash)
