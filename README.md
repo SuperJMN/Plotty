@@ -13,7 +13,7 @@ The cool and interesting thing about it is the parser that takes the assembly co
 # Do you want to see it running? 
 Then, watch [this video](https://files.gitter.im/datalust/superpower/fotB/2018-01-03_11-49-25.mp4) :) 
 
-#Example code:
+# Example code:
 ```
 	MOVE	R0,#27
 	MOVE	R1,#65
@@ -25,13 +25,13 @@ start:	STORE	R1,0+R2
 end:	HALT
 ```
 
-#Reference
+# Reference
 - MOVE destination, source: Moves values between registers. The source argument can be a number
 - STORE source,destination: Stores a value in memory. 
-- ADD source,value,[destination]: Adds a value. If the destination isn't specified, the source will be the destination (implicit destination)
-- BRANCH register1, register2,target: Compares the values of register1 and register2. If both are equal, the execution jumps to the specified target (label or line)
+- ADD source, value[, destination]: Adds a value. If the destination isn't specified, the source will be the destination (implicit destination)
+- BRANCH register1, register2, target: Compares the values of register1 and register2. If both are equal, the execution jumps to the specified target (label or line)
 - HALT: halts the execution.
 
-##NOTICE: 
+## NOTICE: 
 - Immediate values are prefixed with **#** (hash)
 - The first 80x80 bytes of memory are mapped to the **Console**, so writing a value of 65 (ASCII code for 'A') to the address 0 will result in a letter A at the top-left part of the console (if you're running the Plotty.Uwp emulator).
