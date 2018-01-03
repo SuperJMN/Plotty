@@ -13,13 +13,13 @@ The cool and interesting thing about it is the parser that takes the assembly co
 
 #Example code:
 ```
-		MOVE	R0,#27
-		MOVE	R1,#65
+	MOVE	R0,#27
+	MOVE	R1,#65
 start:	STORE	R1,0+R2
-		ADD		R1,#1
-		ADD		R2,#1
-		BRANCH	R0,R2,end
-		BRANCH	R3,R3,start
+	ADD	R1,#1
+	ADD	R2,#1
+	BRANCH	R0,R2,end
+	BRANCH	R3,R3,start
 end:	HALT
 ```
 
