@@ -38,12 +38,25 @@ namespace Plotty
                 Destination = destination,
             };
 
+        public static readonly TokenListParser<AsmToken, MemoryAddress> ImmediateAddress =
+            from address in Number
+            select (MemoryAddress)new ImmediateAddress(address);
+
+        public static readonly TokenListParser<AsmToken, MemoryAddress> RelativeAddress =
+            from address in Number
+            from plus in Token.EqualTo(AsmToken.Plus)
+            from source in Source
+            select (MemoryAddress) new RelativeAddress(address, source);
+
+        public static readonly TokenListParser<AsmToken, MemoryAddress> MemoryAddress =
+            RelativeAddress.Try().Or(ImmediateAddress);
+
         public static readonly TokenListParser<AsmToken, Instruction> Store =
             from keyword in Token.EqualTo(AsmToken.Store)
             from white in Token.EqualTo(AsmToken.Whitespace)
             from source in Source
             from comma in Token.EqualTo(AsmToken.Comma)
-            from address in Number
+            from address in MemoryAddress
             select (Instruction)new StoreInstruction
             {
                 Source = source,
@@ -69,15 +82,15 @@ namespace Plotty
         public static readonly TokenListParser<AsmToken, Instruction> Add =
             from keyword in Token.EqualTo(AsmToken.Add)
             from white in Token.EqualTo(AsmToken.Whitespace)
-            from first in Register
+            from source in Register
             from comma in Token.EqualTo(AsmToken.Comma)
-            from second in Source
-            from third in Register.OptionalOrDefault()
-            select (Instruction)new ArithmeticInstruction()
+            from addend in Source
+            from destination in (from cm in Token.EqualTo(AsmToken.Comma) from reg in Register select reg).OptionalOrDefault()
+            select (Instruction)new ArithmeticInstruction
             {
-                Source = first,
-                Addend = second,
-                Destination = third ?? first,
+                Source = source,
+                Addend = addend,
+                Destination = destination ?? source,
             };
 
         private static readonly TextParser<string> RegisterParser = Character.EqualTo('R')
@@ -126,5 +139,43 @@ namespace Plotty
             
         public static readonly TokenListParser<AsmToken, Line[]> AsmParser = 
             Line.ManyDelimitedBy(Token.EqualTo(AsmToken.NewLine));
+    }
+
+    public abstract class MemoryAddress
+    {
+        public int BaseAddress { get; }
+
+        public MemoryAddress(int baseAddress)
+        {
+            BaseAddress = baseAddress;
+        }      
+    }
+
+    public class ImmediateAddress : MemoryAddress
+    {
+        public ImmediateAddress(int baseAddress) : base(baseAddress)
+        {
+        }
+
+        public override string ToString()
+        {
+            return $"{BaseAddress}";
+        }
+    }
+
+    public class RelativeAddress : MemoryAddress
+    {
+        
+        public Source Source { get; }
+
+        public RelativeAddress(int baseAddress, Source source) : base(baseAddress)
+        {
+            Source = source;
+        }
+
+        public override string ToString()
+        {
+            return $"[{BaseAddress}+{Source}]";
+        }
     }
 }

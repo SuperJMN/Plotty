@@ -2,7 +2,7 @@
 {
     public class StoreInstruction : Instruction
     {
-        public int Address { get; set; }
+        public MemoryAddress Address { get; set; }
         public Source Source { get; set; }
 
         public override string ToString()

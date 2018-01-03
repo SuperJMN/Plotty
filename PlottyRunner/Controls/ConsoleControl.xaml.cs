@@ -18,7 +18,7 @@ namespace PlottyRunner.Controls
 
             var p = new CanvasDevice();
             var format = new CanvasTextFormat();
-            var layout = new CanvasTextLayout(p, "X", format, 0F, 0F);
+            var layout = new CanvasTextLayout(p, "Q", format, 0F, 0F);
             CharWidth = layout.DrawBounds.Width;
             CharHeight = layout.DrawBounds.Height;
             TextColor = Color.FromArgb(255, 255, 255, 255);

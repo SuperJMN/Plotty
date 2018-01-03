@@ -12,9 +12,10 @@ namespace Plotty
             new Dictionary<char, AsmToken>()
             {
                 {':', AsmToken.Colon},
+                {'+', AsmToken.Plus},
                 {'#', AsmToken.Hash},
                 {',', AsmToken.Comma},
-                {'\n', AsmToken.NewLine},                
+                {'\n', AsmToken.NewLine},
             };
 
         private readonly IDictionary<string, AsmToken> words = new Dictionary<string, AsmToken>()
@@ -39,7 +40,8 @@ namespace Plotty
                     var regNum = Numerics.Integer(cursor.Remainder);
                     yield return Result.Value(AsmToken.Register, cursor.Location, regNum.Remainder);
                     cursor = regNum.Remainder.ConsumeChar();
-                } else if (charToTokenDict.TryGetValue(cursor.Value, out var token))
+                }
+                else if (charToTokenDict.TryGetValue(cursor.Value, out var token))
                 {
                     yield return Result.Value(token, cursor.Location, cursor.Remainder);
                     cursor = cursor.Remainder.ConsumeChar();

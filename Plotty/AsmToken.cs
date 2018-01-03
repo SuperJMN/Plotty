@@ -31,6 +31,8 @@ namespace Plotty
         [Token(Category = "text", Example = ":")]
         Colon,
         [Token(Category = "keyword", Example = "HALT")]
-        Halt
+        Halt,
+        [Token(Category = "operator", Example = "+")]
+        Plus
     }
 }
