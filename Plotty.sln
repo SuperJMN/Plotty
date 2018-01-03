@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plotty", "Plotty\Plotty.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plotty.Test", "Plotty.Test\Plotty.Test.csproj", "{5ADBBC34-FE80-4C29-8FFB-FD8DF72B9D01}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlottyMachine", "PlottyMachine\PlottyMachine.csproj", "{3560012B-012F-4B68-B787-052DAB6FA328}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plotty.Console", "PlottyMachine\Plotty.Console.csproj", "{3560012B-012F-4B68-B787-052DAB6FA328}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlottyRunner", "PlottyRunner\PlottyRunner.csproj", "{A5AFF469-9164-4567-A199-14FAC90049DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plotty.Uwp", "PlottyRunner\Plotty.Uwp.csproj", "{A5AFF469-9164-4567-A199-14FAC90049DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{D9002AE6-7752-4230-ABCC-20DDE148BA5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,6 +96,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3560012B-012F-4B68-B787-052DAB6FA328} = {D9002AE6-7752-4230-ABCC-20DDE148BA5B}
+		{A5AFF469-9164-4567-A199-14FAC90049DC} = {D9002AE6-7752-4230-ABCC-20DDE148BA5B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2AE660CA-14A6-4162-9064-567B56389DBA}

@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Plotty\Plotty.csproj" />
+    <ProjectReference Include="..\Plotty\Plotty.Core.csproj" />
   </ItemGroup>
 
 </Project>

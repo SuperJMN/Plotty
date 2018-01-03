@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace PlottyRunner
+namespace Plotty.Uwp
 {
     public class RegisterViewModel : ReactiveObject
     {

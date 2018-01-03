@@ -1,7 +1,7 @@
 using System;
 using Windows.UI.Xaml.Data;
 
-namespace PlottyRunner
+namespace Plotty.Uwp
 {
     public class NullToEmptyStringConverter : IValueConverter
     {

@@ -1,6 +1,4 @@
-﻿using Plotty;
-
-namespace PlottyRunner
+﻿namespace Plotty.Uwp
 {
     public class LineViewModel
     {

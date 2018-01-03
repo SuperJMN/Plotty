@@ -1,7 +1,7 @@
 ﻿using System;
 using ReactiveUI;
 
-namespace PlottyRunner
+namespace Plotty.Uwp
 {
     public class ConsoleHandler : ReactiveObject
     {

@@ -1,14 +1,12 @@
-﻿using System;
-using Plotty;
-using Superpower;
+﻿using Superpower;
 
-namespace PlottyMachine
+namespace Plotty.Console
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            System.Console.WriteLine("Hello World!");
 
             var text1 = @"MOVE	R1,#5
 pepito:ADD	R2,#1

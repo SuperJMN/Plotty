@@ -3,11 +3,10 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Plotty;
 using ReactiveUI;
 using Superpower;
 
-namespace PlottyRunner
+namespace Plotty.Uwp
 {
     public class MainViewModel : ReactiveObject
     {

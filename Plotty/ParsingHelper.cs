@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using Superpower.Model;
+﻿using Superpower.Model;
 using Superpower.Parsers;
 
 namespace Plotty

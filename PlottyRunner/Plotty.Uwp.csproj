@@ -7,8 +7,8 @@
     <ProjectGuid>{A5AFF469-9164-4567-A199-14FAC90049DC}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PlottyRunner</RootNamespace>
-    <AssemblyName>PlottyRunner</AssemblyName>
+    <RootNamespace>Plotty.Uwp</RootNamespace>
+    <AssemblyName>Plotty.Uwp</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16299.0</TargetPlatformVersion>
@@ -167,7 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Plotty\Plotty.csproj">
-      <Project>{DB8947FD-8E81-4D6F-A28C-DA32A113206D}</Project>
+      <Project>{db8947fd-8e81-4d6f-a28c-da32a113206d}</Project>
       <Name>Plotty</Name>
     </ProjectReference>
   </ItemGroup>

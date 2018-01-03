@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="PlottyRunner.MainPage"
+    x:Class="Plotty.Uwp.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:PlottyRunner"
@@ -7,12 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:monaco="using:Monaco"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:uwp="using:Plotty.Uwp"
     mc:Ignorable="d">
     <Page.Resources>
        
     </Page.Resources>
     <Page.DataContext>
-        <local:MainViewModel />
+        <uwp:MainViewModel />
     </Page.DataContext>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
@@ -71,7 +72,7 @@
         </Grid>
 
 
-        <local:StatusControl Grid.Column="1" Margin="10" DataContext="{Binding CoreViewModel}" />
+        <uwp:StatusControl Grid.Column="1" Margin="10" DataContext="{Binding CoreViewModel}" />
 
         <controls:GridSplitter
             Width="8"
