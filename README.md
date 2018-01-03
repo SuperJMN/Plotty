@@ -1,15 +1,17 @@
 # Plotty
-##Emulator of a custom RISC architecture using Superpower
+## Emulator of a custom RISC architecture using Superpower
 
 This is **Plotty**, a side-project just for The Fun Of Learning®. 
 
 #It's based on [Superpower](https://github.com/nblumhardt/superpower)
-##A very interesting and powerful library by [Nicholas Blumhardt](https://github.com/nblumhardt) to build parsers easily in .NET.
+## A very interesting and powerful library by [Nicholas Blumhardt](https://github.com/nblumhardt) to build parsers easily in .NET.
 
 To summarize, this project goes around a custom RISC architecture I created. It can be programmed by writing in an assembly language than is then parsed to instructions and executed by an interpreter. 
 
 The cool and interesting thing about it is the parser that takes the assembly code and transforms it into instructions. If you want to learn about parsing with **Superpower**, you can use this for reference to create your own parsers :)
 
+# Do you want to see it running? 
+Then, watch this video :) https://files.gitter.im/datalust/superpower/fotB/2018-01-03_11-49-25.mp4
 
 #Example code:
 ```
