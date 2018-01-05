@@ -15,7 +15,9 @@ namespace Plotty.Uwp
 
         public MainViewModel()
         {
-            Source = "\t\tMOVE\tR0,#27\r\n\t\tMOVE\tR1,#65\r\nstart:\tSTORE\tR1,0+R2\r\n\t\tADD\tR1,#1\r\n\t\tADD\tR2,#1\r\n\t\tBRANCH\tR0,R2,end\r\n\t\tBRANCH\tR3,R3,start\r\nend:\tHALT";
+            //Source = "\t\tMOVE\tR0,#27\r\n\t\tMOVE\tR1,#65\r\nstart:\tSTORE\tR1,0+R2\r\n\t\tADD\tR1,#1\r\n\t\tADD\tR2,#1\r\n\t\tBRANCH\tR0,R2,end\r\n\t\tBRANCH\tR3,R3,start\r\nend:\tHALT";
+            Source =
+                "\t\tMOVE\tR0,#3\r\n\t\tMOVE\tR1,#4\r\nstart: \tBRANCH\tR0,R2,end\r\n\t\tADD\tR3,R1\r\n\t\tADD\tR2,#1\r\n\t\tBRANCH\tR4,R4,start\r\nend:\tHALT";
             CoreViewModel = new CoreViewModel(new PlottyCore());
             PlayCommand = ReactiveCommand.CreateFromObservable(() => Observable
                 .StartAsync(Play)
