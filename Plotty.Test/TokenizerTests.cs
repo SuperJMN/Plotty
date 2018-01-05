@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Superpower.Model;
 using Xunit;
 
 namespace Plotty.Test

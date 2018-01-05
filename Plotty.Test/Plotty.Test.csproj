@@ -9,13 +9,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="SemanticComparison" Version="4.0.0" />
+    <PackageReference Include="Superpower" Version="1.1.1-dev-00081" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Plotty\Plotty.Core.csproj" />
+    <ProjectReference Include="..\Plotty\Plotty.csproj" />
   </ItemGroup>
 
 </Project>

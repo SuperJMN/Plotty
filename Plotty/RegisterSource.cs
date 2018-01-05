@@ -11,7 +11,12 @@
 
         public override string ToString()
         {
-            return $"Register {Register}";
+            return $"{Register}";
+        }
+
+        public override int GetValue(PlottyCore plottyCore)
+        {
+            return plottyCore.Registers[Register.Id];
         }
     }
 }

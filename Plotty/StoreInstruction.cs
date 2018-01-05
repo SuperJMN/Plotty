@@ -7,7 +7,7 @@
 
         public override string ToString()
         {
-            return $"Store {Source} in MEM:{Address}";
+            return $"Store {Source} in Memory at [{Address}]";
         }
     }
 }

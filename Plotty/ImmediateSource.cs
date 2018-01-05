@@ -13,5 +13,10 @@
         {
             return $"immediate {Immediate}";
         }
+
+        public override int GetValue(PlottyCore plottyCore)
+        {
+            return Immediate;
+        }
     }
 }

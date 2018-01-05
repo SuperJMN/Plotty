@@ -8,18 +8,10 @@
 
         public override void Execute()
         {
-            var inst = (MoveInstruction)PlottyCore.CurrentLine.Instruction;
-
-            switch (inst.Source)
-            {
-                case ImmediateSource im:
-                    PlottyCore.Registers[inst.Destination.Id] = im.Immediate;
-                    break;
-                case RegisterSource reg:
-                    PlottyCore.Registers[inst.Destination.Id] = PlottyCore.Registers[reg.Register.Id];
-                    break;
-            }
-
+            var inst = (LoadInstruction)PlottyCore.CurrentLine.Instruction;
+            var value = inst.MemoryAddress.GetValue(PlottyCore);
+            PlottyCore.Registers[inst.Destination.Id] = value;
+           
             PlottyCore.GoToNext();
         }
     }
