@@ -13,9 +13,14 @@
             var r2 = PlottyCore.Registers[instruction.Another.Id];
             if (r1 == r2)
             {
-                if (instruction.Target.Label != null)
+                switch (instruction.Target)
                 {
-                    PlottyCore.GoTo(instruction.Target.Label);
+                    case LabelTarget jt:
+                        PlottyCore.GoTo(jt.Label);
+                        break;
+                    case SourceTarget rt:
+                        PlottyCore.GoTo(rt.Target.GetValue(PlottyCore));
+                        break;
                 }
             }
             else

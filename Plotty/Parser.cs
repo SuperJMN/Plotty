@@ -103,14 +103,14 @@ namespace Plotty
 
         public static readonly TokenListParser<AsmToken, JumpTarget> LabelTarget =
             from text in Token.EqualTo(AsmToken.Text)
-            select new JumpTarget(text.ToStringValue());
+            select (JumpTarget)new LabelTarget(text.ToStringValue());
 
-        public static readonly TokenListParser<AsmToken, JumpTarget> RelativeTarget =
-            from number in Number
-            select new JumpTarget(number);
+        public static readonly TokenListParser<AsmToken, JumpTarget> RegisterTarget =
+            from number in Source
+            select (JumpTarget)new SourceTarget(number);
 
         public static readonly TokenListParser<AsmToken, JumpTarget> JumpTarget =
-            LabelTarget.Or(RelativeTarget);
+            LabelTarget.Or(RegisterTarget);
 
         public static readonly TokenListParser<AsmToken, Instruction> Branch =
             from token in Token.EqualTo(AsmToken.Branch)
@@ -139,5 +139,15 @@ namespace Plotty
 
         public static readonly TokenListParser<AsmToken, Line[]> AsmParser =
             Line.ManyDelimitedBy(Token.EqualTo(AsmToken.NewLine));
-    }    
+    }
+
+    public class SourceTarget : JumpTarget
+    {
+        public Source Target { get; }
+
+        public SourceTarget(Source target)
+        {
+            Target = target;
+        }
+    }
 }

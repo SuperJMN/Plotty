@@ -102,13 +102,13 @@ namespace Plotty
         {
             var inst = Instructions.Single(x => x.Label != null && x.Label.Name == labelName);
             var index = Instructions.IndexOf(inst);
-            CurrentLine = inst;
-            LineNumber = index;
+            GoTo(index);
         }
 
         public void GoTo(int id)
         {
             CurrentLine = Instructions[id];
+            LineNumber = id;
         }
     }
 }

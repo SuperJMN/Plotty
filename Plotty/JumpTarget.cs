@@ -1,26 +1,22 @@
 ﻿namespace Plotty
 {
-    public class JumpTarget
+    public class LabelTarget : JumpTarget
     {
         public string Label { get; }
-        public int LineNumber { get; }
-
-
-        public JumpTarget(string target)
+        
+        public LabelTarget(string label)
         {
-            Label = target;
+            Label = label;
         }
 
-        public JumpTarget(int lineNumber)
-        {
-            LineNumber = lineNumber;
-        }
 
         public override string ToString()
         {
-            var text = Label != null ? $"Label '{Label}'" : $"Line {LineNumber}";
-
-            return text;
+            return $"Label '{Label}'";
         }
+    }
+
+    public abstract class JumpTarget
+    {
     }
 }
