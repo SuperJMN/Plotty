@@ -44,12 +44,8 @@ namespace Plotty
             from offset in Source
             select (MemoryAddress)new IndexedAddress(baseRegister, offset);
 
-        public static readonly TokenListParser<AsmToken, MemoryAddress> RegisterIndirectAddress =
-            from register in Parse.Ref(() => Register)
-            select (MemoryAddress)new RegisterIndirectAddress(register);
-
         public static readonly TokenListParser<AsmToken, MemoryAddress> MemoryAddress =
-            IndexedAddress.Try().Or(RegisterIndirectAddress);
+            IndexedAddress;
 
         public static readonly TokenListParser<AsmToken, Instruction> Store =
             from keyword in Token.EqualTo(AsmToken.Store)
@@ -139,15 +135,5 @@ namespace Plotty
 
         public static readonly TokenListParser<AsmToken, Line[]> AsmParser =
             Line.ManyDelimitedBy(Token.EqualTo(AsmToken.NewLine));
-    }
-
-    public class SourceTarget : JumpTarget
-    {
-        public Source Target { get; }
-
-        public SourceTarget(Source target)
-        {
-            Target = target;
-        }
     }
 }
