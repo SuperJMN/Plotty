@@ -7,9 +7,10 @@
     xmlns:monaco="using:Monaco"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:uwp="using:Plotty.Uwp"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d">
     <Page.Resources>
-       
+
     </Page.Resources>
     <Page.DataContext>
         <uwp:MainViewModel />
@@ -23,9 +24,9 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8" >
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8">
                 <Button Command="{Binding PlayCommand}">
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F5" />
@@ -40,7 +41,7 @@
                         <KeyboardAccelerator Key="F5" Modifiers="Shift" />
                     </Button.KeyboardAccelerators>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Stop"  VerticalAlignment="Center" />
+                        <TextBlock Text="Stop" VerticalAlignment="Center" />
                         <SymbolIcon Symbol="Stop" Margin="4,0,0,0" />
                     </StackPanel>
                 </Button>
@@ -51,9 +52,16 @@
                     <TextBlock Text="{Binding DelayTag}" VerticalAlignment="Center" />
                 </StackPanel>
             </StackPanel>
-            <monaco:CodeEditor Grid.Row="1" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray" BorderThickness="1" />
+            <monaco:CodeEditor x:Name="Editor" Grid.Row="1" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray"
+                               BorderThickness="1">
+                <interactivity:Interaction.Behaviors>
+                    <uwp:CurrentLineBehavior CurrentLine="{Binding CoreViewModel.CurrentLine.Index}"
+                                             IsEnabled="{Binding IsBusy}" LineBrush="Yellow" />
+                </interactivity:Interaction.Behaviors>
+            </monaco:CodeEditor>
             <TextBlock Foreground="Red" TextWrapping="Wrap" Grid.Row="2" Text="{Binding Error}" />
-            <controls:Loading Grid.Row="1" IsLoading="{Binding IsBusy}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
+            <controls:Loading Grid.Row="1" IsLoading="{Binding IsBusy}" VerticalContentAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch">
                 <Grid>
                     <controls:TileControl AnimationDuration="15"
                                           AnimationStepX="1"
@@ -64,8 +72,8 @@
                                           IsAnimated="True"
                                           Opacity="0.2"
                                           OffsetX="0"
-                                          OffsetY="0"                                          
-                                          ScrollOrientation="Both"/>
+                                          OffsetY="0"
+                                          ScrollOrientation="Both" />
                 </Grid>
             </controls:Loading>
         </Grid>
@@ -82,7 +90,6 @@
             ResizeDirection="Auto"
             ResizeBehavior="BasedOnAlignment"
             CursorBehavior="ChangeOnSplitterHover"
-            GripperForeground="White">
-        </controls:GridSplitter>
+            GripperForeground="White" />
     </Grid>
 </Page>

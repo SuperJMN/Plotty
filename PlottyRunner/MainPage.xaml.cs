@@ -11,7 +11,7 @@ namespace Plotty.Uwp
     {
         public MainPage()
         {
-            this.InitializeComponent();           
-        }        
+            this.InitializeComponent();
+        }
     }
 }
