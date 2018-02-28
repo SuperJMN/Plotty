@@ -1,4 +1,4 @@
-namespace Plotty.Compiler.Tests
+namespace Plotty.Compiler
 {
     public class AssignmentExpression : Expression
     {

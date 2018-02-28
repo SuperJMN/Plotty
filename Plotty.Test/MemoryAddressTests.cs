@@ -1,4 +1,5 @@
-﻿using Superpower;
+﻿using Plotty.Core;
+using Superpower;
 using Xunit;
 
 namespace Plotty.Test

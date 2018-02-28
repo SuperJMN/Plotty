@@ -1,4 +1,6 @@
-﻿namespace Plotty.Uwp
+﻿using Plotty.Core;
+
+namespace Plotty.Uwp
 {
     public class LineViewModel
     {

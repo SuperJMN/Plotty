@@ -1,7 +1,7 @@
 ﻿using Superpower.Model;
 using Superpower.Parsers;
 
-namespace Plotty
+namespace Plotty.Core
 {
     public class ParsingHelper
     {

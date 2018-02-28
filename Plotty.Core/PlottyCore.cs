@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Plotty
+namespace Plotty.Core
 {
     public class PlottyCore
     {

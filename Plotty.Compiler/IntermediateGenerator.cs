@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Plotty.Compiler.Tests
+namespace Plotty.Compiler
 {
     public class IntermediateGenerator
     {

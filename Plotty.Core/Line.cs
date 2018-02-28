@@ -1,4 +1,4 @@
-﻿namespace Plotty
+﻿namespace Plotty.Core
 {
     public class Line
     {
