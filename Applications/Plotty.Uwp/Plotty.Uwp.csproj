@@ -122,6 +122,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="play.png" />
+    <Content Include="Samples in ASM\ASCII print.txt" />
+    <Content Include="Samples in ASM\Multiplication.txt" />
+    <Content Include="Samples in ASM\Subroutine.txt" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

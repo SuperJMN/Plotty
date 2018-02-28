@@ -9,6 +9,8 @@ namespace Plotty.Compiler.Tests
         [Fact]
         public void Test()
         {
+            // a = b + c * d
+
             var ast = new AssignmentExpression(new RefExpresion("a"),
                 new AddExpression(new RefExpresion("b"),
                     new MultExpression(new RefExpresion("c"), new RefExpresion("d"))));
