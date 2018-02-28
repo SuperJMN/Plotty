@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Plotty\Plotty.csproj" />
+    <ProjectReference Include="..\..\Plotty.Core\Plotty.Core.csproj" />
   </ItemGroup>
 
 </Project>

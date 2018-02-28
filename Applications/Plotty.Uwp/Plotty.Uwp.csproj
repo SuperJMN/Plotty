@@ -167,7 +167,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Plotty\Plotty.csproj">
+    <ProjectReference Include="..\..\Plotty.Core\Plotty.Core.csproj">
       <Project>{db8947fd-8e81-4d6f-a28c-da32a113206d}</Project>
       <Name>Plotty</Name>
     </ProjectReference>
