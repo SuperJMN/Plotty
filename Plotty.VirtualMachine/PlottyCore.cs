@@ -18,7 +18,7 @@ namespace Plotty.VirtualMachine
         public Line CurrentLine { get; set; }
 
         public int LineNumber { get; private set; }
-        public int[] Memory { get; private set; } = new int[MemoryCount];
+        public int[] Memory { get; } = new int[MemoryCount];
         public Status Status { get; set; } = Status.Running;
         public bool CanExecute => CurrentLine != null && Status != Status.Halted;
 
