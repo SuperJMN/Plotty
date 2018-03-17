@@ -173,9 +173,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Plotty\Plotty.Instructions\Plotty.Instructions.csproj">
-      <Project>{55967434-B296-4989-A47D-D6AE03F7C5F2}</Project>
-      <Name>Plotty.Instructions</Name>
+    <ProjectReference Include="..\..\..\..\Plotty\Plotty.Instructions\Plotty.Model.csproj">
+      <Project>{55967434-b296-4989-a47d-d6ae03f7c5f2}</Project>
+      <Name>Plotty.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plotty.Core\Plotty.Parser.csproj">
       <Project>{db8947fd-8e81-4d6f-a28c-da32a113206d}</Project>
