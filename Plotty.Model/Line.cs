@@ -5,9 +5,13 @@
         public Label Label { get; }
         public Instruction Instruction { get; }
 
-        public Line(Label label, Instruction instruction)
+        public Line(Label label, Instruction instruction) : this(instruction)
         {
             Label = label;
+        }
+
+        public Line(Instruction instruction)
+        {
             Instruction = instruction;
         }
 

@@ -22,7 +22,7 @@ namespace Plotty.VirtualMachine
         public Status Status { get; set; } = Status.Running;
         public bool CanExecute => CurrentLine != null && Status != Status.Halted;
 
-        public void Load(Line[] cmds)
+        public void Load(IList<Line> cmds)
         {
             Instructions = cmds.ToList();
             LineNumber = 0;
