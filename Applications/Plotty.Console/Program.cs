@@ -18,7 +18,7 @@ end:	HALT";
             var tokenList = new Tokenizer().Tokenize(text1);
             var parsed = Parser.Parser.AsmParser.Parse(tokenList);
 
-            var plottyCore = new PlottyCore();
+            var plottyCore = new PlottyMachine();
             plottyCore.Load(parsed);
 
             while (plottyCore.CanExecute)

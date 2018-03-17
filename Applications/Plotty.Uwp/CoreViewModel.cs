@@ -14,10 +14,10 @@ namespace Plotty.Uwp
         private IList<RegisterViewModel> registers;
         private IEnumerable<Line> lines;
         private LineViewModel currentLine;
-        public PlottyCore PlottyCore { get; }
+        public PlottyMachine PlottyCore { get; }
         public ConsoleHandler Console { get; set; }
 
-        public CoreViewModel(PlottyCore plottyCore)
+        public CoreViewModel(PlottyMachine plottyCore)
         {
             PlottyCore = plottyCore;
             Registers = PlottyCore.Registers.Select((value, index) => new RegisterViewModel(index, value)).ToList();
