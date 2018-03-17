@@ -3,8 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Plotty.Common;
-using Plotty.Common.Instructions;
+using Plotty.Model;
 using Plotty.VirtualMachine;
 using ReactiveUI;
 

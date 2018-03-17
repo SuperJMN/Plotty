@@ -1,5 +1,4 @@
-﻿using Plotty.Parser;
-using Superpower;
+﻿using Superpower;
 using Xunit;
 
 namespace Plotty.Test
@@ -13,7 +12,7 @@ namespace Plotty.Test
         //[InlineData("ADD R1,R2,R3")]
         public void Add(string source)
         {
-            var tokenList = new Tokenizer().Tokenize(source);
+            var tokenList = new Parser.Tokenizer().Tokenize(source);
             var commands = Parser.Parser.Add.Parse(tokenList);
         } 
 
@@ -22,7 +21,7 @@ namespace Plotty.Test
         [InlineData("LOAD R1,#1\nADD R1,#1,R2\nBRANCH R0,R1,label")]
         public void Line(string source)
         {
-            var tokenList = new Tokenizer().Tokenize(source);
+            var tokenList = new Parser.Tokenizer().Tokenize(source);
             var commands = Parser.Parser.Line.Parse(tokenList);
         } 
     }

@@ -17,7 +17,8 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>PlottyRunner_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Plotty.Uwp_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>66DBA7CAB40880B73062AB7179A05E41E1337C6A</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -118,7 +119,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="PlottyRunner_TemporaryKey.pfx" />
+    <None Include="Plotty.Uwp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="play.png" />
@@ -173,16 +174,20 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Plotty.Common\Plotty.Common.csproj">
-      <Project>{A043AB25-2792-44BB-95C2-67CBF9CB3580}</Project>
-      <Name>Plotty.Common</Name>
+    <ProjectReference Include="..\..\Plotty.Commands\Plotty.Commands.csproj">
+      <Project>{817789ae-766f-48e0-915a-e71d55103d72}</Project>
+      <Name>Plotty.Commands</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Plotty.Core\Plotty.Parser.csproj">
-      <Project>{db8947fd-8e81-4d6f-a28c-da32a113206d}</Project>
+    <ProjectReference Include="..\..\Plotty.Model\Plotty.Model.csproj">
+      <Project>{2953cb7e-7692-4d36-9d66-cc1fce165d9b}</Project>
+      <Name>Plotty.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plotty.Parser\Plotty.Parser.csproj">
+      <Project>{ae0d23c6-31e7-4f8c-8325-e3d5ed696a2f}</Project>
       <Name>Plotty.Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plotty.VirtualMachine\Plotty.VirtualMachine.csproj">
-      <Project>{72B597D7-72C8-4F12-9EBC-319785C8AE38}</Project>
+      <Project>{25553e47-8408-402c-a4b5-b6537070594a}</Project>
       <Name>Plotty.VirtualMachine</Name>
     </ProjectReference>
   </ItemGroup>

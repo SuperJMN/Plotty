@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Plotty.Commands;
-using Plotty.Common;
-using Plotty.Common.Instructions;
+using Plotty.Model;
 
 namespace Plotty.VirtualMachine
 {

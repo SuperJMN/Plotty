@@ -1,5 +1,4 @@
-﻿using Plotty.Common;
-using Plotty.Common.Instructions;
+﻿using Plotty.Model;
 
 namespace Plotty.Commands
 {

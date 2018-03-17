@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Plotty.Common\Plotty.Common.csproj" />
+    <ProjectReference Include="..\Plotty.Model\Plotty.Model.csproj" />
   </ItemGroup>
 
 </Project>
