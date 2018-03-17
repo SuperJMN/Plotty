@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Plotty.Commands\Plotty.Commands.csproj" />
-    <ProjectReference Include="..\Plotty.Common\Plotty.Common.csproj" />
   </ItemGroup>
 
 </Project>

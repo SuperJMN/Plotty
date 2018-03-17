@@ -1,5 +1,4 @@
-﻿using Plotty.Common;
-using Plotty.Common.Instructions;
+﻿using Plotty.Model;
 using Superpower;
 using Superpower.Parsers;
 

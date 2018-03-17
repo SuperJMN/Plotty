@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Plotty.Common\Plotty.Common.csproj" />
+    <Reference Include="Plotty.Common">
+      <HintPath>..\Plotty.Common\bin\Debug\netstandard2.0\Plotty.Common.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Plotty.Common\Plotty.Common.csproj" />
+    <ProjectReference Include="..\..\..\Plotty\Plotty.Instructions\Plotty.Model.csproj" />
   </ItemGroup>
 
 </Project>
