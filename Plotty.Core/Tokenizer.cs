@@ -4,7 +4,7 @@ using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
 
-namespace Plotty.Core
+namespace Plotty.Parser
 {
     public class Tokenizer : Tokenizer<AsmToken>
     {

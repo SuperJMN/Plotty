@@ -1,4 +1,4 @@
-﻿using Plotty.Core;
+﻿using Plotty.Parser;
 using Superpower;
 using Xunit;
 
@@ -14,7 +14,7 @@ namespace Plotty.Test
         public void Add(string source)
         {
             var tokenList = new Tokenizer().Tokenize(source);
-            var commands = Parser.Add.Parse(tokenList);
+            var commands = Parser.Parser.Add.Parse(tokenList);
         } 
 
         [Theory]
@@ -23,7 +23,7 @@ namespace Plotty.Test
         public void Line(string source)
         {
             var tokenList = new Tokenizer().Tokenize(source);
-            var commands = Parser.Line.Parse(tokenList);
+            var commands = Parser.Parser.Line.Parse(tokenList);
         } 
     }
 }

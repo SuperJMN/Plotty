@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Plotty.Core\Plotty.Core.csproj" />
+    <ProjectReference Include="..\..\Plotty.Core\Plotty.Parser.csproj" />
+    <ProjectReference Include="..\..\Plotty.VirtualMachine\Plotty.VirtualMachine.csproj" />
   </ItemGroup>
 
 </Project>

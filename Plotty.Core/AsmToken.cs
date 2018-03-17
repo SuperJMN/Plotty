@@ -1,6 +1,6 @@
 ﻿using Superpower.Display;
 
-namespace Plotty.Core
+namespace Plotty.Parser
 {
     public enum AsmToken
     {

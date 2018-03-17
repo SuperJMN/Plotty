@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Plotty.Core\Plotty.Core.csproj" />
+    <ProjectReference Include="..\Plotty.Core\Plotty.Parser.csproj" />
   </ItemGroup>
 
 </Project>

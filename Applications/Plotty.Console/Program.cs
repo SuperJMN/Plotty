@@ -1,4 +1,5 @@
-﻿using Plotty.Core;
+﻿using Plotty.Parser;
+using Plotty.VirtualMachine;
 using Superpower;
 
 namespace Plotty.Console
@@ -15,7 +16,7 @@ pepito:ADD	R2,#1
         BRANCH	R0,R0,pepito
 end:	HALT";
             var tokenList = new Tokenizer().Tokenize(text1);
-            var parsed = Parser.AsmParser.Parse(tokenList);
+            var parsed = Parser.Parser.AsmParser.Parse(tokenList);
 
             var plottyCore = new PlottyCore();
             plottyCore.Load(parsed);

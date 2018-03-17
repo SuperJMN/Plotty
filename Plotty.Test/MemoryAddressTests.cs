@@ -1,4 +1,4 @@
-﻿using Plotty.Core;
+﻿using Plotty.Parser;
 using Superpower;
 using Xunit;
 
@@ -13,7 +13,7 @@ namespace Plotty.Test
         public void Add(string source)
         {
             var tokenList = new Tokenizer().Tokenize(source);
-            var address = Parser.MemoryAddress.Parse(tokenList);
+            var address = Parser.Parser.MemoryAddress.Parse(tokenList);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Plotty.Core;
+﻿using Line = Plotty.Common.Line;
 
 namespace Plotty.Uwp
 {

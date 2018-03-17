@@ -3,7 +3,8 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Plotty.Core;
+using Plotty.Parser;
+using Plotty.VirtualMachine;
 using ReactiveUI;
 using Superpower;
 
@@ -43,7 +44,7 @@ namespace Plotty.Uwp
         private async Task Play(CancellationToken cancellationToken)
         {
             Error = string.Empty;
-            var instructions = Parser.AsmParser.Parse(new Tokenizer().Tokenize(Source));
+            var instructions = Parser.Parser.AsmParser.Parse(new Tokenizer().Tokenize(Source));
             CoreViewModel.Lines = instructions;
             await CoreViewModel.Execute(cancellationToken);
         }
