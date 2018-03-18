@@ -96,6 +96,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AssemblyCodingViewModel.cs" />
+    <Compile Include="CLangCodingViewModel.cs" />
+    <Compile Include="CodingViewTemplateSelector.cs" />
     <Compile Include="ConsoleHandler.cs" />
     <Compile Include="Controls\ConsoleControl.xaml.cs">
       <DependentUpon>ConsoleControl.xaml</DependentUpon>
@@ -107,12 +110,19 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CodingViewModelBase.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="NullToEmptyStringConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterViewModel.cs" />
     <Compile Include="StatusControl.xaml.cs">
       <DependentUpon>StatusControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AsmView.xaml.cs">
+      <DependentUpon>AsmView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CLangView.xaml.cs">
+      <DependentUpon>CLangView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +162,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\AsmView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CLangView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
@@ -174,9 +192,17 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Plotty.CodeGeneration\Plotty.CodeGeneration.csproj">
+      <Project>{307fac61-bb9d-417a-a887-18e1e3c854f3}</Project>
+      <Name>Plotty.CodeGeneration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Plotty.Commands\Plotty.Commands.csproj">
       <Project>{817789ae-766f-48e0-915a-e71d55103d72}</Project>
       <Name>Plotty.Commands</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plotty.Compiler\Plotty.Compiler.csproj">
+      <Project>{ED437E95-1249-4A7A-94B3-E1546EB98CBA}</Project>
+      <Name>Plotty.Compiler</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plotty.Model\Plotty.Model.csproj">
       <Project>{2953cb7e-7692-4d36-9d66-cc1fce165d9b}</Project>
@@ -189,6 +215,10 @@
     <ProjectReference Include="..\..\Plotty.VirtualMachine\Plotty.VirtualMachine.csproj">
       <Project>{25553e47-8408-402c-a4b5-b6537070594a}</Project>
       <Name>Plotty.VirtualMachine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\superpower\src\Superpower\Superpower.csproj">
+      <Project>{D5AB8485-9FF1-492C-889F-718EB0B10DFE}</Project>
+      <Name>Superpower</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

@@ -1,68 +1,32 @@
-﻿using System;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Plotty.VirtualMachine;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ReactiveUI;
-using Superpower;
 
 namespace Plotty.Uwp
 {
     public class MainViewModel : ReactiveObject
     {
-        private string error;
-        private readonly ObservableAsPropertyHelper<bool> isBusyOH;
+        private CodingViewModelBase selectedView;
 
         public MainViewModel()
         {
-            Source = "\t\tMOVE\tR0,#3\r\n\t\tMOVE\tR1,#4\r\nstart: \tBRANCH\tR0,R2,end\r\n\t\tADD\tR3,R1\r\n\t\tADD\tR2,#1\r\n\t\tBRANCH\tR4,R4,start\r\nend:\tHALT";
-            CoreViewModel = new CoreViewModel(new PlottyMachine());
-            PlayCommand = ReactiveCommand.CreateFromObservable(() => Observable
-                .StartAsync(Play)
-                .TakeUntil(CancelCommand));
-            PlayCommand.ThrownExceptions.Subscribe(ex => { Error = ex.Message; });
-            CancelCommand = ReactiveCommand.Create(
-                () => { },
-                PlayCommand.IsExecuting);
-
-            isBusyOH = PlayCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
-            Delay = 250;
+            SelectedView = CodingViews.First();
         }
 
-        public ReactiveCommand<Unit, Unit> CancelCommand { get; }
-
-        public string Error
+        public List<CodingViewModelBase> CodingViews { get; set; } = new List<CodingViewModelBase>()
         {
-            get => error;
-            set => this.RaiseAndSetIfChanged(ref error, value);
-        }
+            new CLangCodingViewModel(),
+            new AssemblyCodingViewModel(),
+        };
 
-        public ReactiveCommand<Unit, Unit> PlayCommand { get; }
-
-        private async Task Play(CancellationToken cancellationToken)
+        public CodingViewModelBase SelectedView
         {
-            Error = string.Empty;
-            var instructions = Parser.Parser.AsmParser.Parse(new Parser.Tokenizer().Tokenize(Source));
-            CoreViewModel.Lines = instructions;
-            await CoreViewModel.Execute(cancellationToken);
-        }
-
-        public string Source { get; set; }
-        public CoreViewModel CoreViewModel { get; }
-
-        public bool IsBusy => isBusyOH.Value;
-
-        public int Delay
-        {
-            get => CoreViewModel.Delay;
+            get => selectedView;
             set
             {
-                CoreViewModel.Delay = value;
-                this.RaisePropertyChanged(nameof(DelayTag));
+                selectedView = value;
+                this.RaiseAndSetIfChanged(ref selectedView, value);
             }
         }
-
-        public string DelayTag => $"{Delay} ms";
     }
 }

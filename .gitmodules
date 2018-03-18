@@ -4,3 +4,6 @@
 [submodule "DeepEqual"]
 	path = DeepEqual
 	url = https://github.com/jamesfoster/DeepEqual.git
+[submodule "superpower"]
+	path = superpower
+	url = https://github.com/datalust/superpower.git

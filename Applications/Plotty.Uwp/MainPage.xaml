@@ -4,12 +4,24 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:monaco="using:Monaco"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:uwp="using:Plotty.Uwp"
-    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:views="using:Plotty.Uwp.Views"
     mc:Ignorable="d">
     <Page.Resources>
+
+        <uwp:CodingViewTemplateSelector x:Key="CodingViewTemplateSelector">
+            <uwp:CodingViewTemplateSelector.AssemblyTemplate>
+                <DataTemplate>
+                    <views:AsmView />
+                </DataTemplate>
+            </uwp:CodingViewTemplateSelector.AssemblyTemplate>
+            <uwp:CodingViewTemplateSelector.CLangTemplate>
+                <DataTemplate>
+                    <views:CLangView />
+                </DataTemplate>
+            </uwp:CodingViewTemplateSelector.CLangTemplate>
+        </uwp:CodingViewTemplateSelector>
 
     </Page.Resources>
     <Page.DataContext>
@@ -20,66 +32,16 @@
             <ColumnDefinition Width="3*" />
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8">
-                <Button Command="{Binding PlayCommand}">
-                    <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="F5" />
-                    </Button.KeyboardAccelerators>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Play" VerticalAlignment="Center" />
-                        <SymbolIcon Symbol="Play" Margin="4,0,0,0" />
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding CancelCommand}">
-                    <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="F5" Modifiers="Shift" />
-                    </Button.KeyboardAccelerators>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Stop" VerticalAlignment="Center" />
-                        <SymbolIcon Symbol="Stop" Margin="4,0,0,0" />
-                    </StackPanel>
-                </Button>
-                <StackPanel Orientation="Horizontal">
-                    <Slider Margin="10,0" Header="Per-instruction delay" Value="{Binding Delay, Mode=TwoWay}"
-                            SmallChange="100" LargeChange="500" Minimum="0" Maximum="2000" SnapsTo="Ticks"
-                            TickFrequency="100" />
-                    <TextBlock Text="{Binding DelayTag}" VerticalAlignment="Center" />
-                </StackPanel>
-            </StackPanel>
-            <monaco:CodeEditor x:Name="Editor" Grid.Row="1" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray"
-                               BorderThickness="1">
-                <interactivity:Interaction.Behaviors>
-                    <uwp:CurrentLineBehavior CurrentLine="{Binding CoreViewModel.CurrentLine.Index}"
-                                             IsEnabled="{Binding IsBusy}" LineBrush="Yellow" />
-                </interactivity:Interaction.Behaviors>
-            </monaco:CodeEditor>
-            <TextBlock Foreground="Red" TextWrapping="Wrap" Grid.Row="2" Text="{Binding Error}" />
-            <controls:Loading Grid.Row="1" IsLoading="{Binding IsBusy}" VerticalContentAlignment="Stretch"
-                              HorizontalContentAlignment="Stretch">
-                <Grid>
-                    <controls:TileControl AnimationDuration="15"
-                                          AnimationStepX="1"
-                                          AnimationStepY="1"
-                                          Background="#FFDDDDDD"
-                                          ImageAlignment="Bottom"
-                                          ImageSource="ms-appx:///play.png"
-                                          IsAnimated="True"
-                                          Opacity="0.2"
-                                          OffsetX="0"
-                                          OffsetY="0"
-                                          ScrollOrientation="Both" />
-                </Grid>
-            </controls:Loading>
-        </Grid>
 
+        <Pivot ItemsSource="{Binding CodingViews}" SelectedItem="{Binding SelectedView, Mode=TwoWay}" ItemTemplateSelector="{StaticResource CodingViewTemplateSelector}">
+            <Pivot.HeaderTemplate>
+                <DataTemplate x:DataType="uwp:CodingViewModelBase">
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </Pivot.HeaderTemplate>
+        </Pivot>
 
-        <uwp:StatusControl Grid.Column="1" Margin="10" DataContext="{Binding CoreViewModel}" />
+        <uwp:StatusControl Grid.Column="1" Margin="10" DataContext="{Binding SelectedView.CoreViewModel}" />
 
         <controls:GridSplitter
             Width="8"
