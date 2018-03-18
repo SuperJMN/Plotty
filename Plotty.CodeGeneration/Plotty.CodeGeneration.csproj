@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CodeGeneration\CodeGen.Core\CodeGen.Core.csproj" />
+    <ProjectReference Include="..\CodeGeneration\CodeGen\CodeGen.Intermediate.csproj" />
+    <ProjectReference Include="..\Plotty.Model\Plotty.Model.csproj" />
+  </ItemGroup>
+
+</Project>

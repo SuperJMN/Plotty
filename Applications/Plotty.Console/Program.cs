@@ -1,30 +1,22 @@
-﻿using Plotty.Parser;
+﻿using System.Linq;
+using Plotty.Compiler;
 using Plotty.VirtualMachine;
-using Superpower;
 
 namespace Plotty.Console
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
-            System.Console.WriteLine("Hello World!");
+            var result = new PlottyCompiler().Compile("{ a=1; b=2; }");
 
-            var text1 = @"MOVE	R1,#5
-pepito:ADD	R2,#1
-	BRANCH	R1,R2,end
-        BRANCH	R0,R0,pepito
-end:	HALT";
-            var tokenList = new Tokenizer().Tokenize(text1);
-            var parsed = Parser.Parser.AsmParser.Parse(tokenList);
+            var machine = new PlottyMachine();
+            machine.Load(result.Code.ToList());
 
-            var plottyCore = new PlottyMachine();
-            plottyCore.Load(parsed);
-
-            while (plottyCore.CanExecute)
+            while (machine.CanExecute)
             {
-                plottyCore.Execute();
-            }            
+                machine.Execute();
+            }              
         }
     }
 }

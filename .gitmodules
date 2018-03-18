@@ -1,0 +1,6 @@
+[submodule "CodeGeneration"]
+	path = CodeGeneration
+	url = https://github.com/SuperJMN/CodeGeneration.git
+[submodule "DeepEqual"]
+	path = DeepEqual
+	url = https://github.com/jamesfoster/DeepEqual.git

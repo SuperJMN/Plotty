@@ -3,10 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <StartupObject>Plotty.Console.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Plotty.Parser\Plotty.Parser.csproj" />
+    <ProjectReference Include="..\..\Plotty.Compiler\Plotty.Compiler.csproj" />
     <ProjectReference Include="..\..\Plotty.VirtualMachine\Plotty.VirtualMachine.csproj" />
   </ItemGroup>
 
