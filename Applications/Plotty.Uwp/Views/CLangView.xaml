@@ -46,10 +46,10 @@
                 <TextBlock Text="{Binding DelayTag}" VerticalAlignment="Center" />
             </StackPanel>
         </StackPanel>
-        <monaco:CodeEditor Grid.Row="1" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray"
+        <monaco:CodeEditor Grid.Row="1" CodeLanguage="c" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray"
                            BorderThickness="1">
         </monaco:CodeEditor>
-        <monaco:CodeEditor x:Name="Editor" Grid.Row="2" Text="{Binding AsmSource, Mode=TwoWay}" BorderBrush="Gray"
+        <monaco:CodeEditor  Grid.Row="2" Text="{Binding AsmSource, Mode=TwoWay}" BorderBrush="Gray"
                                BorderThickness="1">
             <interactivity:Interaction.Behaviors>
                 <uwp:CurrentLineBehavior CurrentLine="{Binding CoreViewModel.CurrentLine.Index}"

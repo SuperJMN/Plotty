@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
@@ -49,7 +50,7 @@ namespace Plotty.Uwp
             await CoreViewModel.Execute(cancellationToken);
         }
 
-        protected abstract Line[] GeneratePlottyInstructions(string source);
+        protected abstract IEnumerable<Line> GeneratePlottyInstructions(string source);
 
         public string Source { get; set; }
         public CoreViewModel CoreViewModel { get; }
