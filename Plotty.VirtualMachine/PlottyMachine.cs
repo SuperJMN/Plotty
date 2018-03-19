@@ -9,7 +9,7 @@ namespace Plotty.VirtualMachine
     public class PlottyMachine : IPlottyCore
     {
         private const int RegCount = 8;
-        private const int MemoryCount = 64 * 1024;
+        private const int MemoryCount = 4 * 1024;
 
         public int[] Registers { get; private set; } = new int[RegCount];
 
@@ -52,7 +52,7 @@ namespace Plotty.VirtualMachine
                     case MoveInstruction _:
                         cmd = new MoveCommand(this);
                         break;
-                    case ArithmeticInstruction _:
+                    case AddInstruction _:
                         cmd = new AddCommand(this);
                         break;
                     case BranchInstruction _:

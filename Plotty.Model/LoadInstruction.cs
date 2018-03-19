@@ -9,5 +9,10 @@
         {
             return $"Load Memory at [{MemoryAddress}] into {Destination}";
         }
+
+        public override void Accept(ILineVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

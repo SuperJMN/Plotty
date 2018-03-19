@@ -9,16 +9,25 @@ namespace Plotty.Compiler
 {
     public class PlottyCompiler
     {
-        public GenerationResult Compile(string source)
+        public CompilationResult Compile(string source)
         {
             var tokens = TokenizerFactory.Create().Tokenize(source);
             var parsed = Statements.ProgramParser.Parse(tokens);
 
             var generator = new IntermediateCodeGenerator();
-            var codes = generator.Generate(parsed);
+            var codes = generator.Generate(parsed).ToList();
             var plottyGenerator = new PlottyCodeGenerator();
-            
-            return plottyGenerator.Generate(codes.ToList());
+
+            var generationResult = plottyGenerator.Generate(codes.ToList());
+
+            var plottyAssemblyVisitor = new AssemblyGeneratingVisitor();
+
+            foreach (var line in generationResult.Code)
+            {
+                line.Accept(plottyAssemblyVisitor);
+            }
+
+            return new CompilationResult(generationResult, plottyAssemblyVisitor.Lines);
         }      
-    } 
+    }
 }

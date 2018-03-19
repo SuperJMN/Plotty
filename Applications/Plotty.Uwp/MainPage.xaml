@@ -8,22 +8,7 @@
     xmlns:uwp="using:Plotty.Uwp"
     xmlns:views="using:Plotty.Uwp.Views"
     mc:Ignorable="d">
-    <Page.Resources>
 
-        <uwp:CodingViewTemplateSelector x:Key="CodingViewTemplateSelector">
-            <uwp:CodingViewTemplateSelector.AssemblyTemplate>
-                <DataTemplate>
-                    <views:AsmView />
-                </DataTemplate>
-            </uwp:CodingViewTemplateSelector.AssemblyTemplate>
-            <uwp:CodingViewTemplateSelector.CLangTemplate>
-                <DataTemplate>
-                    <views:CLangView />
-                </DataTemplate>
-            </uwp:CodingViewTemplateSelector.CLangTemplate>
-        </uwp:CodingViewTemplateSelector>
-
-    </Page.Resources>
     <Page.DataContext>
         <uwp:MainViewModel />
     </Page.DataContext>
@@ -32,23 +17,35 @@
             <ColumnDefinition Width="3*" />
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
 
-        <Pivot ItemsSource="{Binding CodingViews}" SelectedItem="{Binding SelectedView, Mode=TwoWay}" ItemTemplateSelector="{StaticResource CodingViewTemplateSelector}">
-            <Pivot.HeaderTemplate>
-                <DataTemplate x:DataType="uwp:CodingViewModelBase">
-                    <TextBlock Text="{Binding Name}" />
-                </DataTemplate>
-            </Pivot.HeaderTemplate>
-        </Pivot>
+        <views:CodeAreaControl Grid.Column="0" />
+        <views:MemoryViewControl Grid.Row="1" Grid.Column="0" DataContext="{Binding SelectedView.PlottyMachine}" />
 
-        <uwp:StatusControl Grid.Column="1" Margin="10" DataContext="{Binding SelectedView.CoreViewModel}" />
+        <uwp:StatusControl Grid.Row="0" Grid.Column="1" Margin="10" DataContext="{Binding SelectedView.PlottyMachine}" />
 
         <controls:GridSplitter
             Width="8"
             Background="Gray"
             GripperCursor="Default"
             HorizontalAlignment="Left"
-            Grid.Column="1"
+            Grid.Row="0" Grid.Column="1"
+            Grid.RowSpan="2"
+            ResizeDirection="Auto"
+            ResizeBehavior="BasedOnAlignment"
+            CursorBehavior="ChangeOnSplitterHover"
+            GripperForeground="White" />
+
+        <controls:GridSplitter
+            Height="8"
+            Background="Gray"
+            GripperCursor="Default"            
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"
+            Grid.Row="1" Grid.Column="0"
             ResizeDirection="Auto"
             ResizeBehavior="BasedOnAlignment"
             CursorBehavior="ChangeOnSplitterHover"

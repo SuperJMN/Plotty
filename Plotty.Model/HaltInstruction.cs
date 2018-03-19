@@ -6,5 +6,10 @@
         {
             return $"Halt";
         }
+
+        public override void Accept(ILineVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

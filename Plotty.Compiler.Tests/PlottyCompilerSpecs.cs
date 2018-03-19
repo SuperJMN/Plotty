@@ -14,7 +14,7 @@ namespace Plotty.Compiler.Tests
         public void GivenSourceVariablesHaveTheExpectedValues(string source, IDictionary<string, int> expectations)
         {
             var result = new PlottyCompiler().Compile(source);
-            AssertRun(result, expectations);
+            AssertRun(result.GenerationResult, expectations);
         }
 
         public static IEnumerable<object[]> TestData => new List<object[]>()

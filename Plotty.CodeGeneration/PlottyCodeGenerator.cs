@@ -30,36 +30,49 @@ namespace Plotty.CodeGeneration
                 {
                     case IntegerConstantAssignment ias:
 
-                        yield return new Line(new MoveInstruction
-                        {
-                            Destination = new Register(1),
-                            Source = new ImmediateSource(ias.Value),
-                        });
-                        yield return new Line(new StoreInstruction()
-                        {
-                            Source = new RegisterSource(new Register(1)),
-                            Address = new IndexedAddress(new Register(0), new ImmediateSource(addressMap[ias.Target]))
-                        });
+                        yield return MoveImmediate(addressMap[ias.Target], new Register(0));
+                        yield return MoveImmediate(ias.Value, new Register(1));                       
+                        yield return Store(new Register(1), new Register(0));
 
                         break;
 
                     case ReferenceAssignment ras:
 
-                        yield return new Line(new LoadInstruction()
-                        {
-                            Destination = new Register(1),
-                            MemoryAddress = new IndexedAddress(new Register(0), new ImmediateSource(addressMap[ras.Origin]))
-                        });
-
-                        yield return new Line(new StoreInstruction()
-                        {
-                            Source = new RegisterSource(new Register(1)),
-                            Address = new IndexedAddress(new Register(0), new ImmediateSource(addressMap[ras.Target]))
-                        });
+                        yield return MoveImmediate(addressMap[ras.Origin], new Register(0));
+                        yield return Load(new Register(1), new Register(0));
+                        yield return MoveImmediate(addressMap[ras.Target], new Register(0));
+                        yield return Store(new Register(1), new Register(0));
 
                         break;
                 }
             }
+        }
+
+        private static Line Store(Register register, Register baseRegister, int offset = 0)
+        {
+            return new Line(new StoreInstruction
+            {
+                Source = new RegisterSource(register),
+                MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
+            });
+        }
+
+        private static Line Load(Register register, Register baseRegister, int offset = 0)
+        {
+            return new Line(new LoadInstruction
+            {
+                Destination = register,
+                MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
+            });
+        }
+
+        private static Line MoveImmediate(int immediate, Register destination)
+        {
+            return new Line(new MoveInstruction
+            {
+                Destination = destination,
+                Source = new ImmediateSource(immediate),
+            });
         }
     }
 }

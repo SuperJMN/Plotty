@@ -57,7 +57,7 @@ namespace Plotty.Parser
             select (Instruction)new StoreInstruction
             {
                 Source = source,
-                Address = address,
+                MemoryAddress = address,
             };
 
         public static readonly TokenListParser<AsmToken, Instruction> Move =
@@ -83,7 +83,7 @@ namespace Plotty.Parser
             from comma in Token.EqualTo(AsmToken.Comma)
             from addend in Source
             from destination in (from cm in Token.EqualTo(AsmToken.Comma) from reg in Register select reg).OptionalOrDefault()
-            select (Instruction)new ArithmeticInstruction
+            select (Instruction)new AddInstruction
             {
                 Source = source,
                 Addend = addend,

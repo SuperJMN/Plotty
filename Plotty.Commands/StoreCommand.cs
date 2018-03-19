@@ -13,7 +13,7 @@ namespace Plotty.Commands
             var inst = (StoreInstruction)PlottyCore.CurrentLine.Instruction;
 
             int value = inst.Source.GetValue(PlottyCore);
-            var address = inst.Address.GetAddress(PlottyCore);
+            var address = inst.MemoryAddress.GetAddress(PlottyCore);
 
             PlottyCore.Memory[address] = value;
            

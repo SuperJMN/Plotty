@@ -1,7 +1,7 @@
 ﻿namespace Plotty.Model
 {
-    public class Instruction
+    public abstract class Instruction
     {
-        public Label Label { get; set; }
+        public abstract void Accept(ILineVisitor visitor);
     }
 }

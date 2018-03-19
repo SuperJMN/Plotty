@@ -22,11 +22,7 @@ namespace Plotty.Uwp
         public CodingViewModelBase SelectedView
         {
             get => selectedView;
-            set
-            {
-                selectedView = value;
-                this.RaiseAndSetIfChanged(ref selectedView, value);
-            }
+            set => this.RaiseAndSetIfChanged(ref selectedView, value);
         }
     }
 }

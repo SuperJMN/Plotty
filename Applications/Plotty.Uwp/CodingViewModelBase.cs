@@ -19,7 +19,7 @@ namespace Plotty.Uwp
         public CodingViewModelBase()
         {
             Source = DefaultSourceCode;
-            CoreViewModel = new CoreViewModel(new PlottyMachine());
+            PlottyMachine = new PlottyMachineViewModel(new PlottyMachine());
             PlayCommand = ReactiveCommand.CreateFromObservable(() => Observable
                 .StartAsync(Play)
                 .TakeUntil(CancelCommand));
@@ -46,23 +46,23 @@ namespace Plotty.Uwp
         {
             Error = string.Empty;
             var instructions = GeneratePlottyInstructions(Source);
-            CoreViewModel.Lines = instructions;
-            await CoreViewModel.Execute(cancellationToken);
+            PlottyMachine.Lines = instructions;
+            await PlottyMachine.Execute(cancellationToken);
         }
 
         protected abstract IEnumerable<Line> GeneratePlottyInstructions(string source);
 
         public string Source { get; set; }
-        public CoreViewModel CoreViewModel { get; }
+        public PlottyMachineViewModel PlottyMachine { get; }
 
         public bool IsBusy => isBusyOH.Value;
 
         public int Delay
         {
-            get => CoreViewModel.Delay;
+            get => PlottyMachine.Delay;
             set
             {
-                CoreViewModel.Delay = value;
+                PlottyMachine.Delay = value;
                 this.RaisePropertyChanged(nameof(DelayTag));
             }
         }

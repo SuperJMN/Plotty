@@ -9,5 +9,10 @@
         {
             return $"Move {Source} into {Destination}";
         }
+
+        public override void Accept(ILineVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

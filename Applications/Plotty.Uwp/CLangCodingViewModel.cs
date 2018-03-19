@@ -15,7 +15,7 @@ namespace Plotty.Uwp
 
         protected override IEnumerable<Line> GeneratePlottyInstructions(string source)
         {
-            var instructions = new PlottyCompiler().Compile(source).Code.ToArray();
+            var instructions = new PlottyCompiler().Compile(source).GenerationResult.Code.ToArray();
             return instructions;
         }
 
@@ -24,11 +24,7 @@ namespace Plotty.Uwp
         public string AsmSource
         {
             get => asmSource;
-            set
-            {
-                asmSource = value;
-                this.RaiseAndSetIfChanged(ref asmSource, value);
-            }
+            set => this.RaiseAndSetIfChanged(ref asmSource, value);
         }
     }
 }

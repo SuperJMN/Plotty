@@ -19,5 +19,10 @@
         {
             return $"{Instruction}";
         }
+
+        public void Accept(ILineVisitor lineVisitor)
+        {
+            Instruction.Accept(lineVisitor);
+        }
     }
 }

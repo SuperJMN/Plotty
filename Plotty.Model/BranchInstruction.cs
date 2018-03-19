@@ -10,5 +10,10 @@
         {
             return $"Jump to {Target} if {One} and {Another} are equal";
         }
+
+        public override void Accept(ILineVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

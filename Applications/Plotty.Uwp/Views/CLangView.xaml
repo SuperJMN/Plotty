@@ -2,76 +2,25 @@
     x:Class="Plotty.Uwp.Views.CLangView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Plotty.Uwp.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:monaco="using:Monaco"
-    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:uwp="using:Plotty.Uwp"
-    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400" d:DataContext="{d:DesignInstance uwp:CLangCodingViewModel}">
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8">
-            <Button Command="{Binding PlayCommand}">
-                <Button.KeyboardAccelerators>
-                    <KeyboardAccelerator Key="F5" />
-                </Button.KeyboardAccelerators>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Play" VerticalAlignment="Center" />
-                    <SymbolIcon Symbol="Play" Margin="4,0,0,0" />
-                </StackPanel>
-            </Button>
-            <Button Command="{Binding CancelCommand}">
-                <Button.KeyboardAccelerators>
-                    <KeyboardAccelerator Key="F5" Modifiers="Shift" />
-                </Button.KeyboardAccelerators>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Stop" VerticalAlignment="Center" />
-                    <SymbolIcon Symbol="Stop" Margin="4,0,0,0" />
-                </StackPanel>
-            </Button>
-            <StackPanel Orientation="Horizontal">
-                <Slider Margin="10,0" Header="Per-instruction delay" Value="{Binding Delay, Mode=TwoWay}"
-                            SmallChange="100" LargeChange="500" Minimum="0" Maximum="2000" SnapsTo="Ticks"
-                            TickFrequency="100" />
-                <TextBlock Text="{Binding DelayTag}" VerticalAlignment="Center" />
-            </StackPanel>
-        </StackPanel>
-        <monaco:CodeEditor Grid.Row="1" CodeLanguage="c" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray"
+        <monaco:CodeEditor Grid.Row="0" CodeLanguage="c" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray"
                            BorderThickness="1">
         </monaco:CodeEditor>
-        <monaco:CodeEditor  Grid.Row="2" Text="{Binding AsmSource, Mode=TwoWay}" BorderBrush="Gray"
+        <monaco:CodeEditor  Grid.Row="1" Text="{Binding AsmSource, Mode=TwoWay}" BorderBrush="Gray"
                                BorderThickness="1">
-            <interactivity:Interaction.Behaviors>
-                <uwp:CurrentLineBehavior CurrentLine="{Binding CoreViewModel.CurrentLine.Index}"
-                                             IsEnabled="{Binding IsBusy}" LineBrush="Yellow" />
-            </interactivity:Interaction.Behaviors>
         </monaco:CodeEditor>
-        <TextBlock Foreground="Red" TextWrapping="Wrap" Grid.Row="3" Text="{Binding Error}" />
-        <controls:Loading Grid.Row="1" Grid.RowSpan="2" IsLoading="{Binding IsBusy}" VerticalContentAlignment="Stretch"
-                              HorizontalContentAlignment="Stretch">
-            <Grid>
-                <controls:TileControl AnimationDuration="15"
-                                          AnimationStepX="1"
-                                          AnimationStepY="1"
-                                          Background="#FFDDDDDD"
-                                          ImageAlignment="Bottom"
-                                          ImageSource="ms-appx:///play.png"
-                                          IsAnimated="True"
-                                          Opacity="0.2"
-                                          OffsetX="0"
-                                          OffsetY="0"
-                                          ScrollOrientation="Both" />
-            </Grid>
-        </controls:Loading>
+        
     </Grid>
 </UserControl>

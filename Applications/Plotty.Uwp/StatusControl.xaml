@@ -9,7 +9,7 @@
     xmlns:controls2="using:Plotty.Uwp.Controls"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400" d:DataContext="{d:DesignInstance uwp:CoreViewModel}">
+    d:DesignWidth="400" d:DataContext="{d:DesignInstance uwp:PlottyMachineViewModel}">
 
     <UserControl.Resources>
         <DataTemplate x:Key="LineTemplate" x:DataType="uwp:LineViewModel">
