@@ -2,29 +2,35 @@
     x:Class="Plotty.Uwp.Views.MemoryViewControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Plotty.Uwp.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:uwp="using:Plotty.Uwp"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400" d:DataContext="{d:DesignInstance uwp:PlottyMachineViewModel}">
 
-    <Grid>
+    <controls:HeaderedContentControl Header="Memory References">
         <ScrollViewer>
-            <ItemsControl ItemsSource="{Binding Memory}">
-                
+            <ItemsControl ItemsSource="{Binding MemoryMap}">
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapGrid ItemWidth="80" ItemHeight="60" MaximumRowsOrColumns="10" Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <UserControl>
 
-                            <Grid>
+                            <Grid Margin="4">
 
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup>
                                         <VisualState>
                                             <VisualState.Setters>
-                                                <Setter Target="Border.Background" Value="Red" />
+                                                <Setter Target="Border.Background" Value="{ThemeResource AccentButtonBackground}" />
                                             </VisualState.Setters>
                                             <VisualState.StateTriggers>
                                                 <StateTrigger IsActive="{Binding HasChanged}" />
@@ -33,16 +39,15 @@
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
 
-                                <Border Background="#D4DCD5" x:Name="Border" CornerRadius="5" BorderThickness="2"
+                                <Border Background="{ThemeResource AppBarBackground}" x:Name="Border" CornerRadius="5" BorderThickness="2"
                                         BorderBrush="#E7E7E7"
                                         HorizontalAlignment="Stretch">
                                     <Grid>
-                                        <TextBlock FontSize="10" Margin="4" Foreground="#858585"
-                                                   VerticalAlignment="Top"
+                                        <TextBlock FontSize="10" Margin="4" VerticalAlignment="Top"
                                                    HorizontalAlignment="Left" Text="{Binding Name}">
                                         </TextBlock>
-                                        <TextBlock Foreground="White" VerticalAlignment="Center" TextAlignment="Center"
-                                                   Text="{Binding Value}" />
+                                        <TextBlock Grid.Column="0" VerticalAlignment="Center" TextAlignment="Center"
+                                                   Text="{Binding Display}" />
                                     </Grid>
                                 </Border>
                             </Grid>
@@ -51,8 +56,12 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-    </Grid>
+    </controls:HeaderedContentControl>
 </UserControl>
+
+
+
+
 
 
 

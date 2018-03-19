@@ -1,4 +1,6 @@
-﻿using ReactiveUI;
+﻿using System.Collections.Generic;
+using CodeGen.Core;
+using ReactiveUI;
 
 namespace Plotty.Uwp
 {
@@ -6,8 +8,9 @@ namespace Plotty.Uwp
     {
         private int val;
         private bool hasChanged;
+        private Reference reference;
 
-        public MemoryViewModel(int index, int value, string reference = null)
+        public MemoryViewModel(int index, int value, Reference reference = null)
         {
             Index = index;
             Value = value;
@@ -16,28 +19,32 @@ namespace Plotty.Uwp
 
         public string Name => $"{Index}";
 
-        public string Tag => $"{Name} - {Value}";
+        public string Display => Reference != null? $"{Reference.Identifier} = {Value}" : Value.ToString();
 
         public int Index { get; }
 
         public int Value
         {
-            get { return val; }
+            get => val;
             set
             {
                 HasChanged = !val.Equals(value);
                 
                 this.RaiseAndSetIfChanged(ref val, value);
-                this.RaisePropertyChanged(nameof(Tag));
+                this.RaisePropertyChanged(nameof(Display));
             }
         }
 
-        public string Reference { get; }
+        public Reference Reference
+        {
+            get => reference;
+            set => this.RaiseAndSetIfChanged(ref reference, value);
+        }
 
         public bool HasChanged
         {
-            get { return hasChanged; }
-            set { this.RaiseAndSetIfChanged(ref hasChanged, value); }
-        }
+            get => hasChanged;
+            private set => this.RaiseAndSetIfChanged(ref hasChanged, value);
+        }     
     }
 }

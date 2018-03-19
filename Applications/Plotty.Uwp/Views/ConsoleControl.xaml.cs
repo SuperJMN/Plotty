@@ -6,7 +6,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 
-namespace Plotty.Uwp.Controls
+namespace Plotty.Uwp.Views
 {
     public sealed partial class ConsoleControl
     {

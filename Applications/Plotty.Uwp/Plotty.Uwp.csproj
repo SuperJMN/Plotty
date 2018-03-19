@@ -100,7 +100,7 @@
     <Compile Include="CLangCodingViewModel.cs" />
     <Compile Include="CodingViewTemplateSelector.cs" />
     <Compile Include="ConsoleHandler.cs" />
-    <Compile Include="Controls\ConsoleControl.xaml.cs">
+    <Compile Include="Views\ConsoleControl.xaml.cs">
       <DependentUpon>ConsoleControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="PlottyMachineViewModel.cs" />
@@ -116,7 +116,7 @@
     <Compile Include="NullToEmptyStringConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterViewModel.cs" />
-    <Compile Include="StatusControl.xaml.cs">
+    <Compile Include="Views\StatusControl.xaml.cs">
       <DependentUpon>StatusControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AsmView.xaml.cs">
@@ -157,7 +157,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Controls\ConsoleControl.xaml">
+    <Page Include="Views\ConsoleControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -165,7 +165,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="StatusControl.xaml">
+    <Page Include="Views\StatusControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -207,6 +207,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CodeGeneration\CodeGen.Core\CodeGen.Core.csproj">
+      <Project>{218896F7-8149-4322-AF9A-5CEC02F9C3B9}</Project>
+      <Name>CodeGen.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Plotty.CodeGeneration\Plotty.CodeGeneration.csproj">
       <Project>{307fac61-bb9d-417a-a887-18e1e3c854f3}</Project>
       <Name>Plotty.CodeGeneration</Name>

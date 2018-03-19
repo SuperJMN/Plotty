@@ -37,15 +37,6 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8" DataContext="{Binding SelectedView}">
-            <Button Command="{Binding CompileCommand}">
-                <Button.KeyboardAccelerators>
-                    <KeyboardAccelerator Key="F5" />
-                </Button.KeyboardAccelerators>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Compile" VerticalAlignment="Center" />
-                    <SymbolIcon Symbol="Sync" Margin="4,0,0,0" />
-                </StackPanel>
-            </Button>
             <Button Command="{Binding PlayCommand}">
                 <Button.KeyboardAccelerators>
                     <KeyboardAccelerator Key="F5" />
@@ -82,22 +73,6 @@
         </Pivot>
 
         <TextBlock Foreground="Red" TextWrapping="Wrap" Grid.Row="2" Text="{Binding SelectedView.Error}" />
-        <controls:Loading Grid.Row="1" IsLoading="{Binding SelectedView.IsBusy}" VerticalContentAlignment="Stretch"
-                          HorizontalContentAlignment="Stretch">
-            <Grid>
-                <controls:TileControl AnimationDuration="15"
-                                      AnimationStepX="1"
-                                      AnimationStepY="1"
-                                      Background="#FFDDDDDD"
-                                      ImageAlignment="Bottom"
-                                      ImageSource="ms-appx:///play.png"
-                                      IsAnimated="True"
-                                      Opacity="0.2"
-                                      OffsetX="0"
-                                      OffsetY="0"
-                                      ScrollOrientation="Both" />
-            </Grid>
-        </controls:Loading>
 
     </Grid>
 </UserControl>
