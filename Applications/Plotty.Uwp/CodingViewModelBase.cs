@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Plotty.Compiler;
 using Plotty.Model;
 using Plotty.VirtualMachine;
 using ReactiveUI;
@@ -13,26 +15,41 @@ namespace Plotty.Uwp
     public abstract class CodingViewModelBase : ReactiveObject
     {
         private string error;
-        private readonly ObservableAsPropertyHelper<bool> isBusyOH;
+        private readonly ObservableAsPropertyHelper<bool> isBusyOaph;
+        private string assemblyCode;
         protected abstract string DefaultSourceCode { get; }
 
         public CodingViewModelBase()
         {
             Source = DefaultSourceCode;
             PlottyMachine = new PlottyMachineViewModel(new PlottyMachine());
-            PlayCommand = ReactiveCommand.CreateFromObservable(() => Observable
-                .StartAsync(Play)
-                .TakeUntil(CancelCommand));
-            PlayCommand.ThrownExceptions.Subscribe(ex => { Error = ex.Message; });
-            CancelCommand = ReactiveCommand.Create(
-                () => { },
-                PlayCommand.IsExecuting);
 
-            isBusyOH = PlayCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
+            PlayCommand = ReactiveCommand.CreateFromObservable(() => Observable
+                .StartAsync(Play)                
+                .TakeUntil(StopCommand));
+
+            PlayCommand.ThrownExceptions.Subscribe(ex => { Error = ex.Message; });
+            StopCommand = ReactiveCommand.Create(() => { }, PlayCommand.IsExecuting);
+
+            isBusyOaph = PlayCommand.IsExecuting.ToProperty(this, model => model.IsBusy);
             Delay = 250;
+            CompileCommand = ReactiveCommand.Create(Compile);
         }
 
-        public ReactiveCommand<Unit, Unit> CancelCommand { get; }
+        public string AssemblyCode
+        {
+            get => assemblyCode;
+            set => this.RaiseAndSetIfChanged(ref assemblyCode, value);
+        }
+
+        public ReactiveCommand<Unit, CompilationResult> CompileCommand { get; }
+
+        private CompilationResult Compile()
+        {
+            return new PlottyCompiler().Compile(Source);
+        }
+
+        public ReactiveCommand<Unit, Unit> StopCommand { get; }
 
         public string Error
         {
@@ -45,17 +62,16 @@ namespace Plotty.Uwp
         private async Task Play(CancellationToken cancellationToken)
         {
             Error = string.Empty;
-            var instructions = GeneratePlottyInstructions(Source);
-            PlottyMachine.Lines = instructions;
+            var result = Compile();
+            AssemblyCode = string.Join("\n", result.Code);
+            PlottyMachine.Lines = result.GenerationResult.Lines;
             await PlottyMachine.Execute(cancellationToken);
         }
-
-        protected abstract IEnumerable<Line> GeneratePlottyInstructions(string source);
 
         public string Source { get; set; }
         public PlottyMachineViewModel PlottyMachine { get; }
 
-        public bool IsBusy => isBusyOH.Value;
+        public bool IsBusy => isBusyOaph.Value;
 
         public int Delay
         {

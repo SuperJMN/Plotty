@@ -22,7 +22,7 @@ namespace Plotty.Compiler
 
             var plottyAssemblyVisitor = new AssemblyGeneratingVisitor();
 
-            foreach (var line in generationResult.Code)
+            foreach (var line in generationResult.Lines)
             {
                 line.Accept(plottyAssemblyVisitor);
             }

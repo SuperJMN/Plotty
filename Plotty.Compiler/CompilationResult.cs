@@ -5,13 +5,13 @@ namespace Plotty.Compiler
 {
     public class CompilationResult
     {
-        public CompilationResult(GenerationResult generationResult, IReadOnlyCollection<string> lines)
+        public CompilationResult(GenerationResult generationResult, IReadOnlyCollection<string> code)
         {
-            Lines = lines;
+            Code = code;
             GenerationResult = generationResult;
         }
 
-        public IReadOnlyCollection<string> Lines { get;  }
+        public IReadOnlyCollection<string> Code { get;  }
         public GenerationResult GenerationResult { get; }
     }
 }

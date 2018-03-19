@@ -37,6 +37,15 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8" DataContext="{Binding SelectedView}">
+            <Button Command="{Binding CompileCommand}">
+                <Button.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="F5" />
+                </Button.KeyboardAccelerators>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Compile" VerticalAlignment="Center" />
+                    <SymbolIcon Symbol="Sync" Margin="4,0,0,0" />
+                </StackPanel>
+            </Button>
             <Button Command="{Binding PlayCommand}">
                 <Button.KeyboardAccelerators>
                     <KeyboardAccelerator Key="F5" />
@@ -46,7 +55,7 @@
                     <SymbolIcon Symbol="Play" Margin="4,0,0,0" />
                 </StackPanel>
             </Button>
-            <Button Command="{Binding CancelCommand}">
+            <Button Command="{Binding StopCommand}">
                 <Button.KeyboardAccelerators>
                     <KeyboardAccelerator Key="F5" Modifiers="Shift" />
                 </Button.KeyboardAccelerators>

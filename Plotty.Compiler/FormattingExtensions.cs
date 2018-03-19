@@ -30,7 +30,7 @@ namespace Plotty.Compiler
             switch (address)
             {
                 case IndexedAddress ia:
-                    return $"{ia.BaseRegister.GetAssemblySymbol()}, {ia.Offset.GetAssemblySymbol()}";
+                    return $"{ia.BaseRegister.GetAssemblySymbol()},{ia.Offset.GetAssemblySymbol()}";
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(address));

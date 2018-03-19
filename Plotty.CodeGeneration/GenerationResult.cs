@@ -7,12 +7,12 @@ namespace Plotty.CodeGeneration
     public class GenerationResult
     {
         public Dictionary<Reference, int> AddressMap { get; }
-        public IList<Line> Code { get; }
+        public IList<Line> Lines { get; }
 
-        public GenerationResult(Dictionary<Reference, int> addressMap, IList<Line> code)
+        public GenerationResult(Dictionary<Reference, int> addressMap, IList<Line> lines)
         {
             AddressMap = addressMap;
-            Code = code;
+            Lines = lines;
         }
     }
 }

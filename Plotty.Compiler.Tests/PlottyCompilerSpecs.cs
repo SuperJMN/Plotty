@@ -27,7 +27,7 @@ namespace Plotty.Compiler.Tests
         private static void AssertRun(GenerationResult result, IDictionary<string, int> dictionary)
         {
             var machine = new PlottyMachine();
-            machine.Load(result.Code);
+            machine.Load(result.Lines);
 
             while (machine.CanExecute)
             {

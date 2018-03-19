@@ -11,9 +11,9 @@ namespace Plotty.Console
             var result = new PlottyCompiler().Compile("{ a=123; b = a; }");
 
             var machine = new PlottyMachine();
-            machine.Load(result.GenerationResult.Code.ToList());
+            machine.Load(result.GenerationResult.Lines.ToList());
 
-            var code = string.Join("\n", result.Lines);
+            var code = string.Join("\n", result.Code);
 
             while (machine.CanExecute)
             {
