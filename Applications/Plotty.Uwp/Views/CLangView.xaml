@@ -11,45 +11,70 @@
     d:DesignHeight="300"
     d:DesignWidth="400" d:DataContext="{d:DesignInstance uwp:CLangCodingViewModel}">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid>
-            <controls:HeaderedContentControl Header="Editor">
-                <monaco:CodeEditor CodeLanguage="c" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray"
-                                   BorderThickness="1">
-                </monaco:CodeEditor>
-            </controls:HeaderedContentControl>
-            <controls:Loading  IsLoading="{Binding IsBusy}" VerticalContentAlignment="Stretch"
-                              HorizontalContentAlignment="Stretch">
-                <Grid>
-                    <controls:TileControl AnimationDuration="15"
-                                          AnimationStepX="1"
-                                          AnimationStepY="1"
-                                          Background="#FFDDDDDD"
-                                          ImageAlignment="Bottom"
-                                          ImageSource="ms-appx:///play.png"
-                                          IsAnimated="True"
-                                          Opacity="0.2"
-                                          OffsetX="0"
-                                          OffsetY="0"
-                                          ScrollOrientation="Both" />
-                </Grid>
-            </controls:Loading>
-        </Grid>
-        <Border MaxHeight="300" Grid.Row="1"  BorderBrush="Gray" BorderThickness="1" >
-            <controls:Expander Header="Compiled Assembly">
-                <Grid
-                      BorderThickness="1">
-                    <ScrollViewer>
-                        <TextBlock Text="{Binding AssemblyCode, Mode=TwoWay}" />
-                    </ScrollViewer>
-                </Grid>
+   
 
-            </controls:Expander>
-        </Border>
+    <Grid>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{Binding ElementName=Expander, Path=IsExpanded}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RowDefinition.Height" Value="*" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition x:Name="RowDefinition" Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <controls:HeaderedContentControl Header="Editor">
+                    <monaco:CodeEditor CodeLanguage="c" Text="{Binding Source, Mode=TwoWay}" BorderBrush="Gray"
+                                       BorderThickness="1">
+                    </monaco:CodeEditor>
+                </controls:HeaderedContentControl>
+                <controls:Loading IsLoading="{Binding IsBusy}" VerticalContentAlignment="Stretch"
+                                  HorizontalContentAlignment="Stretch">
+                    <Grid>
+                        <controls:TileControl AnimationDuration="15"
+                                              AnimationStepX="1"
+                                              AnimationStepY="1"
+                                              Background="#FFDDDDDD"
+                                              ImageAlignment="Bottom"
+                                              ImageSource="ms-appx:///play.png"
+                                              IsAnimated="True"
+                                              Opacity="0.2"
+                                              OffsetX="0"
+                                              OffsetY="0"
+                                              ScrollOrientation="Both" />
+                    </Grid>
+                </controls:Loading>
+            </Grid>
+            <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1">
+                <controls:Expander x:Name="Expander" Header="Compiled Assembly" VerticalAlignment="Stretch">
+                    <controls:Expander.ContentTransitions>
+                        <TransitionCollection>
+                        </TransitionCollection>
+                    </controls:Expander.ContentTransitions>
+                    <Grid
+                        BorderThickness="1">
+                        <ScrollViewer>
+                            <TextBlock Text="{Binding AssemblyCode, Mode=TwoWay}" />
+                        </ScrollViewer>
+                    </Grid>
+
+                </controls:Expander>
+            </Border>
+
+        </Grid>
 
     </Grid>
 </UserControl>
