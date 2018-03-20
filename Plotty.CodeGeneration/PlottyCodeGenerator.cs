@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CodeGen.Core;
 using CodeGen.Intermediate;
 using CodeGen.Intermediate.Codes;
+using CodeGen.Intermediate.Codes.Common;
 using Plotty.Model;
 
 namespace Plotty.CodeGeneration
@@ -28,19 +30,45 @@ namespace Plotty.CodeGeneration
             {
                 switch (intermediateCode)
                 {
-                    case IntegerConstantAssignment ias:
+                    case IntegerConstantAssignment code:
 
-                        yield return MoveImmediate(addressMap[ias.Target], new Register(0));
-                        yield return MoveImmediate(ias.Value, new Register(1));                       
+                        yield return MoveImmediate(addressMap[code.Target], new Register(0));
+                        yield return MoveImmediate(code.Value, new Register(1));
                         yield return Store(new Register(1), new Register(0));
 
                         break;
 
-                    case ReferenceAssignment ras:
+                    case ReferenceAssignment code:
 
-                        yield return MoveImmediate(addressMap[ras.Origin], new Register(0));
+                        yield return MoveImmediate(addressMap[code.Origin], new Register(0));
                         yield return Load(new Register(1), new Register(0));
-                        yield return MoveImmediate(addressMap[ras.Target], new Register(0));
+                        yield return MoveImmediate(addressMap[code.Target], new Register(0));
+                        yield return Store(new Register(1), new Register(0));
+
+                        break;
+
+                    case OperationAssignment code:
+
+                        if (code.Operation != OperationKind.Add)
+                        {
+                            throw new InvalidOperationException();
+                        }
+
+                        yield return MoveImmediate(addressMap[code.Left], new Register(0));
+                        yield return Load(new Register(1), new Register(0));
+
+                        yield return MoveImmediate(addressMap[code.Right], new Register(0));
+                        yield return Load(new Register(2), new Register(0));
+
+                        yield return MoveImmediate(addressMap[code.Target], new Register(0));
+
+                        yield return new Line(new AddInstruction()
+                        {
+                            Source = new Register(1),
+                            Addend = new RegisterSource(new Register(2)),
+                            Destination = new Register(1),
+                        });
+
                         yield return Store(new Register(1), new Register(0));
 
                         break;
