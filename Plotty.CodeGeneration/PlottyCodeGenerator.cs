@@ -72,6 +72,22 @@ namespace Plotty.CodeGeneration
                         yield return Store(new Register(1), new Register(0));
 
                         break;
+
+                    case JumpIfFalse code:
+
+                        yield return MoveImmediate(0, new Register(0));
+
+                        yield return MoveImmediate(addressMap[code.Reference], new Register(1));
+                        yield return Load(new Register(1), new Register(0));
+
+                        yield return new Line(new BranchInstruction()
+                        {
+                            Target = new LabelTarget(code.Label.Name),
+                            One = new Register(1),
+                            Another = new Register(0),
+                        });
+
+                        break;
                 }
             }
         }
