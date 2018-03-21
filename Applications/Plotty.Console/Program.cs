@@ -8,7 +8,7 @@ namespace Plotty.Console
     {
         private static void Main()
         {
-            var result = new PlottyCompiler().Compile("{ a=123; b = a; }");
+            var result = new PlottyCompiler().Compile("a=5;b=3;c=a-b;");
 
             var machine = new PlottyMachine();
             machine.Load(result.GenerationResult.Lines.ToList());
@@ -18,7 +18,7 @@ namespace Plotty.Console
             while (machine.CanExecute)
             {
                 machine.Execute();
-            }              
+            }
         }
     }
 }

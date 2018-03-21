@@ -25,6 +25,18 @@ namespace Plotty.Compiler
             return $"R{register.Id}";
         }
 
+        public static string GetAssemblySymbol(this JumpTarget jumpTarget)
+        {
+            switch (jumpTarget)
+            {
+                case LabelTarget target:
+                    return $"{target.Label}";
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(jumpTarget));
+            }
+        }
+
         public static string GetAssemblySymbol(this MemoryAddress address)
         {
             switch (address)

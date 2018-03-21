@@ -83,10 +83,26 @@ namespace Plotty.Parser
             from comma in Token.EqualTo(AsmToken.Comma)
             from addend in Source
             from destination in (from cm in Token.EqualTo(AsmToken.Comma) from reg in Register select reg).OptionalOrDefault()
-            select (Instruction)new AddInstruction
+            select (Instruction)new ArithmeticInstruction()
             {
-                Source = source,
-                Addend = addend,
+                Operator = Operators.Add,
+                Left = source,
+                Right = addend,
+                Destination = destination ?? source,
+            };
+
+        public static readonly TokenListParser<AsmToken, Instruction> Substract =
+            from keyword in Token.EqualTo(AsmToken.Subst)
+            from white in Token.EqualTo(AsmToken.Whitespace)
+            from source in Register
+            from comma in Token.EqualTo(AsmToken.Comma)
+            from addend in Source
+            from destination in (from cm in Token.EqualTo(AsmToken.Comma) from reg in Register select reg).OptionalOrDefault()
+            select (Instruction)new ArithmeticInstruction()
+            {
+                Operator = Operators.Substract,
+                Left = source,
+                Right = addend,
                 Destination = destination ?? source,
             };
 
@@ -126,7 +142,7 @@ namespace Plotty.Parser
 
         public static readonly TokenListParser<AsmToken, Instruction> Instruction =
             from wh in Token.EqualTo(AsmToken.Whitespace).OptionalOrDefault()
-            from ins in Add.Or(Move).Or(Branch).Or(Halt).Or(Load).Or(Store)
+            from ins in Add.Or(Substract).Or(Move).Or(Branch).Or(Halt).Or(Load).Or(Store)
             select ins;
 
         public static readonly TokenListParser<AsmToken, Line> Line =

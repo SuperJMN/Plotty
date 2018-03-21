@@ -24,6 +24,7 @@ namespace Plotty.Parser
             {"LOAD", AsmToken.Load},
             {"STORE", AsmToken.Store},
             {"ADD", AsmToken.Add},
+            {"SUBST", AsmToken.Subst},
             {"BRANCH", AsmToken.Branch},
             {"HALT", AsmToken.Halt}
         };
