@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using CodeGen.Core;
 using CodeGen.Intermediate;
 using CodeGen.Intermediate.Codes;
-using CodeGen.Intermediate.Codes.Common;
 using Plotty.Model;
 
 namespace Plotty.CodeGeneration
@@ -13,169 +11,51 @@ namespace Plotty.CodeGeneration
     {
         public GenerationResult Generate(List<IntermediateCode> intermediateCodes)
         {
-            var visitor = new NamedObjectCollector();
-            intermediateCodes.ForEach(x => x.Accept(visitor));
+            var addressMap = CreateReferenceToAddressMap(intermediateCodes);
+            var lines = GenerateLines(intermediateCodes, addressMap);
+            PostProcess(lines);
 
-            var addressMap = visitor.References
+            return new GenerationResult(addressMap, lines.ToList());
+        }
+
+        private static List<Line> GenerateLines(List<IntermediateCode> intermediateCodes, IDictionary<Reference, int> addressMap)
+        {
+            var generationVisitor = new PlottyCodeGenerationVisitor(addressMap);
+
+            intermediateCodes.ForEach(x => x.Accept(generationVisitor));
+
+            return generationVisitor.Lines.ToList();
+        }
+
+        private static Dictionary<Reference, int> CreateReferenceToAddressMap(List<IntermediateCode> intermediateCodes)
+        {
+            var namedObjectCollector = new NamedObjectCollector();
+            intermediateCodes.ForEach(x => x.Accept(namedObjectCollector));
+
+            var addressMap = namedObjectCollector.References
                 .Distinct()
-                .Select((reference, index) => new { Reference = reference, Index = index })
+                .Select((reference, index) => new {Reference = reference, Index = index})
                 .ToDictionary(key => key.Reference, value => value.Index);
+            return addressMap;
+        }
 
-            var generateCore = GenerateCore(intermediateCodes, addressMap).ToList();
+        private static void PostProcess(List<Line> finalCode)
+        {
+            finalCode.Add(new Line(new HaltInstruction()));
 
-            generateCore.Add(new Line(new HaltInstruction()));
+            AttachLabelsToInstructions(finalCode);
+        }
 
-            for (int i = 0; i < generateCore.Count - 1; i++)
+        private static void AttachLabelsToInstructions(IList<Line> finalCode)
+        {
+            for (var i = 0; i < finalCode.Count - 1; i++)
             {
-                if (generateCore[i].Label != null)
+                if (finalCode[i].Label != null)
                 {
-                    generateCore[i] = new Line(generateCore[i].Label, generateCore[i + 1].Instruction);
-                    generateCore.RemoveAt(i + 1);
+                    finalCode[i] = new Line(finalCode[i].Label, finalCode[i + 1].Instruction);
+                    finalCode.RemoveAt(i + 1);
                 }
             }
-
-            return new GenerationResult(addressMap, generateCore.ToList());
-        }
-
-        private static IEnumerable<Line> GenerateCore(IEnumerable<IntermediateCode> intermediateCodes, Dictionary<Reference, int> addressMap)
-        {
-            foreach (var intermediateCode in intermediateCodes)
-            {
-                switch (intermediateCode)
-                {
-                    case IntegerConstantAssignment code:
-
-                        yield return MoveImmediate(addressMap[code.Target], new Register(0));
-                        yield return MoveImmediate(code.Value, new Register(1));
-                        yield return Store(new Register(1), new Register(0));
-
-                        break;
-
-                    case ReferenceAssignment code:
-
-                        yield return MoveImmediate(addressMap[code.Origin], new Register(0));
-                        yield return Load(new Register(1), new Register(0));
-                        yield return MoveImmediate(addressMap[code.Target], new Register(0));
-                        yield return Store(new Register(1), new Register(0));
-
-                        break;
-
-                    case OperationAssignment code:
-
-                        yield return MoveImmediate(addressMap[code.Left], new Register(0));
-                        yield return Load(new Register(1), new Register(0));
-
-                        yield return MoveImmediate(addressMap[code.Right], new Register(0));
-                        yield return Load(new Register(2), new Register(0));
-
-                        yield return MoveImmediate(addressMap[code.Target], new Register(0));
-
-                        yield return new Line(new ArithmeticInstruction()
-                        {
-                            Operator = code.Operation == OperationKind.Add ? Operators.Add : Operators.Substract,
-                            Left = new Register(1),
-                            Right = new RegisterSource(new Register(2)),
-                            Destination = new Register(1),
-                        });
-
-                        yield return Store(new Register(1), new Register(0));
-
-                        break;
-
-                    case BoolConstantAssignment code:
-
-                        yield return MoveImmediate(addressMap[code.Target], new Register(0));
-                        yield return MoveImmediate(code.Value ? 0 : 1, new Register(1));
-                        yield return Store(new Register(1), new Register(0));
-                        
-                        break;
-
-                    case BoolExpressionAssignment code:
-
-                        if (code.Operation == BooleanOperation.IsEqual)
-                        {
-                            yield return MoveImmediate(addressMap[code.Left], new Register(0));
-                            yield return Load(new Register(1), new Register(0));
-
-                            yield return MoveImmediate(addressMap[code.Right], new Register(0));
-                            yield return Load(new Register(2), new Register(0));
-
-                            yield return new Line(new ArithmeticInstruction()
-                            {
-                                Operator = Operators.Substract,
-                                Left = new Register(1),
-                                Right = new RegisterSource(new Register(2)),
-                                Destination = new Register(1),
-                            });
-
-                            yield return MoveImmediate(addressMap[code.Target], new Register(0));
-                            yield return Store(new Register(1), new Register(0));
-                        }
-
-                        break;
-
-                    case JumpIfFalse code:
-
-                        yield return MoveImmediate(addressMap[code.Reference], new Register(0));
-                        yield return Load(new Register(1), new Register(0));
-
-                        yield return MoveImmediate(0, new Register(0));
-                        
-
-                        var fake = new Model.Label("temp");
-
-                        yield return new Line(new BranchInstruction()
-                        {
-                            Target = new LabelTarget(fake.Name),
-                            One = new Register(1),
-                            Another = new Register(0),
-                        });
-                        
-                        yield return MoveImmediate(0, new Register(0));
-
-                        yield return new Line(new BranchInstruction()
-                        {
-                            Target = new LabelTarget(code.Label.Name),
-                            One = new Register(0),
-                            Another = new Register(0),
-                        });
-
-                        yield return new Line(fake, null);
-
-                        break;
-                    case LabelCode code:
-                        yield return new Line(new Model.Label(code.Label.Name), null);
-
-                        break;
-                }
-            }
-        }
-
-        private static Line Store(Register register, Register baseRegister, int offset = 0)
-        {
-            return new Line(new StoreInstruction
-            {
-                Source = new RegisterSource(register),
-                MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
-            });
-        }
-
-        private static Line Load(Register register, Register baseRegister, int offset = 0)
-        {
-            return new Line(new LoadInstruction
-            {
-                Destination = register,
-                MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
-            });
-        }
-
-        private static Line MoveImmediate(int immediate, Register destination)
-        {
-            return new Line(new MoveInstruction
-            {
-                Destination = destination,
-                Source = new ImmediateSource(immediate),
-            });
         }
     }
 }
