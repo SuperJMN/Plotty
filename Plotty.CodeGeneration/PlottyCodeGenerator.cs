@@ -121,12 +121,26 @@ namespace Plotty.CodeGeneration
 
                         yield return MoveImmediate(0, new Register(0));
                         
+
+                        var fake = new Model.Label("temp");
+
                         yield return new Line(new BranchInstruction()
                         {
-                            Target = new LabelTarget(code.Label.Name),
+                            Target = new LabelTarget(fake.Name),
                             One = new Register(1),
                             Another = new Register(0),
                         });
+                        
+                        yield return MoveImmediate(0, new Register(0));
+
+                        yield return new Line(new BranchInstruction()
+                        {
+                            Target = new LabelTarget(code.Label.Name),
+                            One = new Register(0),
+                            Another = new Register(0),
+                        });
+
+                        yield return new Line(fake, null);
 
                         break;
                     case LabelCode code:

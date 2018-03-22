@@ -11,7 +11,7 @@ namespace Plotty.Compiler.Tests
     {
         [Theory]
         [MemberData(nameof(TestData))]
-        public void GivenSourceVariablesHaveTheExpectedValues(string source, IEnumerable<Expectation> expectations)
+        public void ReferencesHaveTheExpectedValues(string source, IEnumerable<Expectation> expectations)
         {
             var result = new PlottyCompiler().Compile(source);
             AssertRun(result.GenerationResult, expectations);

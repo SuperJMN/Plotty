@@ -43,6 +43,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Superpower", "superpower\sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGen.Intermediate", "CodeGeneration\CodeGen\CodeGen.Intermediate.csproj", "{B440082E-E01F-484B-94CB-B3D180BD0795}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plotty.CodeGeneration.Tests", "Plotty.CodeGeneration.Tests\Plotty.CodeGeneration.Tests.csproj", "{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -307,6 +309,22 @@ Global
 		{B440082E-E01F-484B-94CB-B3D180BD0795}.Release|x64.Build.0 = Release|Any CPU
 		{B440082E-E01F-484B-94CB-B3D180BD0795}.Release|x86.ActiveCfg = Release|Any CPU
 		{B440082E-E01F-484B-94CB-B3D180BD0795}.Release|x86.Build.0 = Release|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Debug|ARM.Build.0 = Debug|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Debug|x64.Build.0 = Debug|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Debug|x86.Build.0 = Debug|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Release|ARM.ActiveCfg = Release|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Release|ARM.Build.0 = Release|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Release|x64.ActiveCfg = Release|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Release|x64.Build.0 = Release|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Release|x86.ActiveCfg = Release|Any CPU
+		{EF2364F4-A0D5-4CEC-AE92-71426A0623E9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
