@@ -6,36 +6,51 @@ namespace Plotty.Compiler
     public class AssemblyGeneratingVisitor : ILineVisitor
     {
         private readonly List<string> lines = new List<string>();
+        private string label;
         public IReadOnlyCollection<string> Lines => lines.AsReadOnly();
 
         public void Visit(HaltInstruction instruction)
         {
-            lines.Add("\tHALT");
+            lines.Add($"{label}\tHALT");
         }
 
         public void Visit(MoveInstruction instruction)
         {
-            lines.Add($"\tMOVE {instruction.Destination.GetAssemblySymbol()},{instruction.Source.GetAssemblySymbol()}");
+            lines.Add($"{label}\tMOVE {instruction.Destination.GetAssemblySymbol()},{instruction.Source.GetAssemblySymbol()}");
         }
 
         public void Visit(StoreInstruction instruction)
         {
-            lines.Add($"\tSTORE {instruction.Source.GetAssemblySymbol()},{instruction.MemoryAddress.GetAssemblySymbol()}");
+            lines.Add($"{label}\tSTORE {instruction.Source.GetAssemblySymbol()},{instruction.MemoryAddress.GetAssemblySymbol()}");
         }
 
         public void Visit(LoadInstruction instruction)
         {
-            lines.Add($"\tLOAD {instruction.Destination.GetAssemblySymbol()},{instruction.MemoryAddress.GetAssemblySymbol()}");
-        }
-
-        public void Visit(AddInstruction instruction)
-        {
-            lines.Add($"\tADD {instruction.Source.GetAssemblySymbol()},{instruction.Addend.GetAssemblySymbol()},{instruction.Destination.GetAssemblySymbol()}");
+            lines.Add($"{label}\tLOAD {instruction.Destination.GetAssemblySymbol()},{instruction.MemoryAddress.GetAssemblySymbol()}");
         }
 
         public void Visit(BranchInstruction instruction)
         {
-            lines.Add($"\tBRANCH");
+            lines.Add($"{label}\tBRANCH {instruction.One.GetAssemblySymbol()},{instruction.Another.GetAssemblySymbol()},{instruction.Target.GetAssemblySymbol()}");
+        }
+
+        public void Visit(Line line)
+        {
+            if (line.Label != null)
+            {
+                var labelName = line.Label;
+                label = $"{labelName}:";
+            }
+            else
+            {
+                label = "";
+            }
+        }
+
+        public void Visit(ArithmeticInstruction instruction)
+        {
+            var instructionName = instruction.Operator == Operators.Add ? "ADD" : "SUBST";
+            lines.Add($"{label}\t{instructionName} {instruction.Left.GetAssemblySymbol()},{instruction.Right.GetAssemblySymbol()},{instruction.Destination.GetAssemblySymbol()}");           
         }
     }
 }

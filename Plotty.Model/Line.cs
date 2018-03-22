@@ -22,6 +22,7 @@
 
         public void Accept(ILineVisitor lineVisitor)
         {
+            lineVisitor.Visit(this);
             Instruction.Accept(lineVisitor);
         }
     }

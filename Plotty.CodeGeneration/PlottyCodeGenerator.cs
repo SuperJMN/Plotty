@@ -21,7 +21,20 @@ namespace Plotty.CodeGeneration
                 .Select((reference, index) => new { Reference = reference, Index = index })
                 .ToDictionary(key => key.Reference, value => value.Index);
 
-            return new GenerationResult(addressMap, GenerateCore(intermediateCodes, addressMap).ToList());
+            var generateCore = GenerateCore(intermediateCodes, addressMap).ToList();
+
+            generateCore.Add(new Line(new HaltInstruction()));
+
+            for (int i = 0; i < generateCore.Count - 1; i++)
+            {
+                if (generateCore[i].Label != null)
+                {
+                    generateCore[i] = new Line(generateCore[i].Label, generateCore[i + 1].Instruction);
+                    generateCore.RemoveAt(i + 1);
+                }
+            }
+
+            return new GenerationResult(addressMap, generateCore.ToList());
         }
 
         private static IEnumerable<Line> GenerateCore(IEnumerable<IntermediateCode> intermediateCodes, Dictionary<Reference, int> addressMap)
@@ -49,11 +62,6 @@ namespace Plotty.CodeGeneration
 
                     case OperationAssignment code:
 
-                        if (code.Operation != OperationKind.Add)
-                        {
-                            throw new InvalidOperationException();
-                        }
-
                         yield return MoveImmediate(addressMap[code.Left], new Register(0));
                         yield return Load(new Register(1), new Register(0));
 
@@ -62,10 +70,11 @@ namespace Plotty.CodeGeneration
 
                         yield return MoveImmediate(addressMap[code.Target], new Register(0));
 
-                        yield return new Line(new AddInstruction()
+                        yield return new Line(new ArithmeticInstruction()
                         {
-                            Source = new Register(1),
-                            Addend = new RegisterSource(new Register(2)),
+                            Operator = code.Operation == OperationKind.Add ? Operators.Add : Operators.Substract,
+                            Left = new Register(1),
+                            Right = new RegisterSource(new Register(2)),
                             Destination = new Register(1),
                         });
 
@@ -73,19 +82,69 @@ namespace Plotty.CodeGeneration
 
                         break;
 
+                    case BoolConstantAssignment code:
+
+                        yield return MoveImmediate(addressMap[code.Target], new Register(0));
+                        yield return MoveImmediate(code.Value ? 0 : 1, new Register(1));
+                        yield return Store(new Register(1), new Register(0));
+                        
+                        break;
+
+                    case BoolExpressionAssignment code:
+
+                        if (code.Operation == BooleanOperation.IsEqual)
+                        {
+                            yield return MoveImmediate(addressMap[code.Left], new Register(0));
+                            yield return Load(new Register(1), new Register(0));
+
+                            yield return MoveImmediate(addressMap[code.Right], new Register(0));
+                            yield return Load(new Register(2), new Register(0));
+
+                            yield return new Line(new ArithmeticInstruction()
+                            {
+                                Operator = Operators.Substract,
+                                Left = new Register(1),
+                                Right = new RegisterSource(new Register(2)),
+                                Destination = new Register(1),
+                            });
+
+                            yield return MoveImmediate(addressMap[code.Target], new Register(0));
+                            yield return Store(new Register(1), new Register(0));
+                        }
+
+                        break;
+
                     case JumpIfFalse code:
 
-                        yield return MoveImmediate(0, new Register(0));
-
-                        yield return MoveImmediate(addressMap[code.Reference], new Register(1));
+                        yield return MoveImmediate(addressMap[code.Reference], new Register(0));
                         yield return Load(new Register(1), new Register(0));
+
+                        yield return MoveImmediate(0, new Register(0));
+                        
+
+                        var fake = new Model.Label("temp");
+
+                        yield return new Line(new BranchInstruction()
+                        {
+                            Target = new LabelTarget(fake.Name),
+                            One = new Register(1),
+                            Another = new Register(0),
+                        });
+                        
+                        yield return MoveImmediate(0, new Register(0));
 
                         yield return new Line(new BranchInstruction()
                         {
                             Target = new LabelTarget(code.Label.Name),
-                            One = new Register(1),
+                            One = new Register(0),
                             Another = new Register(0),
                         });
+
+                        yield return new Line(fake, null);
+
+                        break;
+                    case LabelCode code:
+                        yield return new Line(new Model.Label(code.Label.Name), null);
 
                         break;
                 }

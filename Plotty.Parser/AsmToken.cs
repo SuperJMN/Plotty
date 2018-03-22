@@ -33,6 +33,8 @@ namespace Plotty.Parser
         [Token(Category = "keyword", Example = "HALT")]
         Halt,
         [Token(Category = "operator", Example = "+")]
-        Plus
+        Plus,
+        [Token(Category = "operator", Example = "-")]
+        Subst
     }
 }
