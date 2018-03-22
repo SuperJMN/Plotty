@@ -23,7 +23,7 @@ namespace Plotty.Test
         }
 
         [Theory]
-        [InlineData("LOAD 123", new [] {AsmToken.Move, AsmToken.Whitespace, AsmToken.Number})]
+        [InlineData("LOAD 123", new [] {AsmToken.Load, AsmToken.Whitespace, AsmToken.Number})]
         [InlineData("STORE 123 123", new [] {AsmToken.Store, AsmToken.Whitespace, AsmToken.Number, AsmToken.Whitespace, AsmToken.Number})]
         [InlineData("1,2", new [] {AsmToken.Number, AsmToken.Comma, AsmToken.Number})]
         [InlineData("ADD 1,2", new [] {AsmToken.Add, AsmToken.Whitespace, AsmToken.Number, AsmToken.Comma, AsmToken.Number})]

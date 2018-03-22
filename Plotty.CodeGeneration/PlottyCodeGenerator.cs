@@ -82,6 +82,14 @@ namespace Plotty.CodeGeneration
 
                         break;
 
+                    case BoolConstantAssignment code:
+
+                        yield return MoveImmediate(addressMap[code.Target], new Register(0));
+                        yield return MoveImmediate(code.Value ? 0 : 1, new Register(1));
+                        yield return Store(new Register(1), new Register(0));
+                        
+                        break;
+
                     case BoolExpressionAssignment code:
 
                         if (code.Operation == BooleanOperation.IsEqual)
@@ -92,21 +100,23 @@ namespace Plotty.CodeGeneration
                             yield return MoveImmediate(addressMap[code.Right], new Register(0));
                             yield return Load(new Register(2), new Register(0));
 
-                            yield return MoveImmediate(addressMap[code.Target], new Register(0));
-
                             yield return new Line(new ArithmeticInstruction()
                             {
+                                Operator = Operators.Substract,
                                 Left = new Register(1),
                                 Right = new RegisterSource(new Register(2)),
                                 Destination = new Register(1),
                             });
+
+                            yield return MoveImmediate(addressMap[code.Target], new Register(0));
+                            yield return Store(new Register(1), new Register(0));
                         }
 
                         break;
 
                     case JumpIfFalse code:
 
-                        yield return MoveImmediate(0, new Register(0));
+                        yield return MoveImmediate(addressMap[code.Reference], new Register(0));
                         yield return Load(new Register(1), new Register(0));
 
                         yield return MoveImmediate(0, new Register(0));

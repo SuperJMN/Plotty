@@ -13,7 +13,7 @@ namespace Plotty.Commands
             var instruction = (BranchInstruction)PlottyCore.CurrentLine.Instruction;
             var r1 = PlottyCore.Registers[instruction.One.Id];
             var r2 = PlottyCore.Registers[instruction.Another.Id];
-            if (r1 == r2)
+            if (r1 != r2)
             {
                 switch (instruction.Target)
                 {
