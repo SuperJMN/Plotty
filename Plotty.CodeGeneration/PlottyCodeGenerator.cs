@@ -39,11 +39,25 @@ namespace Plotty.CodeGeneration
             return addressMap;
         }
 
-        private static void PostProcess(List<Line> finalCode)
+        private static void PostProcess(IList<Line> finalCode)
         {
             finalCode.Add(new Line(new HaltInstruction()));
 
             AttachLabelsToInstructions(finalCode);
+            GiveNameToUnnamedLabels(finalCode);
+        }
+
+        private static void GiveNameToUnnamedLabels(IEnumerable<Line> finalCode)
+        {
+            int count = 0;
+
+            void GiveName(Model.Label label)
+            {
+                label.Name = $"dyn_label{++count}";
+            }
+
+            var unnamed = finalCode.Where(x => x.Label != null && x.Label.Name == null).ToList();
+            unnamed.ForEach(x => GiveName(x.Label));
         }
 
         private static void AttachLabelsToInstructions(IList<Line> finalCode)

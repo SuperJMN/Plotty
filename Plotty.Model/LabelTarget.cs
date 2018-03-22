@@ -2,9 +2,9 @@
 {
     public class LabelTarget : JumpTarget
     {
-        public string Label { get; }
+        public Label Label { get; }
         
-        public LabelTarget(string label)
+        public LabelTarget(Label label)
         {
             Label = label;
         }

@@ -18,7 +18,7 @@ namespace Plotty.Commands
                 switch (instruction.Target)
                 {
                     case LabelTarget jt:
-                        PlottyCore.GoTo(jt.Label);
+                        PlottyCore.GoTo(jt.Label.Name);
                         break;
                     case SourceTarget rt:
                         PlottyCore.GoTo(rt.Target.GetValue(PlottyCore));

@@ -116,7 +116,7 @@ namespace Plotty.Parser
 
         public static readonly TokenListParser<AsmToken, JumpTarget> LabelTarget =
             from text in Token.EqualTo(AsmToken.Text)
-            select (JumpTarget)new LabelTarget(text.ToStringValue());
+            select (JumpTarget)new LabelTarget(new Label(text.ToStringValue()));
 
         public static readonly TokenListParser<AsmToken, JumpTarget> RegisterTarget =
             from number in Source

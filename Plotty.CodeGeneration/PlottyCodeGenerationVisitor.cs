@@ -4,6 +4,7 @@ using CodeGen.Intermediate;
 using CodeGen.Intermediate.Codes;
 using CodeGen.Intermediate.Codes.Common;
 using Plotty.Model;
+using Label = Plotty.Model.Label;
 
 namespace Plotty.CodeGeneration
 {
@@ -23,27 +24,30 @@ namespace Plotty.CodeGeneration
             Add(MoveImmediate(addressMap[code.Reference], new Register(0)));
             Add(Load(new Register(1), new Register(0)));
 
+            
+
+            var onFalseLabel = new Label();
+
+            // Comparison with 0 (TRUE). If both values are 0, the conditions is true, so the code has to be executed.
+            // So we emit
             Add(MoveImmediate(0, new Register(0)));
-
-            var fake = new Model.Label("temp");
-
-            Add(new Line(new BranchInstruction()
+            Add(new Line(new BranchInstruction
             {
-                Target = new LabelTarget(fake.Name),
                 One = new Register(1),
                 Another = new Register(0),
+                Target = new LabelTarget(onFalseLabel),
             }));
 
             Add(MoveImmediate(0, new Register(0)));
 
-            Add(new Line(new BranchInstruction()
+            Add(new Line(new BranchInstruction
             {
-                Target = new LabelTarget(code.Label.Name),
+                Target = new LabelTarget(new Label(code.Label.Name)),
                 One = new Register(0),
                 Another = new Register(0),
             }));
 
-            Add(new Line(fake, null));
+            Add(new Line(onFalseLabel, null));
         }
 
         public void Visit(BoolConstantAssignment code)
@@ -80,7 +84,7 @@ namespace Plotty.CodeGeneration
 
             Add(MoveImmediate(addressMap[code.Target], new Register(0)));
 
-            Add(new Line(new ArithmeticInstruction()
+            Add(new Line(new ArithmeticInstruction
             {
                 Operator = code.Operation == OperationKind.Add ? Operators.Add : Operators.Substract,
                 Left = new Register(1),
@@ -109,7 +113,7 @@ namespace Plotty.CodeGeneration
                 Add(MoveImmediate(addressMap[code.Right], new Register(0)));
                 Add(Load(new Register(2), new Register(0)));
 
-                Add(new Line(new ArithmeticInstruction()
+                Add(new Line(new ArithmeticInstruction
                 {
                     Operator = Operators.Substract,
                     Left = new Register(1),
