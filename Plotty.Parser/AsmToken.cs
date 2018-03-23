@@ -35,6 +35,8 @@ namespace Plotty.Parser
         [Token(Category = "operator", Example = "+")]
         Plus,
         [Token(Category = "operator", Example = "-")]
-        Subst
+        Subst,
+        [Token(Category = "operator", Example = "*")]
+        Mult
     }
 }
