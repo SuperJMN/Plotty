@@ -50,14 +50,13 @@ namespace Plotty.CodeGeneration
         private static void GiveNameToUnnamedLabels(IEnumerable<Line> finalCode)
         {
             int count = 0;
-
-            void GiveName(Model.Label label)
+            foreach (var line in finalCode)
             {
-                label.Name = $"dyn_label{++count}";
+                if (line.Label != null && line.Label.Name == null)
+                {
+                    line.Label.Name = $"dyn_label{++count}";
+                }
             }
-
-            var unnamed = finalCode.Where(x => x.Label != null && x.Label.Name == null).ToList();
-            unnamed.ForEach(x => GiveName(x.Label));
         }
 
         private static void AttachLabelsToInstructions(IList<Line> finalCode)
