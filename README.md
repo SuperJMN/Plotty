@@ -11,7 +11,7 @@ To summarize, this project goes around a custom RISC architecture I created. It 
 The cool and interesting thing about it is the parser that takes the assembly code and transforms it into instructions. If you want to learn about parsing with **Superpower**, you can use this for reference to create your own parsers :)
 
 # Do you want to see it running? 
-Then, watch [this video](https://files.gitter.im/datalust/superpower/fotB/2018-01-03_11-49-25.mp4) :) 
+Then, watch [this video](https://files.gitter.im/datalust/superpower/yLt8/2018-03-22_18-50-20.mp4) :) 
 
 # Example code:
 ```
