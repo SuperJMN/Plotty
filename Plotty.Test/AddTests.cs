@@ -13,7 +13,7 @@ namespace Plotty.Test
         public void Add(string source)
         {
             var tokenList = new Parser.Tokenizer().Tokenize(source);
-            var commands = Parser.Parser.Add.Parse(tokenList);
+            var commands = Parser.Parser.AsmParser.Parse(tokenList);
         } 
 
         //[Theory]

@@ -14,23 +14,21 @@ namespace Plotty.Commands
             var origin = inst.Left.Id;
             var destination = inst.Destination.Id;
 
-            int value;
-            if (inst.Right is ImmediateSource im)
-            {
-                value = im.Immediate;
-            }
-            else
-            {
-                value = PlottyCore.Registers[((RegisterSource) inst.Right).Register.Id];
-            }
+            int value = inst.Right.GetValue(PlottyCore);
             
             if (inst.Operator == Operators.Add)
             {
                 PlottyCore.Registers[destination] = PlottyCore.Registers[origin] + value;            
             }
+
             if (inst.Operator == Operators.Substract)
             {
                 PlottyCore.Registers[destination] = PlottyCore.Registers[origin] - value;            
+            }
+
+            if (inst.Operator == Operators.Multiply)
+            {
+                PlottyCore.Registers[destination] = PlottyCore.Registers[origin] * value;            
             }
 
             PlottyCore.GoToNext();
