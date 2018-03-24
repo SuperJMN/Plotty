@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CodeGen.Core;
 using CodeGen.Intermediate;
@@ -23,8 +24,6 @@ namespace Plotty.CodeGeneration
         {
             Add(MoveImmediate(addressMap[code.Reference], new Register(0)));
             Add(Load(new Register(1), new Register(0)));
-
-            
 
             var onFalseLabel = new Label();
 
@@ -74,7 +73,7 @@ namespace Plotty.CodeGeneration
             instructions.Add(line);
         }
 
-        public void Visit(OperationAssignment code)
+        public void Visit(ArithmeticAssignment code)
         {
             Add(MoveImmediate(addressMap[code.Left], new Register(0)));
             Add(Load(new Register(1), new Register(0)));
@@ -84,15 +83,37 @@ namespace Plotty.CodeGeneration
 
             Add(MoveImmediate(addressMap[code.Target], new Register(0)));
 
+            var @operator = GetOperator(code.Operation);
+
             Add(new Line(new ArithmeticInstruction
             {
-                Operator = code.Operation == OperationKind.Add ? Operators.Add : Operators.Substract,
+                Operator = @operator,
                 Left = new Register(1),
                 Right = new RegisterSource(new Register(2)),
                 Destination = new Register(1),
             }));
 
             Add(Store(new Register(1), new Register(0)));
+        }
+
+        private Operators GetOperator(ArithmeticOperator codeOperation)
+        {
+            if (codeOperation == ArithmeticOperator.Add)
+            {
+                return Operators.Add;
+            }
+
+            if (codeOperation == ArithmeticOperator.Substract)
+            {
+                return Operators.Substract;
+            }
+
+            if (codeOperation == ArithmeticOperator.Mult)
+            {
+                return Operators.Multiply;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(codeOperation));
         }
 
         public void Visit(ReferenceAssignment code)

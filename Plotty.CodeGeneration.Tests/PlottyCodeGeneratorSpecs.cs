@@ -1,19 +1,23 @@
 using System.Collections.Generic;
+using System.Linq;
 using CodeGen.Core;
-using CodeGen.Intermediate;
 using CodeGen.Intermediate.Codes;
 using CodeGen.Intermediate.Codes.Common;
 using FluentAssertions;
+using Plotty.Model;
 using Plotty.VirtualMachine;
 using Xunit;
+using Xunit.Theory.Extended;
+using Label = CodeGen.Intermediate.Label;
 
 namespace Plotty.CodeGeneration.Tests
 {
     public class PlottyCodeGeneratorSpecs
     {
-        [Theory]
+        [ExtendedTheory]
         [MemberData(nameof(TestData))]
-        public void IntermediateToPlottyCode(List<IntermediateCode> intermediateCodes, IDictionary<string, int> initialState, IEnumerable<Expectation> expectedValues)
+        public void IntermediateToPlottyCode(List<IntermediateCode> intermediateCodes,
+            IDictionary<string, int> initialState, IEnumerable<Expectation> expectedValues)
         {
             var sut = new PlottyCodeGenerator();
             var result = sut.Generate(intermediateCodes);
@@ -21,47 +25,79 @@ namespace Plotty.CodeGeneration.Tests
             AssertRun(result, initialState, expectedValues);
         }
 
-        public static IList<object[]> TestData => new List<object[]>()
+        public static IEnumerable<object[]> TestData => Misc.Concat(Arithmetic);
+
+        private static IEnumerable<object[]> Misc
         {
-            new object[]
+            get
             {
-                new List<IntermediateCode>()
+                return new List<object[]>()
                 {
-                    new BoolExpressionAssignment(BooleanOperation.IsEqual, new Reference("a"), new Reference("b"),
-                        new Reference("c"))
-                },
-                new Dictionary<string, int> {{"b", 5}, {"c", 3}}, new List<Expectation> {new Expectation("a", 0, Operator.NotEqual)}
-            },
-            new object[]
-            {
-                new List<IntermediateCode>()
-                {
-                    new BoolExpressionAssignment(BooleanOperation.IsEqual, new Reference("a"), new Reference("b"),
-                        new Reference("c"))
-                },
-                new Dictionary<string, int> {{"b", 123}, {"c", 123}}, new List<Expectation> {new Expectation("a", 0)}
-            },
-            new object[]
-            {
-                new List<IntermediateCode>()
-                {
-                    new JumpIfFalse(new Reference("a"), new Label("label1")),
-                    new IntegerConstantAssignment(new Reference("b"), 123),
-                    new LabelCode(new Label("label1"))
-                },
-                new Dictionary<string, int> {{"a", 1} }, new List<Expectation> {new Expectation("b", 0)}
-            },
-            new object[]
-            {
-                new List<IntermediateCode>()
-                {
-                    new JumpIfFalse(new Reference("a"), new Label("label1")),
-                    new IntegerConstantAssignment(new Reference("b"), 123),
-                    new LabelCode(new Label("label1"))
-                },
-                new Dictionary<string, int> {{"a", 0} }, new List<Expectation> {new Expectation("b", 123)}
+                    new object[]
+                    {
+                        new List<IntermediateCode>()
+                        {
+                            new BoolExpressionAssignment(BooleanOperation.IsEqual, new Reference("a"), new Reference("b"),
+                                new Reference("c"))
+                        },
+                        new Dictionary<string, int> {{"b", 5}, {"c", 3}},
+                        new List<Expectation> {new Expectation("a", 0, Operator.NotEqual)}
+                    },
+                    new object[]
+                    {
+                        new List<IntermediateCode>()
+                        {
+                            new BoolExpressionAssignment(BooleanOperation.IsEqual, new Reference("a"), new Reference("b"),
+                                new Reference("c"))
+                        },
+                        new Dictionary<string, int> {{"b", 123}, {"c", 123}}, new List<Expectation> {new Expectation("a", 0)}
+                    },
+                    new object[]
+                    {
+                        new List<IntermediateCode>()
+                        {
+                            new JumpIfFalse(new Reference("a"), new Label("label1")),
+                            new IntegerConstantAssignment(new Reference("b"), 123),
+                            new LabelCode(new Label("label1"))
+                        },
+                        new Dictionary<string, int> {{"a", 1}}, new List<Expectation> {new Expectation("b", 0)}
+                    },
+                    new object[]
+                    {
+                        new List<IntermediateCode>()
+                        {
+                            new JumpIfFalse(new Reference("a"), new Label("label1")),
+                            new IntegerConstantAssignment(new Reference("b"), 123),
+                            new LabelCode(new Label("label1"))
+                        },
+                        new Dictionary<string, int> {{"a", 0}}, new List<Expectation> {new Expectation("b", 123)}
+                    },
+                };
             }
-        };
+        }
+
+        private static IEnumerable<object[]> Arithmetic
+        {
+            get
+            {
+                yield return GetAritmethic(ArithmeticOperator.Add, 2, 3, 5);
+                yield return GetAritmethic(ArithmeticOperator.Substract, 10, 2, 8);
+                yield return GetAritmethic(ArithmeticOperator.Mult, 3, 4, 12);                
+            }
+        }
+
+        private static object[] GetAritmethic(ArithmeticOperator add, int op1, int op2, int result)
+        {
+            return new object[]
+            {
+                new List<IntermediateCode>
+                {
+                    new ArithmeticAssignment(add, new Reference("a"), new Reference("b"),
+                        new Reference("c"))
+                },
+                new Dictionary<string, int> {{"b", op1}, {"c", op2}}, new List<Expectation> {new Expectation("a", result)}
+            };
+        }
 
         private static void AssertRun(GenerationResult result, IDictionary<string, int> initialState, IEnumerable<Expectation> expectedState)
         {

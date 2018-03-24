@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Plotty.CodeGeneration\Plotty.CodeGeneration.csproj" />
     <ProjectReference Include="..\Plotty.VirtualMachine\Plotty.VirtualMachine.csproj" />
+    <ProjectReference Include="C:\Users\super\source\repos\xUnit.Theory.Extended\xUnit.Theory.Extended\Xunit.Theory.Extended.csproj" />
   </ItemGroup>
 
 </Project>
