@@ -5,11 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Superpower" Version="1.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Plotty.Model\Plotty.Model.csproj" />
+    <ProjectReference Include="..\superpower\src\Superpower\Superpower.csproj" />
   </ItemGroup>
 
 </Project>

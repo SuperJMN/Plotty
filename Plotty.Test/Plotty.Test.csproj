@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Plotty.Parser\Plotty.Parser.csproj" />
+    <ProjectReference Include="..\superpower\src\Superpower\Superpower.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ namespace Plotty.Test
         [InlineData("R0,R1,#1")]
         public void Add(string source)
         {
-            var tokenList = new Tokenizer().Tokenize(source);
+            var tokenList = TokenizerFactory.Create().Tokenize(source);
             var address = Parser.Parser.MemoryAddress.Parse(tokenList);
         }
     }

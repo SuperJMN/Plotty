@@ -58,7 +58,7 @@ namespace Plotty.CodeGeneration
 
         public void Visit(LabelCode code)
         {
-            Add(new Line(new Model.Label(code.Label.Name), null));
+            Add(new Line(new Label(code.Label.Name), null));
         }
 
         public void Visit(IntegerConstantAssignment code)
@@ -145,6 +145,21 @@ namespace Plotty.CodeGeneration
                 Add(MoveImmediate(addressMap[code.Target], new Register(0)));
                 Add(Store(new Register(1), new Register(0)));
             }
+        }
+
+        public void Visit(Jump code)
+        {
+            Add(UnconditionalJump(code.Label));
+        }
+
+        private static Line UnconditionalJump(CodeGen.Intermediate.Label codeLabel)
+        {
+            return new Line(new BranchInstruction
+            {
+                One = new Register(0),
+                Another = new Register(0),
+                Target = new LabelTarget(new Label(codeLabel.Name))
+            });
         }
 
         private static Line Store(Register register, Register baseRegister, int offset = 0)

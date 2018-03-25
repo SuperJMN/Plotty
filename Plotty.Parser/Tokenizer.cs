@@ -3,101 +3,131 @@ using System.Text;
 using Superpower;
 using Superpower.Model;
 using Superpower.Parsers;
+using Superpower.Tokenizers;
 
 namespace Plotty.Parser
 {
-    public class Tokenizer : Tokenizer<AsmToken>
+    //public class Tokenizer : Tokenizer<AsmToken>
+    //{
+    //    private readonly IDictionary<char, AsmToken> charToTokenDict =
+    //        new Dictionary<char, AsmToken>()
+    //        {
+    //            {':', AsmToken.Colon},
+    //            {'+', AsmToken.Plus},
+    //            {'#', AsmToken.Hash},
+    //            {',', AsmToken.Comma},
+    //            {'\n', AsmToken.NewLine},
+    //        };
+
+    //    private readonly IDictionary<string, AsmToken> words = new Dictionary<string, AsmToken>()
+    //    {
+    //        {"MOVE", AsmToken.Move},
+    //        {"LOAD", AsmToken.Load},
+    //        {"STORE", AsmToken.Store},
+    //        {"ADD", AsmToken.Add},
+    //        {"SUBST", AsmToken.Subtract},
+    //        {"MULT", AsmToken.Multiply},
+    //        {"BRANCH", AsmToken.BranchEqual},
+    //        {"HALT", AsmToken.Halt}
+    //    };
+
+    //    protected override IEnumerable<Result<AsmToken>> Tokenize(TextSpan span)
+    //    {
+    //        var filtered = new TextSpan(span.Source.Replace("\r\n", "\n"));
+    //        var cursor = SkipWhiteSpace(filtered);
+
+    //        do
+    //        {
+    //            if (cursor.Value == 'R')
+    //            {
+    //                var regNum = Numerics.Integer(cursor.Remainder);
+    //                yield return Result.Value(AsmToken.Register, cursor.Location, regNum.Remainder);
+    //                cursor = regNum.Remainder.ConsumeChar();
+    //            }
+    //            else if (charToTokenDict.TryGetValue(cursor.Value, out var token))
+    //            {
+    //                yield return Result.Value(token, cursor.Location, cursor.Remainder);
+    //                cursor = cursor.Remainder.ConsumeChar();
+    //            }
+    //            else if (char.IsWhiteSpace(cursor.Value))
+    //            {
+    //                yield return Result.Value(AsmToken.Whitespace, cursor.Location, cursor.Remainder);
+    //                cursor = SkipWhiteSpace(cursor.Remainder);
+    //            }
+    //            else if (char.IsDigit(cursor.Value))
+    //            {
+    //                var integer = Numerics.Integer(cursor.Location);
+    //                yield return Result.Value(AsmToken.Number, integer.Location, integer.Remainder);
+    //                cursor = integer.Remainder.ConsumeChar();
+    //            }
+    //            else if (char.IsLetter(cursor.Value))
+    //            {
+    //                var keywordBuilder = new StringBuilder();
+    //                var start = cursor.Location;
+    //                keywordBuilder.Append(cursor.Value);
+
+    //                do
+    //                {
+    //                    cursor = cursor.Remainder.ConsumeChar();
+
+    //                    if (cursor.HasValue && char.IsLetter(cursor.Value))
+    //                    {
+    //                        keywordBuilder.Append(cursor.Value);
+    //                    }
+    //                } while (!words.Keys.Contains(keywordBuilder.ToString()) && cursor.HasValue &&
+    //                         char.IsLetter(cursor.Value));
+
+    //                if (cursor.HasValue && char.IsLetter(cursor.Value))
+    //                {
+    //                    cursor = cursor.Remainder.ConsumeChar();
+    //                }
+
+    //                var keyword = keywordBuilder.ToString();
+
+    //                if (words.Keys.Contains(keyword))
+    //                {
+    //                    yield return Result.Value(words[keyword], start, cursor.Location);
+    //                }
+    //                else
+    //                {
+    //                    yield return Result.Value(AsmToken.Text, start, cursor.Location);
+    //                }
+    //            }
+    //            else
+    //            {
+    //                yield return Result.Empty<AsmToken>(cursor.Location, "Unexpected token");
+    //            }
+
+    //        } while (cursor.HasValue);
+    //    }
+    //}
+
+    public static class TokenizerFactory
     {
-        private readonly IDictionary<char, AsmToken> charToTokenDict =
-            new Dictionary<char, AsmToken>()
-            {
-                {':', AsmToken.Colon},
-                {'+', AsmToken.Plus},
-                {'#', AsmToken.Hash},
-                {',', AsmToken.Comma},
-                {'\n', AsmToken.NewLine},
-            };
-
-        private readonly IDictionary<string, AsmToken> words = new Dictionary<string, AsmToken>()
+        public static Tokenizer<AsmToken> Create()
         {
-            {"MOVE", AsmToken.Move},
-            {"LOAD", AsmToken.Load},
-            {"STORE", AsmToken.Store},
-            {"ADD", AsmToken.Add},
-            {"SUBST", AsmToken.Subst},
-            {"MULT", AsmToken.Mult},
-            {"BRANCH", AsmToken.Branch},
-            {"HALT", AsmToken.Halt}
-        };
 
-        protected override IEnumerable<Result<AsmToken>> Tokenize(TextSpan span)
-        {
-            var filtered = new TextSpan(span.Source.Replace("\r\n", "\n"));
-            var cursor = SkipWhiteSpace(filtered);
+            var tokenizerBuilder = new TokenizerBuilder<AsmToken>()
+                .Ignore(Span.WhiteSpace)
+                .Match(Span.EqualTo("MOVE"), AsmToken.Move, true)
+                .Match(Span.EqualTo("LOAD"), AsmToken.Load, true)
+                .Match(Span.EqualTo("STORE"), AsmToken.Store, true)
+                .Match(Span.EqualTo("ADD"), AsmToken.Add, true)
+                .Match(Span.EqualTo("SUB"), AsmToken.Subtract, true)
+                .Match(Span.EqualTo("MULT"), AsmToken.Multiply, true)
+                .Match(Span.EqualTo("BEQ"), AsmToken.BranchEqual, true)
+                .Match(Span.EqualTo("BLT"), AsmToken.BranchLessThan, true)
+                .Match(Character.EqualTo(':'), AsmToken.Colon)
+                .Match(Character.EqualTo('+'), AsmToken.Plus)
+                .Match(Character.EqualTo('#'), AsmToken.Hash)
+                .Match(Character.EqualTo(','), AsmToken.Comma)
+                .Match(Character.EqualTo('\n'), AsmToken.NewLine)
+                .Match(Span.Regex(@"\d*"), AsmToken.Number)
+                .Match(Span.Regex(@"R\d*"), AsmToken.Register, true)
+                .Match(Span.Regex(@"\w[\w\d]*"), AsmToken.Text, true);
+            
 
-            do
-            {
-                if (cursor.Value == 'R')
-                {
-                    var regNum = Numerics.Integer(cursor.Remainder);
-                    yield return Result.Value(AsmToken.Register, cursor.Location, regNum.Remainder);
-                    cursor = regNum.Remainder.ConsumeChar();
-                }
-                else if (charToTokenDict.TryGetValue(cursor.Value, out var token))
-                {
-                    yield return Result.Value(token, cursor.Location, cursor.Remainder);
-                    cursor = cursor.Remainder.ConsumeChar();
-                }
-                else if (char.IsWhiteSpace(cursor.Value))
-                {
-                    yield return Result.Value(AsmToken.Whitespace, cursor.Location, cursor.Remainder);
-                    cursor = SkipWhiteSpace(cursor.Remainder);
-                }
-                else if (char.IsDigit(cursor.Value))
-                {
-                    var integer = Numerics.Integer(cursor.Location);
-                    yield return Result.Value(AsmToken.Number, integer.Location, integer.Remainder);
-                    cursor = integer.Remainder.ConsumeChar();
-                }
-                else if (char.IsLetter(cursor.Value))
-                {
-                    var keywordBuilder = new StringBuilder();
-                    var start = cursor.Location;
-                    keywordBuilder.Append(cursor.Value);
-
-                    do
-                    {
-                        cursor = cursor.Remainder.ConsumeChar();
-
-                        if (cursor.HasValue && char.IsLetter(cursor.Value))
-                        {
-                            keywordBuilder.Append(cursor.Value);
-                        }
-                    } while (!words.Keys.Contains(keywordBuilder.ToString()) && cursor.HasValue &&
-                             char.IsLetter(cursor.Value));
-
-                    if (cursor.HasValue && char.IsLetter(cursor.Value))
-                    {
-                        cursor = cursor.Remainder.ConsumeChar();
-                    }
-
-                    var keyword = keywordBuilder.ToString();
-
-                    if (words.Keys.Contains(keyword))
-                    {
-                        yield return Result.Value(words[keyword], start, cursor.Location);
-                    }
-                    else
-                    {
-                        yield return Result.Value(AsmToken.Text, start, cursor.Location);
-                    }
-                }
-                else
-                {
-                    yield return Result.Empty<AsmToken>(cursor.Location, "Unexpected token");
-                }
-
-            } while (cursor.HasValue);
+            return tokenizerBuilder.Build();
         }
-    }
+    } 
 }
