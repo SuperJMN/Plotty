@@ -1,4 +1,5 @@
-﻿using Plotty.Model;
+﻿using System;
+using Plotty.Model;
 
 namespace Plotty.Commands
 {
@@ -13,7 +14,8 @@ namespace Plotty.Commands
             var instruction = (BranchInstruction)PlottyCore.CurrentLine.Instruction;
             var r1 = PlottyCore.Registers[instruction.One.Id];
             var r2 = PlottyCore.Registers[instruction.Another.Id];
-            if (r1 == r2)
+
+            if (ShouldBranch(r1, r2, instruction.Operator))
             {
                 switch (instruction.Target)
                 {
@@ -29,6 +31,20 @@ namespace Plotty.Commands
             {
                 PlottyCore.GoToNext();
             }
+        }
+
+        private bool ShouldBranch(int a, int b, BooleanOperator @operator)
+        {
+            if (@operator == BooleanOperator.Equal)
+            {
+                return a == b;
+            } 
+            if (@operator == BooleanOperator.LessThan)
+            {
+                return a < b;
+            } 
+
+            throw new ArgumentOutOfRangeException(nameof(@operator));
         }
     }
 }

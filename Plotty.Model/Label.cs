@@ -15,6 +15,11 @@
 
         public override string ToString()
         {
+            if (Name == null)
+            {
+                return $"Unnamed label {GetHashCode()}";
+            }
+
             return $"{Name}";
         }
     }

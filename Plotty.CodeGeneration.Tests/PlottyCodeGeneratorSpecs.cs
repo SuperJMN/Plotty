@@ -8,6 +8,7 @@ using Plotty.Model;
 using Plotty.VirtualMachine;
 using Xunit;
 using Xunit.Theory.Extended;
+using ArithmeticOperator = CodeGen.Intermediate.Codes.Common.ArithmeticOperator;
 using Label = CodeGen.Intermediate.Label;
 
 namespace Plotty.CodeGeneration.Tests
@@ -25,56 +26,106 @@ namespace Plotty.CodeGeneration.Tests
             AssertRun(result, initialState, expectedValues);
         }
 
-        public static IEnumerable<object[]> TestData => Misc.Concat(Arithmetic);
-
-        private static IEnumerable<object[]> Misc
+        [Theory]
+        [InlineData(1, 3, true)]
+        [InlineData(4, 2, false)]
+        [InlineData(5, 5, false)]
+        public void LessThan(int a, int b, bool isTrue)
         {
-            get
+            var result = new List<IntermediateCode>()
             {
-                return new List<object[]>()
+                new BoolExpressionAssignment(BooleanOperation.IsLessThan, new Reference("c"), new Reference("a"),
+                    new Reference("b"))
+            };
+
+            var initialState = new Dictionary<string, int> {{"a", a}, {"b", b}};
+            var expectedValues = new List<Expectation> {new Expectation("c", 0, isTrue? Operator.Equal : Operator.NotEqual )};
+
+            AssertRunFull(result, initialState, expectedValues);
+        }
+
+        private static void AssertRunFull(List<IntermediateCode> code, IDictionary<string, int> initialState, IEnumerable<Expectation> expectedState)
+        {
+            var sut = new PlottyCodeGenerator();
+            var result = sut.Generate(code);
+
+            var machine = new PlottyMachine();
+
+            machine.Load(result.Lines);
+
+            foreach (var state in initialState)
+            {
+                var r = new Reference(state.Key);
+                var address = result.AddressMap[r];
+                machine.Memory[address] = state.Value;
+            }
+
+            while (machine.CanExecute)
+            {
+                machine.Execute();
+            }
+
+            foreach (var expectation in expectedState)
+            {
+                var address = result.AddressMap[new Reference(expectation.RefName)];
+                var expectedValue = expectation.Value;
+
+                if (expectation.Operator== Operator.Equal)
                 {
-                    new object[]
-                    {
-                        new List<IntermediateCode>()
-                        {
-                            new BoolExpressionAssignment(BooleanOperation.IsEqual, new Reference("a"), new Reference("b"),
-                                new Reference("c"))
-                        },
-                        new Dictionary<string, int> {{"b", 5}, {"c", 3}},
-                        new List<Expectation> {new Expectation("a", 0, Operator.NotEqual)}
-                    },
-                    new object[]
-                    {
-                        new List<IntermediateCode>()
-                        {
-                            new BoolExpressionAssignment(BooleanOperation.IsEqual, new Reference("a"), new Reference("b"),
-                                new Reference("c"))
-                        },
-                        new Dictionary<string, int> {{"b", 123}, {"c", 123}}, new List<Expectation> {new Expectation("a", 0)}
-                    },
-                    new object[]
-                    {
-                        new List<IntermediateCode>()
-                        {
-                            new JumpIfFalse(new Reference("a"), new Label("label1")),
-                            new IntegerConstantAssignment(new Reference("b"), 123),
-                            new LabelCode(new Label("label1"))
-                        },
-                        new Dictionary<string, int> {{"a", 1}}, new List<Expectation> {new Expectation("b", 0)}
-                    },
-                    new object[]
-                    {
-                        new List<IntermediateCode>()
-                        {
-                            new JumpIfFalse(new Reference("a"), new Label("label1")),
-                            new IntegerConstantAssignment(new Reference("b"), 123),
-                            new LabelCode(new Label("label1"))
-                        },
-                        new Dictionary<string, int> {{"a", 0}}, new List<Expectation> {new Expectation("b", 123)}
-                    },
-                };
+                    machine.Memory[address].Should().Be(expectedValue);
+                }
+                else
+                {
+                    machine.Memory[address].Should().NotBe(expectedValue);
+                }
             }
         }
+
+        public static IEnumerable<object[]> TestData => Misc.Concat(Arithmetic);
+
+        private static IEnumerable<object[]> Misc => new List<object[]>()
+        {
+            new object[]
+            {
+                new List<IntermediateCode>()
+                {
+                    new BoolExpressionAssignment(BooleanOperation.IsEqual, new Reference("a"), new Reference("b"),
+                        new Reference("c"))
+                },
+                new Dictionary<string, int> {{"b", 5}, {"c", 3}},
+                new List<Expectation> {new Expectation("a", 0, Operator.NotEqual)}
+            },
+            new object[]
+            {
+                new List<IntermediateCode>()
+                {
+                    new BoolExpressionAssignment(BooleanOperation.IsEqual, new Reference("a"), new Reference("b"),
+                        new Reference("c"))
+                },
+                new Dictionary<string, int> {{"b", 123}, {"c", 123}}, new List<Expectation> {new Expectation("a", 0)}
+            },
+            new object[]
+            {
+                new List<IntermediateCode>()
+                {
+                    new JumpIfFalse(new Reference("a"), new Label("label1")),
+                    new IntegerConstantAssignment(new Reference("b"), 123),
+                    new LabelCode(new Label("label1"))
+                },
+                new Dictionary<string, int> {{"a", 1}}, new List<Expectation> {new Expectation("b", 0)}
+            },
+            new object[]
+            {
+                new List<IntermediateCode>()
+                {
+                    new JumpIfFalse(new Reference("a"), new Label("label1")),
+                    new IntegerConstantAssignment(new Reference("b"), 123),
+                    new LabelCode(new Label("label1"))
+                },
+                new Dictionary<string, int> {{"a", 0}}, new List<Expectation> {new Expectation("b", 123)}
+            },
+           
+        };
 
         private static IEnumerable<object[]> Arithmetic
         {

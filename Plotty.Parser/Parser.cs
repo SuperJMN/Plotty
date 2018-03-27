@@ -72,20 +72,20 @@ namespace Plotty.Parser
             from keyword in Token.EqualTo(AsmToken.Halt)
             select (Instruction)new HaltInstruction();
 
-        public static readonly TokenListParser<AsmToken, Operators> Operator =
-            Token.EqualTo(AsmToken.Add).Value(Operators.Add)
-                .Or(Token.EqualTo(AsmToken.Add).Value(Operators.Substract))
-                .Or(Token.EqualTo(AsmToken.Add).Value(Operators.Multiply));
+        public static readonly TokenListParser<AsmToken, ArithmeticOperator> ArithmeticOperator =
+            Token.EqualTo(AsmToken.Add).Value(Model.ArithmeticOperator.Add)
+                .Or(Token.EqualTo(AsmToken.Add).Value(Model.ArithmeticOperator.Substract))
+                .Or(Token.EqualTo(AsmToken.Add).Value(Model.ArithmeticOperator.Multiply));
         
         public static readonly TokenListParser<AsmToken, Instruction> Arithmetic =
-            from op in Operator
+            from op in ArithmeticOperator
             from source in Register
             from comma in Token.EqualTo(AsmToken.Comma)
             from addend in Source
             from destination in (from cm in Token.EqualTo(AsmToken.Comma) from reg in Register select reg).OptionalOrDefault()
             select (Instruction)new ArithmeticInstruction()
             {
-                Operator = op,
+                ArithmeticOperator = op,
                 Left = source,
                 Right = addend,
                 Destination = destination ?? source,
@@ -110,8 +110,12 @@ namespace Plotty.Parser
         public static readonly TokenListParser<AsmToken, JumpTarget> JumpTarget =
             LabelTarget.Or(RegisterTarget);
 
-        public static readonly TokenListParser<AsmToken, Instruction> Branch =
-            from token in Token.EqualTo(AsmToken.BranchEqual)
+        public static readonly TokenListParser<AsmToken, BooleanOperator> BooleanOperator =
+            Token.EqualTo(AsmToken.BranchEqual).Value(Model.BooleanOperator.Equal)
+                .Or(Token.EqualTo(AsmToken.BranchLessThan).Value(Model.BooleanOperator.LessThan));
+
+        public static readonly TokenListParser<AsmToken, Instruction> BranchEqual =
+            from op in BooleanOperator
             from r1 in Register
             from c1 in Token.EqualTo(AsmToken.Comma)
             from r2 in Register
@@ -119,13 +123,14 @@ namespace Plotty.Parser
             from target in JumpTarget
             select (Instruction)new BranchInstruction
             {
+                Operator = op,
                 One = r1,
                 Another = r2,
                 Target = target,
             };
 
         public static readonly TokenListParser<AsmToken, Instruction> Instruction =
-            from ins in Arithmetic.Or(Move).Or(Branch).Or(Halt).Or(Load).Or(Store)
+            from ins in Arithmetic.Or(Move).Or(BranchEqual).Or(Halt).Or(Load).Or(Store)
             select ins;
 
         public static readonly TokenListParser<AsmToken, Line> Line =

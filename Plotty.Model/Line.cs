@@ -17,6 +17,11 @@
 
         public override string ToString()
         {
+            if (Label != null)
+            {
+                return $"Label '{Label}'";
+            }
+
             return $"{Instruction}";
         }
 

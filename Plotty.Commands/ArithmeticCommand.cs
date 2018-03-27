@@ -16,17 +16,17 @@ namespace Plotty.Commands
 
             int value = inst.Right.GetValue(PlottyCore);
             
-            if (inst.Operator == Operators.Add)
+            if (inst.ArithmeticOperator == ArithmeticOperator.Add)
             {
                 PlottyCore.Registers[destination] = PlottyCore.Registers[origin] + value;            
             }
 
-            if (inst.Operator == Operators.Substract)
+            if (inst.ArithmeticOperator == ArithmeticOperator.Substract)
             {
                 PlottyCore.Registers[destination] = PlottyCore.Registers[origin] - value;            
             }
 
-            if (inst.Operator == Operators.Multiply)
+            if (inst.ArithmeticOperator == ArithmeticOperator.Multiply)
             {
                 PlottyCore.Registers[destination] = PlottyCore.Registers[origin] * value;            
             }

@@ -60,6 +60,7 @@ namespace Plotty.VirtualMachine
                     case BranchInstruction _:
                         cmd = new BranchCommand(this);
                         break;
+
                     case HaltInstruction _:
                         cmd = new HaltCommand(this);
                         break;

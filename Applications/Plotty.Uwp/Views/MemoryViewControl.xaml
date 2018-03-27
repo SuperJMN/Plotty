@@ -16,7 +16,7 @@
 
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapGrid ItemWidth="80" ItemHeight="60" MaximumRowsOrColumns="10" Orientation="Horizontal" />
+                        <WrapGrid ItemWidth="120" ItemHeight="60" MaximumRowsOrColumns="10" Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
@@ -44,7 +44,7 @@
                                         HorizontalAlignment="Stretch">
                                     <Grid>
                                         <TextBlock FontSize="10" Margin="4" VerticalAlignment="Top"
-                                                   HorizontalAlignment="Left" Text="{Binding Name}">
+                                                   HorizontalAlignment="Left" Text="{Binding Name}" TextWrapping="Wrap">
                                         </TextBlock>
                                         <TextBlock Grid.Column="0" VerticalAlignment="Center" TextAlignment="Center"
                                                    Text="{Binding Display}" />

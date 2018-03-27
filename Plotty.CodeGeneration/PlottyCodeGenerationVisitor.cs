@@ -5,6 +5,7 @@ using CodeGen.Intermediate;
 using CodeGen.Intermediate.Codes;
 using CodeGen.Intermediate.Codes.Common;
 using Plotty.Model;
+using ArithmeticOperator = Plotty.Model.ArithmeticOperator;
 using Label = Plotty.Model.Label;
 
 namespace Plotty.CodeGeneration
@@ -32,6 +33,7 @@ namespace Plotty.CodeGeneration
             Add(MoveImmediate(0, new Register(0)));
             Add(new Line(new BranchInstruction
             {
+                Operator = BooleanOperator.Equal,
                 One = new Register(1),
                 Another = new Register(0),
                 Target = new LabelTarget(onFalseLabel),
@@ -41,6 +43,7 @@ namespace Plotty.CodeGeneration
 
             Add(new Line(new BranchInstruction
             {
+                Operator = BooleanOperator.Equal,
                 Target = new LabelTarget(new Label(code.Label.Name)),
                 One = new Register(0),
                 Another = new Register(0),
@@ -87,7 +90,7 @@ namespace Plotty.CodeGeneration
 
             Add(new Line(new ArithmeticInstruction
             {
-                Operator = @operator,
+                ArithmeticOperator = @operator,
                 Left = new Register(1),
                 Right = new RegisterSource(new Register(2)),
                 Destination = new Register(1),
@@ -96,21 +99,21 @@ namespace Plotty.CodeGeneration
             Add(Store(new Register(1), new Register(0)));
         }
 
-        private Operators GetOperator(ArithmeticOperator codeOperation)
+        private ArithmeticOperator GetOperator(CodeGen.Intermediate.Codes.Common.ArithmeticOperator codeOperation)
         {
-            if (codeOperation == ArithmeticOperator.Add)
+            if (codeOperation == CodeGen.Intermediate.Codes.Common.ArithmeticOperator.Add)
             {
-                return Operators.Add;
+                return ArithmeticOperator.Add;
             }
 
-            if (codeOperation == ArithmeticOperator.Substract)
+            if (codeOperation == CodeGen.Intermediate.Codes.Common.ArithmeticOperator.Substract)
             {
-                return Operators.Substract;
+                return ArithmeticOperator.Substract;
             }
 
-            if (codeOperation == ArithmeticOperator.Mult)
+            if (codeOperation == CodeGen.Intermediate.Codes.Common.ArithmeticOperator.Mult)
             {
-                return Operators.Multiply;
+                return ArithmeticOperator.Multiply;
             }
 
             throw new ArgumentOutOfRangeException(nameof(codeOperation));
@@ -136,7 +139,7 @@ namespace Plotty.CodeGeneration
 
                 Add(new Line(new ArithmeticInstruction
                 {
-                    Operator = Operators.Substract,
+                    ArithmeticOperator = ArithmeticOperator.Substract,
                     Left = new Register(1),
                     Right = new RegisterSource(new Register(2)),
                     Destination = new Register(1),
@@ -145,20 +148,55 @@ namespace Plotty.CodeGeneration
                 Add(MoveImmediate(addressMap[code.Target], new Register(0)));
                 Add(Store(new Register(1), new Register(0)));
             }
+
+            if (code.Operation == BooleanOperation.IsLessThan)
+            {
+                Add(MoveImmediate(addressMap[code.Left], new Register(0)));
+                Add(Load(new Register(1), new Register(0)));
+
+                Add(MoveImmediate(addressMap[code.Right], new Register(0)));
+                Add(Load(new Register(2), new Register(0)));
+
+                var jumpOnTrue = new Label();
+                var endLabel = new Label();
+
+                Add(new Line(new BranchInstruction()
+                {
+                    Operator = BooleanOperator.LessThan,
+                    One = new Register(1),
+                    Another = new Register(2),
+                    Target = new LabelTarget(jumpOnTrue),
+                }));
+                
+                // Sets false
+                MoveImmediate(1, new Register(1));
+                Add(UnconditionalJump(endLabel));
+                Add(new Line(jumpOnTrue, null));
+
+                // Sets true
+                Add(MoveImmediate(0, new Register(1)));
+                
+                // End
+                Add(new Line(endLabel, null));
+
+                Add(MoveImmediate(addressMap[code.Target], new Register(0)));
+                Add(Store(new Register(1), new Register(0)));
+            }
         }
 
         public void Visit(Jump code)
         {
-            Add(UnconditionalJump(code.Label));
+            Add(UnconditionalJump(new Label(code.Label.Name)));
         }
 
-        private static Line UnconditionalJump(CodeGen.Intermediate.Label codeLabel)
+        private static Line UnconditionalJump(Label label)
         {
             return new Line(new BranchInstruction
             {
+                Operator = BooleanOperator.Equal,
                 One = new Register(0),
                 Another = new Register(0),
-                Target = new LabelTarget(new Label(codeLabel.Name))
+                Target = new LabelTarget(label)
             });
         }
 
