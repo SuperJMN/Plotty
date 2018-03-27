@@ -31,7 +31,9 @@ namespace Plotty.Compiler
 
         public void Visit(BranchInstruction instruction)
         {
-            lines.Add($"{label}\tBRANCH {instruction.One.GetAssemblySymbol()},{instruction.Another.GetAssemblySymbol()},{instruction.Target.GetAssemblySymbol()}");
+            var instructionName = instruction.Operator == BooleanOperator.Equal ? "BEQ" : "BLT";
+
+            lines.Add($"{label}\t{instructionName} {instruction.One.GetAssemblySymbol()},{instruction.Another.GetAssemblySymbol()},{instruction.Target.GetAssemblySymbol()}");
         }
 
         public void Visit(Line line)
@@ -49,7 +51,7 @@ namespace Plotty.Compiler
 
         public void Visit(ArithmeticInstruction instruction)
         {
-            var instructionName = instruction.Operator == Operators.Add ? "ADD" : "SUBST";
+            var instructionName = instruction.ArithmeticOperator == ArithmeticOperator.Add ? "ADD" : "SUB";
             lines.Add($"{label}\t{instructionName} {instruction.Left.GetAssemblySymbol()},{instruction.Right.GetAssemblySymbol()},{instruction.Destination.GetAssemblySymbol()}");           
         }
     }

@@ -5,6 +5,7 @@
         public Register One { get; set; }
         public Register Another { get; set; }
         public JumpTarget Target { get; set; }
+        public BooleanOperator Operator { get; set; }
 
         public override string ToString()
         {

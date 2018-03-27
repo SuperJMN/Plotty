@@ -63,6 +63,11 @@ namespace Plotty.Uwp
             get => PlottyMachine.Delay;
             set
             {
+                if (value == 0)
+                {
+                    value = 1;
+                }
+
                 PlottyMachine.Delay = value;
                 this.RaisePropertyChanged(nameof(DelayTag));
             }
