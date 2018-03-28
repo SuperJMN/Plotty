@@ -31,7 +31,7 @@ namespace Plotty.Compiler
 
         public void Visit(BranchInstruction instruction)
         {
-            var instructionName = instruction.Operator == BooleanOperator.Equal ? "BEQ" : "BLT";
+            var instructionName = instruction.Operator.GetAssemblySymbol();
 
             lines.Add($"{label}\t{instructionName} {instruction.One.GetAssemblySymbol()},{instruction.Another.GetAssemblySymbol()},{instruction.Target.GetAssemblySymbol()}");
         }

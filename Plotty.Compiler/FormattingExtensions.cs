@@ -25,6 +25,37 @@ namespace Plotty.Compiler
             return $"R{register.Id}";
         }
 
+        public static string GetAssemblySymbol(this BooleanOperator op)
+        {
+            if (op == BooleanOperator.Equal)
+            {
+                return "BEQ";
+            }
+
+            if (op == BooleanOperator.LessThan)
+            {
+                return "BLT";
+            }
+
+            if (op == BooleanOperator.LessThanOrEqual)
+            {
+                return "BLE";
+            }
+
+            if (op == BooleanOperator.GreaterThan)
+            {
+                return "BGT";
+            }
+
+            if (op == BooleanOperator.GreaterOrEqual)
+            {
+                return "BGE";
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(op));
+        }
+
+
         public static string GetAssemblySymbol(this JumpTarget jumpTarget)
         {
             switch (jumpTarget)

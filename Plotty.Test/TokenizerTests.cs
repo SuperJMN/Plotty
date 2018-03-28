@@ -14,6 +14,9 @@ namespace Plotty.Test
         [InlineData("1", new [] {AsmToken.Number})]
         [InlineData("STORE", new [] {AsmToken.Store})]
         [InlineData("MOVE ", new [] {AsmToken.Move, })]
+        [InlineData("BLT ", new [] {AsmToken.BranchLessThan, })]
+        [InlineData("BLE ", new [] {AsmToken.BranchLessThanOrEqualTo, })]
+        [InlineData("BEQ ", new [] {AsmToken.BranchEqual, })]
         public void TestList(string ch, AsmToken[] tk)
         {
             var sut = TokenizerFactory.Create();

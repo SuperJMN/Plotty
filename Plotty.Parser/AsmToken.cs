@@ -53,6 +53,8 @@ namespace Plotty.Parser
         Multiply,
 
         [Token(Category = "keyword", Example = "BLT")]
-        BranchLessThan
+        BranchLessThan,
+        [Token(Category = "keyword", Example = "BLE")]
+        BranchLessThanOrEqualTo
     }
 }

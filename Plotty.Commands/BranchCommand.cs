@@ -33,18 +33,33 @@ namespace Plotty.Commands
             }
         }
 
-        private bool ShouldBranch(int a, int b, BooleanOperator @operator)
+        private bool ShouldBranch(int a, int b, BooleanOperator op)
         {
-            if (@operator == BooleanOperator.Equal)
+            if (op == BooleanOperator.Equal)
             {
                 return a == b;
             } 
-            if (@operator == BooleanOperator.LessThan)
+            if (op == BooleanOperator.LessThan)
             {
                 return a < b;
-            } 
+            }
 
-            throw new ArgumentOutOfRangeException(nameof(@operator));
+            if (op == BooleanOperator.GreaterThan)
+            {
+                return a > b;
+            }
+
+            if (op == BooleanOperator.GreaterOrEqual)
+            {
+                return a >= b;
+            }
+
+            if (op == BooleanOperator.LessThanOrEqual)
+            {
+                return a <= b;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(op));
         }
     }
 }

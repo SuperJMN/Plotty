@@ -44,6 +44,77 @@ namespace Plotty.CodeGeneration.Tests
             AssertRunFull(result, initialState, expectedValues);
         }
 
+        [Theory]
+        [InlineData(1, 3, false)]
+        [InlineData(4, 2, true)]
+        [InlineData(5, 5, false)]
+        public void GreaterThan(int a, int b, bool isTrue)
+        {
+            var result = new List<IntermediateCode>()
+            {
+                new BoolExpressionAssignment(BooleanOperation.IsGreaterThan, new Reference("c"), new Reference("a"),
+                    new Reference("b"))
+            };
+
+            var initialState = new Dictionary<string, int> {{"a", a}, {"b", b}};
+            var expectedValues = new List<Expectation> {new Expectation("c", 0, isTrue? Operator.Equal : Operator.NotEqual )};
+
+            AssertRunFull(result, initialState, expectedValues);
+        }
+
+        [Theory]
+        [InlineData(1, 1, true)]
+        [InlineData(1, 0, false)]
+        public void EqualTo(int a, int b, bool isTrue)
+        {
+            var result = new List<IntermediateCode>()
+            {
+                new BoolExpressionAssignment(BooleanOperation.IsEqual, new Reference("c"), new Reference("a"),
+                    new Reference("b"))
+            };
+
+            var initialState = new Dictionary<string, int> {{"a", a}, {"b", b}};
+            var expectedValues = new List<Expectation> {new Expectation("c", 0, isTrue? Operator.Equal : Operator.NotEqual )};
+
+            AssertRunFull(result, initialState, expectedValues);
+        }
+
+        [Theory]
+        [InlineData(1, 1, true)]
+        [InlineData(3, 1, true)]
+        [InlineData(2, 8, false)]
+        public void GreaterThanOrEqualTo(int a, int b, bool isTrue)
+        {
+            var result = new List<IntermediateCode>()
+            {
+                new BoolExpressionAssignment(BooleanOperation.IsGreaterOrEqual, new Reference("c"), new Reference("a"),
+                    new Reference("b"))
+            };
+
+            var initialState = new Dictionary<string, int> {{"a", a}, {"b", b}};
+            var expectedValues = new List<Expectation> {new Expectation("c", 0, isTrue? Operator.Equal : Operator.NotEqual )};
+
+            AssertRunFull(result, initialState, expectedValues);
+        }
+
+        [Theory]
+        [InlineData(1, 1, true)]
+        [InlineData(3, 6, true)]
+        [InlineData(9, 4, false)]
+        public void LessThanOrEqualTo(int a, int b, bool isTrue)
+        {
+            var result = new List<IntermediateCode>()
+            {
+                new BoolExpressionAssignment(BooleanOperation.IsLessOrEqual, new Reference("c"), new Reference("a"),
+                    new Reference("b"))
+            };
+
+            var initialState = new Dictionary<string, int> {{"a", a}, {"b", b}};
+            var expectedValues = new List<Expectation> {new Expectation("c", 0, isTrue? Operator.Equal : Operator.NotEqual )};
+
+            AssertRunFull(result, initialState, expectedValues);
+        }
+
         private static void AssertRunFull(List<IntermediateCode> code, IDictionary<string, int> initialState, IEnumerable<Expectation> expectedState)
         {
             var sut = new PlottyCodeGenerator();

@@ -148,8 +148,7 @@ namespace Plotty.CodeGeneration
                 Add(MoveImmediate(addressMap[code.Target], new Register(0)));
                 Add(Store(new Register(1), new Register(0)));
             }
-
-            if (code.Operation == BooleanOperation.IsLessThan)
+            else
             {
                 Add(MoveImmediate(addressMap[code.Left], new Register(0)));
                 Add(Load(new Register(1), new Register(0)));
@@ -162,20 +161,20 @@ namespace Plotty.CodeGeneration
 
                 Add(new Line(new BranchInstruction()
                 {
-                    Operator = BooleanOperator.LessThan,
+                    Operator = code.Operation.ToOperator(),
                     One = new Register(1),
                     Another = new Register(2),
                     Target = new LabelTarget(jumpOnTrue),
                 }));
-                
+
                 // Sets false
-                MoveImmediate(1, new Register(1));
+                Add(MoveImmediate(1, new Register(1)));
                 Add(UnconditionalJump(endLabel));
                 Add(new Line(jumpOnTrue, null));
 
                 // Sets true
                 Add(MoveImmediate(0, new Register(1)));
-                
+
                 // End
                 Add(new Line(endLabel, null));
 
@@ -183,6 +182,7 @@ namespace Plotty.CodeGeneration
                 Add(Store(new Register(1), new Register(0)));
             }
         }
+
 
         public void Visit(Jump code)
         {

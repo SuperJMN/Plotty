@@ -9,7 +9,7 @@
 
         public override string ToString()
         {
-            return $"Jump to {Target} if {One} and {Another} are equal";
+            return $"Jump to {Target} if {One} is {Operator.Name} {Another} ";
         }
 
         public override void Accept(ILineVisitor visitor)
