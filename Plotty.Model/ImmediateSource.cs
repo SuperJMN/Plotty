@@ -14,7 +14,7 @@
             return $"immediate {Immediate}";
         }
 
-        public override int GetValue(IPlottyCore plottyCore)
+        public override int GetValue(IPlottyMachine plottyMachine)
         {
             return Immediate;
         }

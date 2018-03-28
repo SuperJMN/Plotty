@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Plotty.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "show -f Samples\\fibonacci.c"
+    }
+  }
+}

@@ -2,11 +2,11 @@
 {
     public abstract class MemoryAddress
     {
-        public abstract int GetAddress(IPlottyCore plottyCore);
+        public abstract int GetAddress(IPlottyMachine plottyMachine);
 
-        public int GetValue(IPlottyCore plottyCore)
+        public int GetValue(IPlottyMachine plottyMachine)
         {
-            return plottyCore.Memory[GetAddress(plottyCore)];
+            return plottyMachine.Memory[GetAddress(plottyMachine)];
         }
     }
 }

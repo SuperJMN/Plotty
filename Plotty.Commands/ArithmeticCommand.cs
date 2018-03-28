@@ -4,34 +4,34 @@ namespace Plotty.Commands
 {
     public class ArithmeticCommand : Command
     {
-        public ArithmeticCommand(IPlottyCore plottyCore) : base(plottyCore)
+        public ArithmeticCommand(IPlottyMachine plottyMachine) : base(plottyMachine)
         {
         }
 
         public override void Execute()
         {
-            var inst = (ArithmeticInstruction)PlottyCore.CurrentLine.Instruction;
+            var inst = (ArithmeticInstruction)PlottyMachine.CurrentLine.Instruction;
             var origin = inst.Left.Id;
             var destination = inst.Destination.Id;
 
-            int value = inst.Right.GetValue(PlottyCore);
+            int value = inst.Right.GetValue(PlottyMachine);
             
             if (inst.ArithmeticOperator == ArithmeticOperator.Add)
             {
-                PlottyCore.Registers[destination] = PlottyCore.Registers[origin] + value;            
+                PlottyMachine.Registers[destination] = PlottyMachine.Registers[origin] + value;            
             }
 
             if (inst.ArithmeticOperator == ArithmeticOperator.Substract)
             {
-                PlottyCore.Registers[destination] = PlottyCore.Registers[origin] - value;            
+                PlottyMachine.Registers[destination] = PlottyMachine.Registers[origin] - value;            
             }
 
             if (inst.ArithmeticOperator == ArithmeticOperator.Multiply)
             {
-                PlottyCore.Registers[destination] = PlottyCore.Registers[origin] * value;            
+                PlottyMachine.Registers[destination] = PlottyMachine.Registers[origin] * value;            
             }
 
-            PlottyCore.GoToNext();
+            PlottyMachine.GoToNext();
         }
     }
 }

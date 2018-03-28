@@ -5,11 +5,11 @@ namespace Plotty.Commands
     
     public abstract class Command
     {
-        protected IPlottyCore PlottyCore { get; }
+        protected IPlottyMachine PlottyMachine { get; }
 
-        public Command(IPlottyCore plottyCore)
+        public Command(IPlottyMachine plottyMachine)
         {
-            PlottyCore = plottyCore;
+            PlottyMachine = plottyMachine;
         }
 
         public abstract void Execute();

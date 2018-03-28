@@ -4,17 +4,17 @@ namespace Plotty.Commands
 {
     public class LoadCommand : Command
     {
-        public LoadCommand(IPlottyCore plottyCore) : base(plottyCore)
+        public LoadCommand(IPlottyMachine plottyMachine) : base(plottyMachine)
         {
         }
 
         public override void Execute()
         {
-            var inst = (LoadInstruction)PlottyCore.CurrentLine.Instruction;
-            var value = inst.MemoryAddress.GetValue(PlottyCore);
-            PlottyCore.Registers[inst.Destination.Id] = value;
+            var inst = (LoadInstruction)PlottyMachine.CurrentLine.Instruction;
+            var value = inst.MemoryAddress.GetValue(PlottyMachine);
+            PlottyMachine.Registers[inst.Destination.Id] = value;
            
-            PlottyCore.GoToNext();
+            PlottyMachine.GoToNext();
         }
     }
 }

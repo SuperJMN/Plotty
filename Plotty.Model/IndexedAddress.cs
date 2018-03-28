@@ -11,9 +11,9 @@
             Offset = offset;
         }
 
-        public override int GetAddress(IPlottyCore plottyCore)
+        public override int GetAddress(IPlottyMachine plottyMachine)
         {
-            return plottyCore.Registers[BaseRegister.Id] + Offset.GetValue(plottyCore);
+            return plottyMachine.Registers[BaseRegister.Id] + Offset.GetValue(plottyMachine);
         }
 
         public override string ToString()

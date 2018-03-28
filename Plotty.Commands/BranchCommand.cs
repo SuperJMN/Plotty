@@ -5,31 +5,31 @@ namespace Plotty.Commands
 {
     public class BranchCommand : Command
     {
-        public BranchCommand(IPlottyCore plottyCore) : base(plottyCore)
+        public BranchCommand(IPlottyMachine plottyMachine) : base(plottyMachine)
         {
         }
 
         public override void Execute()
         {
-            var instruction = (BranchInstruction)PlottyCore.CurrentLine.Instruction;
-            var r1 = PlottyCore.Registers[instruction.One.Id];
-            var r2 = PlottyCore.Registers[instruction.Another.Id];
+            var instruction = (BranchInstruction)PlottyMachine.CurrentLine.Instruction;
+            var r1 = PlottyMachine.Registers[instruction.One.Id];
+            var r2 = PlottyMachine.Registers[instruction.Another.Id];
 
             if (ShouldBranch(r1, r2, instruction.Operator))
             {
                 switch (instruction.Target)
                 {
                     case LabelTarget jt:
-                        PlottyCore.GoTo(jt.Label.Name);
+                        PlottyMachine.GoTo(jt.Label.Name);
                         break;
                     case SourceTarget rt:
-                        PlottyCore.GoTo(rt.Target.GetValue(PlottyCore));
+                        PlottyMachine.GoTo(rt.Target.GetValue(PlottyMachine));
                         break;
                 }
             }
             else
             {
-                PlottyCore.GoToNext();
+                PlottyMachine.GoToNext();
             }
         }
 

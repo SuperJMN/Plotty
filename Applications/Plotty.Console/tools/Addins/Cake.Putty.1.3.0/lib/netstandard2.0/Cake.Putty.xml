@@ -1,0 +1,670 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Cake.Putty</name>
+    </assembly>
+    <members>
+        <member name="T:Cake.Putty.ArgumentsBuilderExtension">
+            <summary>
+            Arguments builder
+            </summary>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.AppendAll``1(Cake.Core.IO.ProcessArgumentBuilder,System.Collections.Generic.IList{System.String},``0,System.Collections.Generic.IList{System.String})">
+            <summary>
+            Appends all arguments from <paramref name="settings"/> and <paramref name="arguments"/>.
+            </summary>
+            <typeparam name="TSettings"></typeparam>
+            <param name="builder"></param>
+            <param name="settings"></param>
+            <param name="arguments"></param>
+            <param name="commands"></param>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.IsNullableType(System.Type)">
+            <summary>
+            Checks whether a type is nullable.
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.GetArgumentFromProperty``1(System.Reflection.PropertyInfo,``0)">
+            <summary>
+            Gets and processes <paramref name="property"/> value from <paramref name="settings"/>.
+            </summary>
+            <typeparam name="TSettings"></typeparam>
+            <param name="property"></param>
+            <param name="settings"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.GetArgumentFromBoolProperty(System.Reflection.PropertyInfo,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="property"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.GetArgumentFromNullableBoolProperty(System.Reflection.PropertyInfo,System.Nullable{System.Boolean})">
+            <summary>
+            
+            </summary>
+            <param name="property"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.GetArgumentFromEnumProperty(System.Reflection.PropertyInfo,System.Object)">
+            <summary>
+            Get arguments for a (nullable) enum.
+            </summary>
+            <param name="property"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.GetArgumentFromNullableIntProperty(System.Reflection.PropertyInfo,System.Nullable{System.Int32})">
+            <summary>
+            
+            </summary>
+            <param name="property"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.GetArgumentFromStringArrayProperty(System.Reflection.PropertyInfo,System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="property"></param>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.GetArgumentFromStringProperty(System.Reflection.PropertyInfo,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="property"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.GetPropertyName(System.Reflection.PropertyInfo)">
+            <summary>
+            Retrieves property name from <see cref="T:Cake.Putty.ParameterAttribute"/>.
+            </summary>
+            <param name="property"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.ArgumentsBuilderExtension.GetEnumName(System.Type,System.Object)">
+            <summary>
+            Retrieves enum name from <see cref="T:Cake.Putty.ParameterAttribute"/>.
+            </summary>
+            <param name="sourceType"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cake.Putty.AutoToolSettings">
+            <summary>
+            Base class for tooling that is used for autogeneration of command line arguments.
+            </summary>
+        </member>
+        <member name="T:Cake.Putty.BoolParameterAttribute">
+            <summary>
+            Decorates a bool property with parameter names.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.BoolParameterAttribute.OnTrue">
+            <summary>
+            Value on true.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.BoolParameterAttribute.OnFalse">
+            <summary>
+            Value on false.
+            </summary>
+        </member>
+        <member name="M:Cake.Putty.BoolParameterAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="onTrue"></param>
+            <param name="onFalse"></param>
+        </member>
+        <member name="T:Cake.Putty.IpVersion">
+            <summary>
+            IP version
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.IpVersion.V4">
+            <summary>
+            IPv4
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.IpVersion.V6">
+            <summary>
+            IPv6
+            </summary>
+        </member>
+        <member name="T:Cake.Putty.NamespaceDoc">
+            <summary>
+            This namespace contains Putty operations.
+            </summary>
+        </member>
+        <member name="T:Cake.Putty.ParameterAttribute">
+            <summary>
+            Decorates with parameter name.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.ParameterAttribute.Name">
+            <summary>
+            Parameter name.
+            </summary>
+        </member>
+        <member name="M:Cake.Putty.ParameterAttribute.#ctor(System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="T:Cake.Putty.GenericPlinkRunner`1">
+            <summary>
+            
+            </summary>
+            <typeparam name="TSettings"></typeparam>
+        </member>
+        <member name="M:Cake.Putty.GenericPlinkRunner`1.#ctor(Cake.Core.IO.IFileSystem,Cake.Core.ICakeEnvironment,Cake.Core.IO.IProcessRunner,Cake.Core.Tooling.IToolLocator)">
+            <summary>
+            
+            </summary>
+            <param name="fileSystem"></param>
+            <param name="environment"></param>
+            <param name="processRunner"></param>
+            <param name="tools"></param>
+        </member>
+        <member name="M:Cake.Putty.GenericPlinkRunner`1.Run(System.String,System.String,`0)">
+            <summary>
+            Runs given <paramref name="host"/> and <paramref name="command"/> using given <paramref name=" settings"/>.
+            </summary>
+            <param name="host"></param>
+            <param name="command"></param>
+            <param name="settings"></param>
+        </member>
+        <member name="M:Cake.Putty.GenericPlinkRunner`1.RunWithResult``1(System.String,System.String,`0,System.Func{System.Collections.Generic.IEnumerable{System.String},``0[]})">
+            <summary>
+            Runs a command and returns a result based on processed output.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="host"></param>
+            <param name="command"></param>
+            <param name="settings"></param>
+            <param name="processOutput"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cake.Putty.PlinkProtocol">
+            <summary>
+            PLink protocol.
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.PlinkProtocol.Ssh">
+            <summary>
+            SSH
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.PlinkProtocol.Telnet">
+            <summary>
+            Telnet
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.PlinkProtocol.RLogin">
+            <summary>
+            RLogin
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.PlinkProtocol.Raw">
+            <summary>
+            Raw
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.PlinkProtocol.Serial">
+            <summary>
+            Serial
+            </summary>
+        </member>
+        <member name="T:Cake.Putty.PlinkResolver">
+            <summary>
+            PLink resolver
+            </summary>
+        </member>
+        <member name="M:Cake.Putty.PlinkResolver.CheckCommonWindowsPaths(Cake.Core.IO.IFileSystem)">
+            <summary>
+            Check common Plink client locations.
+            </summary>
+            <param name="fileSystem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.PlinkResolver.GetDefaultWindowsPaths(Cake.Core.IO.IFileSystem)">
+            <summary>
+            Get default paths for common Plink client installations.
+            </summary>
+            <param name="fileSystem"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cake.Putty.PlinkSettings">
+            <summary>
+            Settings for Plink build.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.ConfigurationString">
+            <summary>
+            configuration-string (e.g. 19200,8,n,1,X)
+            </summary>
+            <remarks>
+            Specify the serial configuration(serial only.
+            </remarks>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.LoadSettingsFromSavedSession">
+            <summary>
+            Load settings from saved session.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.Port">
+            <summary>
+            Connect to specified port.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.User">
+            <summary>
+            Connect with specified username.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.Password">
+            <summary>
+            Login with specified password.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.DynamicPortForwarding">
+            <summary>
+            [listen-IP:]listen-port
+            Dynamic SOCKS-based port forwarding.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.LocalPortForwarding">
+            <summary>
+            [listen-IP:]listen-port:host:port
+            Forward local port to remote address.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.RemotePortForwarding">
+            <summary>
+            [listen-IP:]listen-port:host:port
+            Forward remote port to local address.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.X11Forwarding">
+            <summary>
+            Enable / disable X11 forwarding.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.AgentForwarding">
+            <summary>
+            Enable / disable agent forwarding.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.PtyAllocation">
+            <summary>
+            Enable / disable pty allocation.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.SshVersion">
+            <summary>
+            Force use of particular SSH protocol version.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.IpVersion">
+            <summary>
+            Force use of IPv4 or IPv6.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.Compression">
+            <summary>
+            Enable compression.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.KeyFileForUserAuthentication">
+            <summary>
+            Private key file for user authentication.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.EnablePageant">
+            <summary>
+            Enables or disabled use of Pageant.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.Hostkey">
+            <summary>
+            Manually specify a host key (may be repeated).
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.Batch">
+            <summary>
+            Disable all interactive prompts.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.Protocol">
+            <summary>
+            Force use of a particular protocol.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.RemoteCommandsFile">
+            <summary>
+            Remote command is an SSH subsystem (SSH-2 only).
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.DontStartShellCommand">
+            <summary>
+            Don't start a shell/command (SSH-2 only).
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PlinkSettings.Tunnel">
+            <summary>
+            host:port
+            Open tunnel in place of session(SSH-2 only).
+            </summary>
+        </member>
+        <member name="T:Cake.Putty.PlinkTool`1">
+            <summary>
+            Base class for all Plink related tools.
+            </summary>
+            <typeparam name="TSettings">The settings type.</typeparam>
+        </member>
+        <member name="M:Cake.Putty.PlinkTool`1.#ctor(Cake.Core.IO.IFileSystem,Cake.Core.ICakeEnvironment,Cake.Core.IO.IProcessRunner,Cake.Core.Tooling.IToolLocator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Cake.Putty.PlinkTool`1"/> class.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="environment">The environment.</param>
+            <param name="processRunner">The process runner.</param>
+            <param name="tools">The tools locator.</param>
+        </member>
+        <member name="M:Cake.Putty.PlinkTool`1.GetToolName">
+            <summary>
+            Gets the name of the tool.
+            </summary>
+            <returns>The name of the tool.</returns>
+        </member>
+        <member name="M:Cake.Putty.PlinkTool`1.GetToolExecutableNames">
+            <summary>
+            Gets the possible names of the tool executable.
+            </summary>
+            <returns>The tool executable name.</returns>
+        </member>
+        <member name="M:Cake.Putty.PlinkTool`1.GetAlternativeToolPaths(`0)">
+            <summary>
+            
+            </summary>
+            <param name="settings"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cake.Putty.PuttyAliases">
+            <summary>
+            Contains functionality for working with Plink.
+            </summary>
+            <summary>
+            Contains functionality for working with PSCP.
+            </summary>
+            <summary>
+            Aliases for Putty.
+            </summary>
+        </member>
+        <member name="M:Cake.Putty.PuttyAliases.Plink(Cake.Core.ICakeContext,System.String,System.String)">
+            <summary>
+            Invokes Plink without settings
+            </summary>
+            <param name="context">The context.</param>
+            <param name="host">The host.</param>
+            <param name="command">The command.</param>
+        </member>
+        <member name="M:Cake.Putty.PuttyAliases.Plink(Cake.Core.ICakeContext,System.String,System.String,Cake.Putty.PlinkSettings)">
+            <summary>
+            Invokes Plink using given <paramref name="settings"/>.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="host">The host.</param>
+            <param name="command">The command.</param>
+            <param name="settings">The settings.</param>
+        </member>
+        <member name="M:Cake.Putty.PuttyAliases.Pscp(Cake.Core.ICakeContext,System.String,System.String,Cake.Putty.PscpSettings)">
+            <summary>
+            Invokes Pscp with a single from argument and <paramref name="settings"/>.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="from">From.</param>
+            <param name="to">To.</param>
+            <param name="settings">The settings.</param>
+        </member>
+        <member name="M:Cake.Putty.PuttyAliases.Pscp(Cake.Core.ICakeContext,System.String,System.String)">
+            <summary>
+            Invokes Pscp with a single from argument.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="from">From.</param>
+            <param name="to">To.</param>
+        </member>
+        <member name="M:Cake.Putty.PuttyAliases.Pscp(Cake.Core.ICakeContext,System.String[],System.String)">
+            <summary>
+            Invokes Pscp with array of from arguments without settings..
+            </summary>
+            <param name="context">The context.</param>
+            <param name="from">From.</param>
+            <param name="to">To.</param>
+        </member>
+        <member name="M:Cake.Putty.PuttyAliases.Pscp(Cake.Core.ICakeContext,System.String[],System.String,Cake.Putty.PscpSettings)">
+            <summary>
+            Invokes Pscp with array of from arguments.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="from">From.</param>
+            <param name="to">To.</param>
+            <param name="settings">The settings.</param>
+        </member>
+        <member name="T:Cake.Putty.Protocol">
+            <summary>
+            Transfer protocol.
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.Protocol.Sftp">
+            <summary>
+            SFTP
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.Protocol.Scp">
+            <summary>
+            SCP
+            </summary>
+        </member>
+        <member name="T:Cake.Putty.GenericPscpRunner`1">
+            <summary>
+            
+            </summary>
+            <typeparam name="TSettings"></typeparam>
+        </member>
+        <member name="M:Cake.Putty.GenericPscpRunner`1.#ctor(Cake.Core.IO.IFileSystem,Cake.Core.ICakeEnvironment,Cake.Core.IO.IProcessRunner,Cake.Core.Tooling.IToolLocator)">
+            <summary>
+            
+            </summary>
+            <param name="fileSystem"></param>
+            <param name="environment"></param>
+            <param name="processRunner"></param>
+            <param name="tools"></param>
+        </member>
+        <member name="M:Cake.Putty.GenericPscpRunner`1.Run(System.String,`0,System.String[])">
+            <summary>
+            Runs given <paramref name="command"/> using given <paramref name=" settings"/> and <paramref name="additional"/>.
+            </summary>
+            <param name="command"></param>
+            <param name="settings"></param>
+            <param name="additional"></param>
+        </member>
+        <member name="M:Cake.Putty.GenericPscpRunner`1.Run(`0,System.Collections.Generic.IList{System.String})">
+            <summary>
+            Runs using given <paramref name=" settings"/> and <paramref name="additional"/>.
+            </summary>
+            <param name="settings"></param>
+            <param name="additional"></param>
+        </member>
+        <member name="M:Cake.Putty.GenericPscpRunner`1.RunWithResult``1(System.String,`0,System.Func{System.Collections.Generic.IEnumerable{System.String},``0[]},System.String[])">
+            <summary>
+            Runs a command and returns a result based on processed output.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="command"></param>
+            <param name="settings"></param>
+            <param name="processOutput"></param>
+            <param name="arguments"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cake.Putty.PscpResolver">
+            <summary>
+            PSCP resolver.
+            </summary>
+        </member>
+        <member name="M:Cake.Putty.PscpResolver.CheckCommonWindowsPaths(Cake.Core.IO.IFileSystem)">
+            <summary>
+            Check common Pscp client locations.
+            </summary>
+            <param name="fileSystem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cake.Putty.PscpResolver.GetDefaultWindowsPaths(Cake.Core.IO.IFileSystem)">
+            <summary>
+            Get default paths for common Pscp client installations.
+            </summary>
+            <param name="fileSystem"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cake.Putty.PscpSettings">
+            <summary>
+            Settings for Pscp build.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.PreserveFiltAttributes">
+            <summary>
+            Preserve file attributes.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.CopyDirectoriesRecursively">
+            <summary>
+            Copy directories recursively.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.LoadSettingsFromSavedSession">
+            <summary>
+            Load settings from saved session.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.Port">
+            <summary>
+            Connect to specified port.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.User">
+            <summary>
+            Connect with specified username.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.Password">
+            <summary>
+            Login with specified password.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.SshVersion">
+            <summary>
+            Force use of particular SSH protocol version.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.IpVersion">
+            <summary>
+            Force use of IPv4 or IPv6.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.Compression">
+            <summary>
+            Enable compression.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.KeyFileForUserAuthentication">
+            <summary>
+            Private key file for user authentication.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.EnablePageant">
+            <summary>
+            Enables or disabled use of Pageant.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.Hostkey">
+            <summary>
+            Manually specify a host key (may be repeated).
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.Batch">
+            <summary>
+            Disable all interactive prompts.
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.Unsafe">
+            <summary>
+            Allow server-side wildcards (DANGEROUS).
+            </summary>
+        </member>
+        <member name="P:Cake.Putty.PscpSettings.Protocol">
+            <summary>
+            Force use of SFTP or SCP protocol.
+            </summary>
+        </member>
+        <member name="T:Cake.Putty.PscpTool`1">
+            <summary>
+            Base class for all Pscp related tools.
+            </summary>
+            <typeparam name="TSettings">The settings type.</typeparam>
+        </member>
+        <member name="M:Cake.Putty.PscpTool`1.#ctor(Cake.Core.IO.IFileSystem,Cake.Core.ICakeEnvironment,Cake.Core.IO.IProcessRunner,Cake.Core.Tooling.IToolLocator)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Cake.Putty.PscpTool`1"/> class.
+            </summary>
+            <param name="fileSystem">The file system.</param>
+            <param name="environment">The environment.</param>
+            <param name="processRunner">The process runner.</param>
+            <param name="tools">The tool locator.</param>
+        </member>
+        <member name="M:Cake.Putty.PscpTool`1.GetToolName">
+            <summary>
+            Gets the name of the tool.
+            </summary>
+            <returns>The name of the tool.</returns>
+        </member>
+        <member name="M:Cake.Putty.PscpTool`1.GetToolExecutableNames">
+            <summary>
+            Gets the possible names of the tool executable.
+            </summary>
+            <returns>The tool executable name.</returns>
+        </member>
+        <member name="M:Cake.Putty.PscpTool`1.GetAlternativeToolPaths(`0)">
+            <summary>
+            
+            </summary>
+            <param name="settings"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cake.Putty.SshVersion">
+            <summary>
+            SSH version.
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.SshVersion.V1">
+            <summary>
+            SSH v1
+            </summary>
+        </member>
+        <member name="F:Cake.Putty.SshVersion.V2">
+            <summary>
+            SSH v2
+            </summary>
+        </member>
+    </members>
+</doc>

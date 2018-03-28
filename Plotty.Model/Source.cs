@@ -2,6 +2,6 @@
 {
     public abstract class Source
     {
-        public abstract int GetValue(IPlottyCore plottyCore);
+        public abstract int GetValue(IPlottyMachine plottyMachine);
     }
 }

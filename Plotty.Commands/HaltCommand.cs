@@ -4,13 +4,13 @@ namespace Plotty.Commands
 {
     public class HaltCommand : Command
     {
-        public HaltCommand(IPlottyCore plottyCore) : base(plottyCore)
+        public HaltCommand(IPlottyMachine plottyMachine) : base(plottyMachine)
         {            
         }
 
         public override void Execute()
         {
-            PlottyCore.Status = Status.Halted;
+            PlottyMachine.Status = Status.Halted;
         }
     }
 }

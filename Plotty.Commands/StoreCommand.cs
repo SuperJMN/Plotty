@@ -4,20 +4,20 @@ namespace Plotty.Commands
 {
     public class StoreCommand : Command
     {
-        public StoreCommand(IPlottyCore plottyCore) : base(plottyCore)
+        public StoreCommand(IPlottyMachine plottyMachine) : base(plottyMachine)
         {
         }
 
         public override void Execute()
         {
-            var inst = (StoreInstruction)PlottyCore.CurrentLine.Instruction;
+            var inst = (StoreInstruction)PlottyMachine.CurrentLine.Instruction;
 
-            int value = inst.Source.GetValue(PlottyCore);
-            var address = inst.MemoryAddress.GetAddress(PlottyCore);
+            int value = inst.Source.GetValue(PlottyMachine);
+            var address = inst.MemoryAddress.GetAddress(PlottyMachine);
 
-            PlottyCore.Memory[address] = value;
+            PlottyMachine.Memory[address] = value;
            
-            PlottyCore.GoToNext();
+            PlottyMachine.GoToNext();
         }
     }
 }

@@ -14,9 +14,9 @@
             return $"{Register}";
         }
 
-        public override int GetValue(IPlottyCore plottyCore)
+        public override int GetValue(IPlottyMachine plottyMachine)
         {
-            return plottyCore.Registers[Register.Id];
+            return plottyMachine.Registers[Register.Id];
         }
     }
 }

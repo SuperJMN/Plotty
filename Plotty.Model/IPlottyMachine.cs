@@ -1,6 +1,8 @@
-﻿namespace Plotty.Model
+﻿using System.Runtime.CompilerServices;
+
+namespace Plotty.Model
 {
-    public interface IPlottyCore
+    public interface IPlottyMachine
     {
         int[] Registers { get; }
         int[] Memory { get; }

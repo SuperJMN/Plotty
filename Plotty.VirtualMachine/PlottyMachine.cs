@@ -6,7 +6,7 @@ using Plotty.Model;
 
 namespace Plotty.VirtualMachine
 {
-    public class PlottyMachine : IPlottyCore
+    public class PlottyMachine : IPlottyMachine
     {
         private const int RegCount = 8;
         private const int MemoryCount = 4 * 1024;
