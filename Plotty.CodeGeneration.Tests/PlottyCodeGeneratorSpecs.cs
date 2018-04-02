@@ -4,10 +4,8 @@ using CodeGen.Core;
 using CodeGen.Intermediate.Codes;
 using CodeGen.Intermediate.Codes.Common;
 using FluentAssertions;
-using Plotty.Model;
 using Plotty.VirtualMachine;
 using Xunit;
-using Xunit.Theory.Extended;
 using ArithmeticOperator = CodeGen.Intermediate.Codes.Common.ArithmeticOperator;
 using Label = CodeGen.Intermediate.Label;
 
@@ -15,7 +13,7 @@ namespace Plotty.CodeGeneration.Tests
 {
     public class PlottyCodeGeneratorSpecs
     {
-        [ExtendedTheory]
+        [Theory]
         [MemberData(nameof(TestData))]
         public void IntermediateToPlottyCode(List<IntermediateCode> intermediateCodes,
             IDictionary<string, int> initialState, IEnumerable<Expectation> expectedValues)

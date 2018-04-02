@@ -88,6 +88,10 @@ namespace Plotty.Compiler
             }
         }
 
+        public void Visit(MethodCall expressionNode)
+        {            
+        }
+
         public IEnumerable<Reference> References => references.AsReadOnly();
     }
 }

@@ -200,7 +200,7 @@
       <Version>8.0.0-alpha0117</Version>
     </PackageReference>
     <PackageReference Include="Superpower">
-      <Version>1.1.0</Version>
+      <Version>2.0.0-dev-00091</Version>
     </PackageReference>
     <PackageReference Include="Win2D.uwp">
       <Version>1.21.0</Version>
@@ -234,10 +234,6 @@
     <ProjectReference Include="..\..\Plotty.VirtualMachine\Plotty.VirtualMachine.csproj">
       <Project>{25553e47-8408-402c-a4b5-b6537070594a}</Project>
       <Name>Plotty.VirtualMachine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\superpower\src\Superpower\Superpower.csproj">
-      <Project>{D5AB8485-9FF1-492C-889F-718EB0B10DFE}</Project>
-      <Name>Superpower</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

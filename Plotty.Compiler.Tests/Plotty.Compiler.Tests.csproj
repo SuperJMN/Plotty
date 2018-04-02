@@ -8,14 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.2.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.2" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DeepEqual\src\DeepEqual\DeepEqual.csproj" />
     <ProjectReference Include="..\Plotty.CodeGeneration\Plotty.CodeGeneration.csproj" />
     <ProjectReference Include="..\Plotty.Compiler\Plotty.Compiler.csproj" />
     <ProjectReference Include="..\Plotty.VirtualMachine\Plotty.VirtualMachine.csproj" />

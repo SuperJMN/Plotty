@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Superpower" Version="2.0.0-dev-00091" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CodeGeneration\CodeGen.Parsing\CodeGen.Parsing.csproj" />
     <ProjectReference Include="..\Plotty.CodeGeneration\Plotty.CodeGeneration.csproj" />
   </ItemGroup>

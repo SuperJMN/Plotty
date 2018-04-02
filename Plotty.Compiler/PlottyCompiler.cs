@@ -34,7 +34,7 @@ namespace Plotty.Compiler
             return plottyAssemblyVisitor.Lines;
         }
 
-        private static GenerationResult GeneratePlottyCode(List<IntermediateCode> intermediateCode)
+        private static GenerationResult GeneratePlottyCode(IEnumerable<IntermediateCode> intermediateCode)
         {
             var plottyGenerator = new PlottyCodeGenerator();
 
