@@ -3,7 +3,7 @@
     public class CLangCodingViewModel : CodingViewModelBase
     {
         protected override string DefaultSourceCode =>
-            "{\n\ta =1;\n\tb=2;\n}";
+            "void main()\n{\n\ta=1;\n\tb=2;\n\tcall(a, b);\n}";
 
         public override string Name => "C Language";       
     }
