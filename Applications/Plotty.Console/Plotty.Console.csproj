@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Samples\fibonacci2.c">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Samples\fibonacci.c">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

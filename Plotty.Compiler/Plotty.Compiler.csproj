@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CodeGeneration\CodeGen.Parsing\CodeGen.Parsing.csproj" />
     <ProjectReference Include="..\Plotty.CodeGeneration\Plotty.CodeGeneration.csproj" />
   </ItemGroup>
 

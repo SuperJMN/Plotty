@@ -23,7 +23,7 @@ namespace Plotty.Compiler.Tests
             var n = 12;
             var result = 89;
 
-            var code = $"n = {n};\nfirst = 0;\nsecond = 1;\n \nfor (c = 0; c<n ;c=c+1)\n{{\n\tif ( c < 2 )\n\t{{\n    \tnext = c;\n\t}}\n\n    if ( c > 1)\n    {{\n\t\tnext = first + second;\n        first = second;\n\t\tsecond = next;\n\t}}      \n}}\n";
+            var code = $"void main()\n {{int first;int second;int next;int c; int n; n = {n};\nfirst = 0;\nsecond = 1;\n \nfor (c = 0; c<n ;c=c+1)\n{{\n\tif ( c < 2 )\n\t{{\n    \tnext = c;\n\t}}\n\n    if ( c > 1)\n    {{\n\t\tnext = first + second;\n        first = second;\n\t\tsecond = next;\n\t}}      \n}}\n}}";
             AssertRun(code, new[] { new Expectation("next", result), });
         }
 
@@ -34,7 +34,7 @@ namespace Plotty.Compiler.Tests
         [InlineData(0, 0, Operator.NotEqual)]
         public void LessThan(int a, int b, Operator op)
         {
-            var code = $"a={a}; b={b};c = a < b;";
+            var code = WrapInsideMain($"a={a}; b={b};c = a < b;");
             AssertRun(code, new[] { new Expectation("c", 0, op), });
         }
 
@@ -45,7 +45,7 @@ namespace Plotty.Compiler.Tests
         [InlineData(0, 0, Operator.NotEqual)]
         public void GreaterThan(int a, int b, Operator op)
         {
-            var code = $"a={a}; b={b};c = a > b;";
+            var code = WrapInsideMain($"int a, b, c; a={a}; b={b};c = a > b;");
             AssertRun(code, new[] { new Expectation("c", 0, op), });
         }
 
@@ -80,19 +80,24 @@ namespace Plotty.Compiler.Tests
 
         public static IEnumerable<object[]> TestData => new List<object[]>()
         {
-            new object[] {"{a=123;}", new[]  {new Expectation("a", 123)}},
-            new object[] {"{a=1;b=2;}", new[]  {new Expectation("a", 1), new Expectation("b", 2)}},
-            new object[] {"{a=1;b=2;b=a;}",new[] {new Expectation("a", 1), new Expectation("b", 1)}},
-            new object[] {"a=1+2;}",  new[]  {new Expectation("a", 3)}},
-            new object[] {"a=6-2;}", new[]  {new Expectation("a", 4)}},
-            new object[] {"a=0==1;}",  new[]  {new Expectation("a", 0, Operator.NotEqual)}},
-            new object[] {"a=1==1;}",  new[]  {new Expectation("a", 0)}},
-            new object[] {"if (a==1) b=123;}",  new[]  {new Expectation("b", 123, Operator.NotEqual)}},
-            new object[] {"if (a==0) b=123;}",  new[]  {new Expectation("b", 123)}},
-            new object[] {"if (true) b=123;",  new[]  {new Expectation("b", 123)}},
-            new object[] {"if (false) b=123;",  new[]  {new Expectation("b", 123, Operator.NotEqual)}},
+            new object[] {WrapInsideMain("{a=123;}"), new[]  {new Expectation("a", 123)}},
+            new object[] {WrapInsideMain("{a=1;b=2;}"), new[]  {new Expectation("a", 1), new Expectation("b", 2)}},
+            new object[] {WrapInsideMain("{a=1;b=2;b=a;}"),new[] {new Expectation("a", 1), new Expectation("b", 1)}},
+            new object[] {WrapInsideMain("a=1+2;}"),  new[]  {new Expectation("a", 3)}},
+            new object[] {WrapInsideMain("a=6-2;}"), new[]  {new Expectation("a", 4)}},
+            new object[] {WrapInsideMain("a=0==1;}"),  new[]  {new Expectation("a", 0, Operator.NotEqual)}},
+            new object[] {WrapInsideMain("a=1==1;}"),  new[]  {new Expectation("a", 0)}},
+            new object[] {WrapInsideMain("if (a==1) b=123;}"),  new[]  {new Expectation("b", 123, Operator.NotEqual)}},
+            new object[] {WrapInsideMain("if (a==0) b=123;}"),  new[]  {new Expectation("b", 123)}},
+            new object[] {WrapInsideMain("if (true) b=123;"),  new[]  {new Expectation("b", 123)}},
+            new object[] {WrapInsideMain("if (false) b=123;"),  new[]  {new Expectation("b", 123, Operator.NotEqual)}},
         };
-        
+
+        private static string WrapInsideMain(string s)
+        {
+            return "void main() { int a, b, c;" + s + "}";
+        }
+
         private static void AssertRun(GenerationResult result, IEnumerable<Expectation> expectations)
         {
             var machine = new PlottyMachine();
