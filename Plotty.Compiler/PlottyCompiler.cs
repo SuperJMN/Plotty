@@ -16,10 +16,18 @@ namespace Plotty.Compiler
         {
             Program ast = GenerateAst(source);
             Analize(ast);
+            var scope = GetScope(ast);
             var intermediateCode = GenerateIntermediateCode(ast);
-            var result = GeneratePlottyCode(intermediateCode);
+            var result = GeneratePlottyCode(intermediateCode, scope);            
             var assemblyCode = GenerateAssemblyCode(result);
             return new CompilationResult(result, assemblyCode);
+        }
+
+        private Scope GetScope(ICodeUnit ast)
+        {
+            var scanner = new ScopeScanner();
+            ast.Accept(scanner);
+            return scanner.Scope;
         }
 
         private static IReadOnlyCollection<string> GenerateAssemblyCode(GenerationResult result)
@@ -34,11 +42,11 @@ namespace Plotty.Compiler
             return plottyAssemblyVisitor.Lines;
         }
 
-        private static GenerationResult GeneratePlottyCode(IEnumerable<IntermediateCode> intermediateCode)
+        private static GenerationResult GeneratePlottyCode(IEnumerable<IntermediateCode> intermediateCode, Scope scope)
         {
             var plottyGenerator = new PlottyCodeGenerator();
 
-            var generationResult = plottyGenerator.Generate(intermediateCode.ToList());
+            var generationResult = plottyGenerator.Generate(intermediateCode.ToList(), scope);
             return generationResult;
         }
 

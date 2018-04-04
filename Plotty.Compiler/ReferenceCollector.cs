@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CodeGen.Core;
-using CodeGen.Parsing;
 using CodeGen.Parsing.Ast;
 using CodeGen.Parsing.Ast.Expressions;
 using CodeGen.Parsing.Ast.Statements;
@@ -67,9 +66,9 @@ namespace Plotty.Compiler
             throw new System.NotImplementedException();
         }
 
-        public void Visit(Unit unit)
+        public void Visit(Function function)
         {
-            unit.Block.Accept(this);
+            
         }
 
         public void Visit(DeclarationStatement expressionNode)
@@ -82,14 +81,23 @@ namespace Plotty.Compiler
 
         public void Visit(Program program)
         {
-            foreach (var unit in program.Units)
+            foreach (var unit in program.Functions)
             {
                 unit.Accept(this);
             }
         }
 
-        public void Visit(MethodCall expressionNode)
-        {            
+        public void Visit(Call call)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Visit(ReturnStatement expressionNode)
+        {
+        }
+
+        public void Visit(Argument argument)
+        {           
         }
 
         public IEnumerable<Reference> References => references.AsReadOnly();

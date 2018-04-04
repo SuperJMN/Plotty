@@ -3,13 +3,14 @@ using System.Linq;
 using CodeGen.Core;
 using CodeGen.Intermediate;
 using CodeGen.Intermediate.Codes;
+using CodeGen.Parsing.Ast;
 using Plotty.Model;
 
 namespace Plotty.CodeGeneration
 {
     public class PlottyCodeGenerator
     {
-        public GenerationResult Generate(List<IntermediateCode> intermediateCodes)
+        public GenerationResult Generate(List<IntermediateCode> intermediateCodes, Scope scope)
         {
             var addressMap = CreateReferenceToAddressMap(intermediateCodes);
             var lines = GenerateLines(intermediateCodes, addressMap);

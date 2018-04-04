@@ -19,7 +19,7 @@ namespace Plotty.CodeGeneration.Tests
             IDictionary<string, int> initialState, IEnumerable<Expectation> expectedValues)
         {
             var sut = new PlottyCodeGenerator();
-            var result = sut.Generate(intermediateCodes);
+            var result = sut.Generate(intermediateCodes, null);
 
             AssertRun(result, initialState, expectedValues);
         }
@@ -116,7 +116,7 @@ namespace Plotty.CodeGeneration.Tests
         private static void AssertRunFull(List<IntermediateCode> code, IDictionary<string, int> initialState, IEnumerable<Expectation> expectedState)
         {
             var sut = new PlottyCodeGenerator();
-            var result = sut.Generate(code);
+            var result = sut.Generate(code, null);
 
             var machine = new PlottyMachine();
 

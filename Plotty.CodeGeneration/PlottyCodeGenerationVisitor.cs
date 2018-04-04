@@ -189,6 +189,10 @@ namespace Plotty.CodeGeneration
             Add(UnconditionalJump(new Label(code.Label.Name)));
         }
 
+        public void Visit(FunctionDefinitionCode def)
+        {            
+        }
+
         private static Line UnconditionalJump(Label label)
         {
             return new Line(new BranchInstruction
