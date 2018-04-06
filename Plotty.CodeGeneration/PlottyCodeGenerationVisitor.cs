@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CodeGen.Core;
 using CodeGen.Intermediate;
 using CodeGen.Intermediate.Codes;
 using CodeGen.Intermediate.Codes.Common;
+using CodeGen.Parsing.Ast;
 using Plotty.Model;
 using ArithmeticOperator = Plotty.Model.ArithmeticOperator;
 using Label = Plotty.Model.Label;
@@ -12,63 +14,75 @@ namespace Plotty.CodeGeneration
 {
     public class PlottyCodeGenerationVisitor : IIntermediateCodeVisitor
     {
-        private readonly IDictionary<Reference, int> addressMap;
         private readonly List<Line> instructions = new List<Line>();
-        public IReadOnlyCollection<Line> Lines => instructions.AsReadOnly();
+        private Scope currentScope;
+        private Dictionary<Reference, int> localAddress;
+        public IEnumerable<Line> Lines => instructions.AsReadOnly();
 
-        public PlottyCodeGenerationVisitor(IDictionary<Reference, int> addressMap)
+        private Scope CurrentScope
         {
-            this.addressMap = addressMap;
+            get => currentScope;
+            set
+            {
+                currentScope = value;
+                Allocate(currentScope.Symbols);
+            }
         }
+
+        private void Allocate(IReadOnlyDictionary<Reference, Symbol> currentScopeSymbols)
+        {
+            localAddress = currentScopeSymbols.Select((x, i) => new {x, i}).ToDictionary(x => x.x.Key, x => x.i);
+        }
+
+        public PlottyCodeGenerationVisitor(Scope scope)
+        {
+            CurrentScope = scope;
+            RootScope = CurrentScope;
+            Emit = new Emitter(this);
+        }
+
+        public Scope RootScope { get; }
+
+        private Emitter Emit { get; }
 
         public void Visit(JumpIfFalse code)
         {
-            Add(MoveImmediate(addressMap[code.Reference], new Register(0)));
-            Add(Load(new Register(1), new Register(0)));
+            Emit.Move(GetAddress(code.Reference), new Register(0));
+            Emit.Load(new Register(1), new Register(0));
 
             var onFalseLabel = new Label();
 
             // Comparison with 0 (TRUE). If both values are 0, the conditions is true, so the code has to be executed.
             // So we emit
-            Add(MoveImmediate(0, new Register(0)));
-            Add(new Line(new BranchInstruction
-            {
-                Operator = BooleanOperator.Equal,
-                One = new Register(1),
-                Another = new Register(0),
-                Target = new LabelTarget(onFalseLabel),
-            }));
-
-            Add(MoveImmediate(0, new Register(0)));
-
-            Add(new Line(new BranchInstruction
-            {
-                Operator = BooleanOperator.Equal,
-                Target = new LabelTarget(new Label(code.Label.Name)),
-                One = new Register(0),
-                Another = new Register(0),
-            }));
-
-            Add(new Line(onFalseLabel, null));
+            Emit.Move(0, new Register(0));
+            Emit.Branch(BooleanOperator.Equal, new Register(1), new Register(0), onFalseLabel);
+            Emit.Move(0, new Register(0));
+            Emit.Jump(new Label(code.Label.Name));
+            Emit.Label(onFalseLabel);
         }
 
         public void Visit(BoolConstantAssignment code)
         {
-            Add(MoveImmediate(addressMap[code.Target], new Register(0)));
-            Add(MoveImmediate(code.Value ? 0 : 1, new Register(1)));
-            Add(Store(new Register(1), new Register(0)));
+            Emit.Move(GetAddress(code.Target), new Register(0));
+            Emit.Move(code.Value ? 0 : 1, new Register(1));
+            Emit.Store(new Register(1), new Register(0));
+        }
+
+        private int GetAddress(Reference reference)
+        {
+            return localAddress[reference];
         }
 
         public void Visit(LabelCode code)
         {
-            Add(new Line(new Label(code.Label.Name), null));
+            Emit.Label(new Label(code.Label.Name));
         }
 
         public void Visit(IntegerConstantAssignment code)
         {
-            Add(MoveImmediate(addressMap[code.Target], new Register(0)));
-            Add(MoveImmediate(code.Value, new Register(1)));
-            Add(Store(new Register(1), new Register(0)));
+            Emit.Move(GetAddress(code.Target), new Register(0));
+            Emit.Move(code.Value, new Register(1));
+            Emit.Store(new Register(1), new Register(0));
         }
 
         private void Add(Line line)
@@ -78,13 +92,13 @@ namespace Plotty.CodeGeneration
 
         public void Visit(ArithmeticAssignment code)
         {
-            Add(MoveImmediate(addressMap[code.Left], new Register(0)));
-            Add(Load(new Register(1), new Register(0)));
+            Emit.Move(GetAddress(code.Left), new Register(0));
+            Emit.Load(new Register(1), new Register(0));
 
-            Add(MoveImmediate(addressMap[code.Right], new Register(0)));
-            Add(Load(new Register(2), new Register(0)));
+            Emit.Move(GetAddress(code.Right), new Register(0));
+            Emit.Load(new Register(2), new Register(0));
 
-            Add(MoveImmediate(addressMap[code.Target], new Register(0)));
+            Emit.Move(GetAddress(code.Target), new Register(0));
 
             var @operator = GetOperator(code.Operation);
 
@@ -96,7 +110,7 @@ namespace Plotty.CodeGeneration
                 Destination = new Register(1),
             }));
 
-            Add(Store(new Register(1), new Register(0)));
+            Emit.Store(new Register(1), new Register(0));
         }
 
         private ArithmeticOperator GetOperator(CodeGen.Intermediate.Codes.Common.ArithmeticOperator codeOperation)
@@ -121,21 +135,21 @@ namespace Plotty.CodeGeneration
 
         public void Visit(ReferenceAssignment code)
         {
-            Add(MoveImmediate(addressMap[code.Origin], new Register(0)));
-            Add(Load(new Register(1), new Register(0)));
-            Add(MoveImmediate(addressMap[code.Target], new Register(0)));
-            Add(Store(new Register(1), new Register(0)));
+            Emit.Move(GetAddress(code.Origin), new Register(0));
+            Emit.Load(new Register(1), new Register(0));
+            Emit.Move(GetAddress(code.Target), new Register(0));
+            Emit.Store(new Register(1), new Register(0));
         }
 
         public void Visit(BoolExpressionAssignment code)
         {
             if (code.Operation == BooleanOperation.IsEqual)
             {
-                Add(MoveImmediate(addressMap[code.Left], new Register(0)));
-                Add(Load(new Register(1), new Register(0)));
+                Emit.Move(GetAddress(code.Left), new Register(0));
+                Emit.Load(new Register(1), new Register(0));
 
-                Add(MoveImmediate(addressMap[code.Right], new Register(0)));
-                Add(Load(new Register(2), new Register(0)));
+                Emit.Move(GetAddress(code.Right), new Register(0));
+                Emit.Load(new Register(2), new Register(0));
 
                 Add(new Line(new ArithmeticInstruction
                 {
@@ -145,16 +159,16 @@ namespace Plotty.CodeGeneration
                     Destination = new Register(1),
                 }));
 
-                Add(MoveImmediate(addressMap[code.Target], new Register(0)));
-                Add(Store(new Register(1), new Register(0)));
+                Emit.Move(GetAddress(code.Target), new Register(0));
+                Emit.Store(new Register(1), new Register(0));
             }
             else
             {
-                Add(MoveImmediate(addressMap[code.Left], new Register(0)));
-                Add(Load(new Register(1), new Register(0)));
+                Emit.Move(GetAddress(code.Left), new Register(0));
+                Emit.Load(new Register(1), new Register(0));
 
-                Add(MoveImmediate(addressMap[code.Right], new Register(0)));
-                Add(Load(new Register(2), new Register(0)));
+                Emit.Move(GetAddress(code.Right), new Register(0));
+                Emit.Load(new Register(2), new Register(0));
 
                 var jumpOnTrue = new Label();
                 var endLabel = new Label();
@@ -168,67 +182,110 @@ namespace Plotty.CodeGeneration
                 }));
 
                 // Sets false
-                Add(MoveImmediate(1, new Register(1)));
-                Add(UnconditionalJump(endLabel));
-                Add(new Line(jumpOnTrue, null));
+                Emit.Move(1, new Register(1));
+                Emit.Jump(endLabel);
+                Emit.Label(jumpOnTrue);
 
                 // Sets true
-                Add(MoveImmediate(0, new Register(1)));
+                Emit.Move(0, new Register(1));
 
                 // End
-                Add(new Line(endLabel, null));
+                Emit.Label(endLabel);
 
-                Add(MoveImmediate(addressMap[code.Target], new Register(0)));
-                Add(Store(new Register(1), new Register(0)));
+                Emit.Move(GetAddress(code.Target), new Register(0));
+                Emit.Store(new Register(1), new Register(0));
             }
         }
 
 
         public void Visit(Jump code)
         {
-            Add(UnconditionalJump(new Label(code.Label.Name)));
+            Emit.Jump(new Label(code.Label.Name));
         }
 
         public void Visit(FunctionDefinitionCode def)
-        {            
+        {
+            CurrentScope = RootScope.Children.Single(s => (s.Owner as Function)?.Name == def.Function.Name);
+            Emit.Label(new Label(def.Function.Name));
         }
 
-        private static Line UnconditionalJump(Label label)
+        public void Visit(CallCode code)
         {
-            return new Line(new BranchInstruction
-            {
-                Operator = BooleanOperator.Equal,
-                One = new Register(0),
-                Another = new Register(0),
-                Target = new LabelTarget(label)
-            });
+            Emit.Jump(new Label(code.FunctionName));
         }
 
-        private static Line Store(Register register, Register baseRegister, int offset = 0)
+        public void Visit(ReturnCode code)
         {
-            return new Line(new StoreInstruction
-            {
-                Source = new RegisterSource(register),
-                MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
-            });
+            CurrentScope = CurrentScope.Parent;
         }
 
-        private static Line Load(Register register, Register baseRegister, int offset = 0)
+        private class Emitter
         {
-            return new Line(new LoadInstruction
-            {
-                Destination = register,
-                MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
-            });
-        }
+            private PlottyCodeGenerationVisitor Visitor { get; }
 
-        private static Line MoveImmediate(int immediate, Register destination)
-        {
-            return new Line(new MoveInstruction
+            public Emitter(PlottyCodeGenerationVisitor visitor)
             {
-                Destination = destination,
-                Source = new ImmediateSource(immediate),
-            });
+                Visitor = visitor;
+            }
+
+            private void Add(Line line)
+            {
+                Visitor.instructions.Add(line);
+            }
+
+            public void Label(Label label)
+            {
+                Add(new Line(label, null));
+            }
+
+            public void Jump(Label label)
+            {
+                Add(new Line(new BranchInstruction
+                {
+                    Operator = BooleanOperator.Equal,
+                    One = new Register(0),
+                    Another = new Register(0),
+                    Target = new LabelTarget(label)
+                }));
+            }
+
+            public void Store(Register register, Register baseRegister, int offset= 0)
+            {
+                Add(new Line(new StoreInstruction
+                {
+                    Source = new RegisterSource(register),
+                    MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
+                }));
+            }
+
+            public void Move(int immediate, Register destination)
+            {
+                Add(new Line(new MoveInstruction
+                {
+                    Destination = destination,
+                    Source = new ImmediateSource(immediate),
+                }));
+            }
+
+            public void Load(Register register, Register baseRegister, int offset = 0)
+            {
+                Add(new Line(new LoadInstruction
+                {
+                    Destination = register,
+                    MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
+                }));
+            }
+
+            public void Branch(BooleanOperator op, Register r1, Register r2, Label label)
+            {
+                Add(new Line(new BranchInstruction
+                {
+                    Operator = op,
+                    One = r1,
+                    Another = r2,
+                    Target = new LabelTarget(label),
+                }));
+            }
         }
     }
 }

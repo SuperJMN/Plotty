@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using CodeGen.Core;
-using CodeGen.Intermediate;
 using CodeGen.Intermediate.Codes;
 using CodeGen.Parsing.Ast;
 using Plotty.Model;
@@ -12,32 +10,19 @@ namespace Plotty.CodeGeneration
     {
         public GenerationResult Generate(List<IntermediateCode> intermediateCodes, Scope scope)
         {
-            var addressMap = CreateReferenceToAddressMap(intermediateCodes);
-            var lines = GenerateLines(intermediateCodes, addressMap);
+            var lines = GenerateLines(intermediateCodes, scope);
             PostProcess(lines);
 
-            return new GenerationResult(addressMap, lines.ToList());
+            return new GenerationResult(lines);
         }
 
-        private static List<Line> GenerateLines(List<IntermediateCode> intermediateCodes, IDictionary<Reference, int> addressMap)
+        private static List<Line> GenerateLines(List<IntermediateCode> intermediateCodes, Scope scope)
         {
-            var generationVisitor = new PlottyCodeGenerationVisitor(addressMap);
+            var generationVisitor = new PlottyCodeGenerationVisitor(scope);
 
             intermediateCodes.ForEach(x => x.Accept(generationVisitor));
 
             return generationVisitor.Lines.ToList();
-        }
-
-        private static Dictionary<Reference, int> CreateReferenceToAddressMap(List<IntermediateCode> intermediateCodes)
-        {
-            var namedObjectCollector = new NamedObjectCollector();
-            intermediateCodes.ForEach(x => x.Accept(namedObjectCollector));
-
-            var addressMap = namedObjectCollector.References
-                .Distinct()
-                .Select((reference, index) => new {Reference = reference, Index = index})
-                .ToDictionary(key => key.Reference, value => value.Index);
-            return addressMap;
         }
 
         private static void PostProcess(IList<Line> finalCode)

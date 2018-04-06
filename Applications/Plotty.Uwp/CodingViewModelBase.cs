@@ -88,7 +88,7 @@ namespace Plotty.Uwp
             var compilationResult = Compile();
             AssemblyCode = string.Join("\n", compilationResult.Code);
 
-            PlottyMachine.AddressMap = compilationResult.GenerationResult.AddressMap;
+            //PlottyMachine.AddressMap = compilationResult.GenerationResult.AddressMap;
             await PlottyMachine.Execute(compilationResult.GenerationResult.Lines, cancellationToken);
         }
     }

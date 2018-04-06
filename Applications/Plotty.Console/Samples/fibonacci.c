@@ -1,4 +1,4 @@
-Main()
+void main()
 {
 	n = 12;
 	first = 0;
@@ -6,12 +6,11 @@ Main()
 	
 	for (c = 0; c<n ;c=c+1)
 	{
-		if ( c < 2 )
+		if ( c <= 1)
 		{
 			next = c;
 		}
-
-		if ( c > 1)
+		else
 		{
 			next = first + second;
 			first = second;

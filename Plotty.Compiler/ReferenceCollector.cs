@@ -6,7 +6,7 @@ using CodeGen.Parsing.Ast.Statements;
 
 namespace Plotty.Compiler
 {
-    public class ReferenceCollector : ICodeVisitor
+    public class ReferenceCollector : ICodeUnitVisitor
     {
         private readonly List<Reference> references = new List<Reference>();
 

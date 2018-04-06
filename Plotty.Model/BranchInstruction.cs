@@ -9,7 +9,12 @@
 
         public override string ToString()
         {
-            return $"Jump to {Target} if {One} is {Operator.Name} {Another} ";
+            if (Equals(One, Another))
+            {
+                return $"Jump to {Target}";
+            }
+
+            return $"Jump to {Target} if {One} is {Operator.Name} {Another}";
         }
 
         public override void Accept(ILineVisitor visitor)

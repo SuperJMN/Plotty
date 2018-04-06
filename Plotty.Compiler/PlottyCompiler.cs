@@ -14,13 +14,22 @@ namespace Plotty.Compiler
     {
         public CompilationResult Compile(string source)
         {
-            Program ast = GenerateAst(source);
+            var ast = GenerateAst(source);
             Analize(ast);
+
+            GiveNameToImplicitReferences(ast);
+
             var scope = GetScope(ast);
             var intermediateCode = GenerateIntermediateCode(ast);
             var result = GeneratePlottyCode(intermediateCode, scope);            
             var assemblyCode = GenerateAssemblyCode(result);
             return new CompilationResult(result, assemblyCode);
+        }
+
+        private static void GiveNameToImplicitReferences(ICodeUnit ast)
+        {
+            var nameAssigner = new ImplicitReferenceNameAssigner();
+            nameAssigner.AssignNames(ast);
         }
 
         private Scope GetScope(ICodeUnit ast)

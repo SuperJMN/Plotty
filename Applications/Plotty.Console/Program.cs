@@ -40,14 +40,14 @@ namespace Plotty.Console
             }
 
             System.Console.WriteLine();
-            ShowMachineState(machine, result);
+            //ShowMachineState(machine, result);
         }
 
         private static void ShowMachineState(PlottyMachine machine, CompilationResult result)
         {
             System.Console.WriteLine("Memory References:");
 
-            var state = machine.GetMemoryState(result.GenerationResult.AddressMap);
+            var state = machine.GetMemoryState(null);
 
             var taggedReferences = state.Select(x => $"[{x.Index}]\t{x.Reference}={x.Value}");
             
