@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using CodeGen.Core;
 using CodeGen.Intermediate;
@@ -12,12 +13,24 @@ using Label = Plotty.Model.Label;
 
 namespace Plotty.CodeGeneration
 {
-    public class PlottyCodeGenerationVisitor : IIntermediateCodeVisitor
+    public partial class PlottyCodeGenerationVisitor : IIntermediateCodeVisitor
     {
-        private readonly List<Line> instructions = new List<Line>();
+        private readonly List<PendingFixup> fixups = new List<PendingFixup>();
+        private readonly List<Line> lines = new List<Line>();
+        private readonly Register addressRegister = new Register(6);
+        private readonly Register stackRegister = new Register(7);
+
         private Scope currentScope;
         private Dictionary<Reference, int> localAddress;
-        public IEnumerable<Line> Lines => instructions.AsReadOnly();
+
+        public PlottyCodeGenerationVisitor(Scope scope)
+        {
+            CurrentScope = scope;
+            RootScope = CurrentScope;
+            Emit = new Emitter(this);
+        }
+
+        public IEnumerable<Line> Lines => lines.AsReadOnly();
 
         private Scope CurrentScope
         {
@@ -29,24 +42,18 @@ namespace Plotty.CodeGeneration
             }
         }
 
-        private void Allocate(IReadOnlyDictionary<Reference, Symbol> currentScopeSymbols)
-        {
-            localAddress = currentScopeSymbols.Select((x, i) => new {x, i}).ToDictionary(x => x.x.Key, x => x.i);
-        }
-
-        public PlottyCodeGenerationVisitor(Scope scope)
-        {
-            CurrentScope = scope;
-            RootScope = CurrentScope;
-            Emit = new Emitter(this);
-        }
-
         public Scope RootScope { get; }
 
         private Emitter Emit { get; }
 
+        private IList<CodeLog> CodeLog { get; } = new List<CodeLog>();
+
+        public ReadOnlyCollection<PendingFixup> Fixups => fixups.AsReadOnly();
+
         public void Visit(JumpIfFalse code)
         {
+            Emit.LogVisitFor(code);
+
             Emit.Move(GetAddress(code.Reference), new Register(0));
             Emit.Load(new Register(1), new Register(0));
 
@@ -63,78 +70,52 @@ namespace Plotty.CodeGeneration
 
         public void Visit(BoolConstantAssignment code)
         {
+            Emit.LogVisitFor(code);
+
             Emit.Move(GetAddress(code.Target), new Register(0));
             Emit.Move(code.Value ? 0 : 1, new Register(1));
             Emit.Store(new Register(1), new Register(0));
         }
 
-        private int GetAddress(Reference reference)
-        {
-            return localAddress[reference];
-        }
-
         public void Visit(LabelCode code)
         {
+            Emit.LogVisitFor(code);
+
             Emit.Label(new Label(code.Label.Name));
         }
 
         public void Visit(IntegerConstantAssignment code)
         {
+            Emit.LogVisitFor(code);
+
             Emit.Move(GetAddress(code.Target), new Register(0));
             Emit.Move(code.Value, new Register(1));
             Emit.Store(new Register(1), new Register(0));
         }
 
-        private void Add(Line line)
-        {
-            instructions.Add(line);
-        }
-
         public void Visit(ArithmeticAssignment code)
         {
-            Emit.Move(GetAddress(code.Left), new Register(0));
-            Emit.Load(new Register(1), new Register(0));
+            Emit.LogVisitFor(code);
 
-            Emit.Move(GetAddress(code.Right), new Register(0));
-            Emit.Load(new Register(2), new Register(0));
+            Emit.Move(GetAddress(code.Left), 0);
+            Emit.Load(new Register(1), 0);
 
-            Emit.Move(GetAddress(code.Target), new Register(0));
+            Emit.Move(GetAddress(code.Right), 0);
+            Emit.Load(new Register(2), 0);
 
-            var @operator = GetOperator(code.Operation);
+            Emit.Move(GetAddress(code.Target), 0);
 
-            Add(new Line(new ArithmeticInstruction
-            {
-                ArithmeticOperator = @operator,
-                Left = new Register(1),
-                Right = new RegisterSource(new Register(2)),
-                Destination = new Register(1),
-            }));
+            var op = GetOperator(code.Operation);
 
-            Emit.Store(new Register(1), new Register(0));
-        }
+            Emit.Arithmetic(op, 1, new RegisterSource(2));
 
-        private ArithmeticOperator GetOperator(CodeGen.Intermediate.Codes.Common.ArithmeticOperator codeOperation)
-        {
-            if (codeOperation == CodeGen.Intermediate.Codes.Common.ArithmeticOperator.Add)
-            {
-                return ArithmeticOperator.Add;
-            }
-
-            if (codeOperation == CodeGen.Intermediate.Codes.Common.ArithmeticOperator.Substract)
-            {
-                return ArithmeticOperator.Substract;
-            }
-
-            if (codeOperation == CodeGen.Intermediate.Codes.Common.ArithmeticOperator.Mult)
-            {
-                return ArithmeticOperator.Multiply;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(codeOperation));
+            Emit.Store(1, 0);
         }
 
         public void Visit(ReferenceAssignment code)
         {
+            Emit.LogVisitFor(code);
+
             Emit.Move(GetAddress(code.Origin), new Register(0));
             Emit.Load(new Register(1), new Register(0));
             Emit.Move(GetAddress(code.Target), new Register(0));
@@ -143,6 +124,8 @@ namespace Plotty.CodeGeneration
 
         public void Visit(BoolExpressionAssignment code)
         {
+            Emit.LogVisitFor(code);
+
             if (code.Operation == BooleanOperation.IsEqual)
             {
                 Emit.Move(GetAddress(code.Left), new Register(0));
@@ -151,13 +134,7 @@ namespace Plotty.CodeGeneration
                 Emit.Move(GetAddress(code.Right), new Register(0));
                 Emit.Load(new Register(2), new Register(0));
 
-                Add(new Line(new ArithmeticInstruction
-                {
-                    ArithmeticOperator = ArithmeticOperator.Substract,
-                    Left = new Register(1),
-                    Right = new RegisterSource(new Register(2)),
-                    Destination = new Register(1),
-                }));
+                Emit.Arithmetic(ArithmeticOperator.Substract, 1, new RegisterSource(2));
 
                 Emit.Move(GetAddress(code.Target), new Register(0));
                 Emit.Store(new Register(1), new Register(0));
@@ -173,13 +150,7 @@ namespace Plotty.CodeGeneration
                 var jumpOnTrue = new Label();
                 var endLabel = new Label();
 
-                Add(new Line(new BranchInstruction()
-                {
-                    Operator = code.Operation.ToOperator(),
-                    One = new Register(1),
-                    Another = new Register(2),
-                    Target = new LabelTarget(jumpOnTrue),
-                }));
+                Emit.Branch(code.Operation.ToOperator(), 1, 2, jumpOnTrue);
 
                 // Sets false
                 Emit.Move(1, new Register(1));
@@ -200,92 +171,103 @@ namespace Plotty.CodeGeneration
 
         public void Visit(Jump code)
         {
+            Emit.LogVisitFor(code);
+
             Emit.Jump(new Label(code.Label.Name));
         }
 
-        public void Visit(FunctionDefinitionCode def)
+        public void Visit(FunctionDefinitionCode code)
         {
-            CurrentScope = RootScope.Children.Single(s => (s.Owner as Function)?.Name == def.Function.Name);
-            Emit.Label(new Label(def.Function.Name));
+            Emit.LogVisitFor(code);
+
+            var functionName = code.Function.Name;
+            CurrentScope = GetFuntionScope(functionName);
+            Emit.Label(new Label(functionName));                        
         }
 
         public void Visit(CallCode code)
         {
+            Emit.LogVisitFor(code);
+
+            var continuationLabel = new Label();
+            PushAddressOfLabel(continuationLabel);
             Emit.Jump(new Label(code.FunctionName));
+            Emit.Label(continuationLabel);
+
+            if (code.FunctionName == "main")
+            {
+                Emit.Halt();
+            }
         }
 
         public void Visit(ReturnCode code)
         {
+            Emit.LogVisitFor(code);
+            PopTo(addressRegister);
+            Emit.Jump(addressRegister);
             CurrentScope = CurrentScope.Parent;
         }
 
-        private class Emitter
+        private Scope GetFuntionScope(string functionName)
         {
-            private PlottyCodeGenerationVisitor Visitor { get; }
+            return RootScope.Children.Single(s => (s.Owner as Function)?.Name == functionName);
+        }
 
-            public Emitter(PlottyCodeGenerationVisitor visitor)
+        private void PushAddressOfLabel(Label label)
+        {
+            Emit.Move(-1, 0);
+            var move = GetLast();
+            fixups.Add(new PendingFixup(move, new ReplaceByLabelAddressFixup(label)));
+            Emit.Store(0, stackRegister);
+            Emit.Increment(stackRegister);
+        }
+
+        private void Push(int value)
+        {
+            Emit.Move(value, 0);
+            Emit.Load(0, stackRegister);
+            Emit.Increment(stackRegister);
+        }
+
+        private void PopTo(Register destination)
+        {
+            Emit.Decrement(stackRegister);
+            Emit.Load(destination, stackRegister);            
+        }
+
+        private Line GetLast()
+        {
+            return lines.Last();
+        }
+
+        private void Allocate(IReadOnlyDictionary<Reference, Symbol> currentScopeSymbols)
+        {
+            localAddress = currentScopeSymbols.Select((x, i) => new {x, i}).ToDictionary(x => x.x.Key, x => x.i);
+        }
+
+        private int GetAddress(Reference reference)
+        {
+            return localAddress[reference];
+        }
+
+        private ArithmeticOperator GetOperator(CodeGen.Intermediate.Codes.Common.ArithmeticOperator codeOperation)
+        {
+            if (codeOperation == CodeGen.Intermediate.Codes.Common.ArithmeticOperator.Add)
             {
-                Visitor = visitor;
+                return ArithmeticOperator.Add;
             }
 
-            private void Add(Line line)
+            if (codeOperation == CodeGen.Intermediate.Codes.Common.ArithmeticOperator.Substract)
             {
-                Visitor.instructions.Add(line);
+                return ArithmeticOperator.Substract;
             }
 
-            public void Label(Label label)
+            if (codeOperation == CodeGen.Intermediate.Codes.Common.ArithmeticOperator.Mult)
             {
-                Add(new Line(label, null));
+                return ArithmeticOperator.Multiply;
             }
 
-            public void Jump(Label label)
-            {
-                Add(new Line(new BranchInstruction
-                {
-                    Operator = BooleanOperator.Equal,
-                    One = new Register(0),
-                    Another = new Register(0),
-                    Target = new LabelTarget(label)
-                }));
-            }
-
-            public void Store(Register register, Register baseRegister, int offset= 0)
-            {
-                Add(new Line(new StoreInstruction
-                {
-                    Source = new RegisterSource(register),
-                    MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
-                }));
-            }
-
-            public void Move(int immediate, Register destination)
-            {
-                Add(new Line(new MoveInstruction
-                {
-                    Destination = destination,
-                    Source = new ImmediateSource(immediate),
-                }));
-            }
-
-            public void Load(Register register, Register baseRegister, int offset = 0)
-            {
-                Add(new Line(new LoadInstruction
-                {
-                    Destination = register,
-                    MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
-                }));
-            }
-
-            public void Branch(BooleanOperator op, Register r1, Register r2, Label label)
-            {
-                Add(new Line(new BranchInstruction
-                {
-                    Operator = op,
-                    One = r1,
-                    Another = r2,
-                    Target = new LabelTarget(label),
-                }));
-            }
+            throw new ArgumentOutOfRangeException(nameof(codeOperation));
         }
     }
 }

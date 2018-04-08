@@ -63,6 +63,9 @@ namespace Plotty.Compiler
                 case LabelTarget target:
                     return $"{target.Label}";
 
+                case SourceTarget target:
+                    return $"{target.Target.GetAssemblySymbol()}";
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(jumpTarget));
             }

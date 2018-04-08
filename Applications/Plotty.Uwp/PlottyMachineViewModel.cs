@@ -36,7 +36,7 @@ namespace Plotty.Uwp
                 CurrentLine = new LineViewModel(PlottyMachine.LineNumber, PlottyMachine.CurrentLine);
                 PlottyMachine.Execute();
                 RefreshRegisters();
-                RefreshMemory();
+                //RefreshMemory();
 
                 if (CurrentLine?.Line?.Instruction is StoreInstruction)
                 {

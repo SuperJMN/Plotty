@@ -8,5 +8,10 @@
         {
             Target = target;
         }
+
+        public override string ToString()
+        {
+            return $"{Target}";
+        }
     }
 }

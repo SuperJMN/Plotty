@@ -19,7 +19,7 @@
         {
             if (Label != null)
             {
-                return $"Label '{Label}'";
+                return $"@'{Label}': {Instruction}";
             }
 
             return $"{Instruction}";
