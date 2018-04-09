@@ -56,7 +56,7 @@ namespace Plotty.Console
 
         private static void PrintCode(IEnumerable<string> readOnlyCollection)
         {
-            var taggedLines = readOnlyCollection.Select((s, i) => $"{i+1}\t{s}");
+            var taggedLines = readOnlyCollection.Select((s, i) => $"{i}\t{s}");
             System.Console.WriteLine(string.Join("\n", taggedLines));
         }
 

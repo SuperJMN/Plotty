@@ -2,7 +2,7 @@
   "profiles": {
     "Plotty.Console": {
       "commandName": "Project",
-      "commandLineArgs": "run -f Samples\\call.c"
+      "commandLineArgs": "run -f Samples\\fibonacci.c"
     }
   }
 }

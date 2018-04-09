@@ -25,8 +25,7 @@ namespace Plotty.CodeGeneration
 
         public override string ToString()
         {
-            string indentedLines = string.Concat("\n\t", Lines);
-            return $"{Code}\n\t{indentedLines}";
+           return $"{Code}";
         }
     }
 }

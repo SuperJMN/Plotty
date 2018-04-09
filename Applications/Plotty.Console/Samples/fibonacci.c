@@ -1,4 +1,10 @@
-void main()
+void main() 
+{
+	f=fibonacci();
+	return;
+}
+
+int fibonacci()
 {
 	n = 12;
 	first = 0;
@@ -17,4 +23,6 @@ void main()
 			second = next;
 		}      
 	}
+
+	return next;
 }

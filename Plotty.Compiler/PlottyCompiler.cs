@@ -23,7 +23,7 @@ namespace Plotty.Compiler
             var intermediateCode = GenerateIntermediateCode(ast);
             var result = GeneratePlottyCode(intermediateCode, scope);            
             var assemblyCode = GenerateAssemblyCode(result);
-            return new CompilationResult(result, assemblyCode);
+            return new CompilationResult(result, assemblyCode, scope);
         }
 
         private static void GiveNameToImplicitReferences(ICodeUnit ast)

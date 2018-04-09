@@ -37,12 +37,14 @@ namespace Plotty.CodeGeneration
                 }));
             }
 
-            public void Store(Register subject, Register baseRegister, int offset = 0)
+            public void Store(Register subject, Register baseRegister, Register offset = null)
             {
+                var source = offset == null ? (Source) new ImmediateSource(0) : new RegisterSource(offset);
+
                 Add(new Line(new StoreInstruction
                 {
                     Source = new RegisterSource(subject),
-                    MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
+                    MemoryAddress = new IndexedAddress(baseRegister, source)
                 }));
             }
 
@@ -55,12 +57,22 @@ namespace Plotty.CodeGeneration
                 }));
             }
 
-            public void Load(Register subject, Register baseRegister, int offset = 0)
+            public void Load(Register subject, Register baseRegister, Register offset = null)
             {
+                Source source;
+                if (offset == null)
+                {
+                    source = new ImmediateSource(0);
+                }
+                else
+                {
+                    source=new RegisterSource(offset);
+                }
+                
                 Add(new Line(new LoadInstruction
                 {
                     Destination = subject,
-                    MemoryAddress = new IndexedAddress(baseRegister, new ImmediateSource(offset))
+                    MemoryAddress = new IndexedAddress(baseRegister, source)
                 }));
             }
 
@@ -75,7 +87,7 @@ namespace Plotty.CodeGeneration
                 }));
             }
 
-            public void Arithmetic(ArithmeticOperator @operator, Register register, RegisterSource registerSource,
+            public void Arithmetic(ArithmeticOperator @operator, Register register, Source registerSource,
                 Register destination = null)
             {
                 Add(new Line(new ArithmeticInstruction
@@ -89,14 +101,12 @@ namespace Plotty.CodeGeneration
 
             public void Increment(Register register)
             {
-                Move(1, 0);
-                Arithmetic(ArithmeticOperator.Add, register, new RegisterSource(0));
+                Arithmetic(ArithmeticOperator.Add, register, new ImmediateSource(1));
             }
 
             public void Decrement(Register register)
             {
-                Move(1, 0);
-                Arithmetic(ArithmeticOperator.Substract, register, new RegisterSource(0));
+                Arithmetic(ArithmeticOperator.Substract, register, new ImmediateSource(1));
             }
 
             public void Jump(Register register)

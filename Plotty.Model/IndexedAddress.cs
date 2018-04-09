@@ -18,6 +18,11 @@
 
         public override string ToString()
         {
+            if (Offset is ImmediateSource a && a.Immediate == 0)
+            {
+                return $"{BaseRegister}";
+            }
+
             return $"{BaseRegister} + {Offset}";
         }
     }

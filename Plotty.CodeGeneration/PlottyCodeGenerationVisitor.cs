@@ -17,11 +17,13 @@ namespace Plotty.CodeGeneration
     {
         private readonly List<PendingFixup> fixups = new List<PendingFixup>();
         private readonly List<Line> lines = new List<Line>();
-        private readonly Register addressRegister = new Register(6);
-        private readonly Register stackRegister = new Register(7);
+
+        private readonly Register returnRegister = new Register(6);
+        private readonly Register baseRegister = new Register(7);
 
         private Scope currentScope;
         private Dictionary<Reference, int> localAddress;
+        
 
         public PlottyCodeGenerationVisitor(Scope scope)
         {
@@ -55,7 +57,7 @@ namespace Plotty.CodeGeneration
             Emit.LogVisitFor(code);
 
             Emit.Move(GetAddress(code.Reference), new Register(0));
-            Emit.Load(new Register(1), new Register(0));
+            Emit.Load(new Register(1), baseRegister, 0);
 
             var onFalseLabel = new Label();
 
@@ -74,7 +76,7 @@ namespace Plotty.CodeGeneration
 
             Emit.Move(GetAddress(code.Target), new Register(0));
             Emit.Move(code.Value ? 0 : 1, new Register(1));
-            Emit.Store(new Register(1), new Register(0));
+            Emit.Store(new Register(1), baseRegister, 0);
         }
 
         public void Visit(LabelCode code)
@@ -90,7 +92,7 @@ namespace Plotty.CodeGeneration
 
             Emit.Move(GetAddress(code.Target), new Register(0));
             Emit.Move(code.Value, new Register(1));
-            Emit.Store(new Register(1), new Register(0));
+            Emit.Store(new Register(1), baseRegister, 0);
         }
 
         public void Visit(ArithmeticAssignment code)
@@ -98,10 +100,10 @@ namespace Plotty.CodeGeneration
             Emit.LogVisitFor(code);
 
             Emit.Move(GetAddress(code.Left), 0);
-            Emit.Load(new Register(1), 0);
+            Emit.Load(new Register(1), baseRegister, 0);
 
             Emit.Move(GetAddress(code.Right), 0);
-            Emit.Load(new Register(2), 0);
+            Emit.Load(new Register(2), baseRegister, 0);
 
             Emit.Move(GetAddress(code.Target), 0);
 
@@ -109,7 +111,7 @@ namespace Plotty.CodeGeneration
 
             Emit.Arithmetic(op, 1, new RegisterSource(2));
 
-            Emit.Store(1, 0);
+            Emit.Store(1, baseRegister, 0);
         }
 
         public void Visit(ReferenceAssignment code)
@@ -117,9 +119,9 @@ namespace Plotty.CodeGeneration
             Emit.LogVisitFor(code);
 
             Emit.Move(GetAddress(code.Origin), new Register(0));
-            Emit.Load(new Register(1), new Register(0));
+            Emit.Load(new Register(1), baseRegister, 0);
             Emit.Move(GetAddress(code.Target), new Register(0));
-            Emit.Store(new Register(1), new Register(0));
+            Emit.Store(new Register(1), baseRegister, 0);
         }
 
         public void Visit(BoolExpressionAssignment code)
@@ -129,23 +131,23 @@ namespace Plotty.CodeGeneration
             if (code.Operation == BooleanOperation.IsEqual)
             {
                 Emit.Move(GetAddress(code.Left), new Register(0));
-                Emit.Load(new Register(1), new Register(0));
+                Emit.Load(new Register(1), baseRegister, new Register(0));
 
                 Emit.Move(GetAddress(code.Right), new Register(0));
-                Emit.Load(new Register(2), new Register(0));
+                Emit.Load(new Register(2), baseRegister, new Register(0));
 
                 Emit.Arithmetic(ArithmeticOperator.Substract, 1, new RegisterSource(2));
 
                 Emit.Move(GetAddress(code.Target), new Register(0));
-                Emit.Store(new Register(1), new Register(0));
+                Emit.Store(new Register(1), baseRegister, new Register(0));
             }
             else
             {
                 Emit.Move(GetAddress(code.Left), new Register(0));
-                Emit.Load(new Register(1), new Register(0));
+                Emit.Load(new Register(1), baseRegister, new Register(0));
 
                 Emit.Move(GetAddress(code.Right), new Register(0));
-                Emit.Load(new Register(2), new Register(0));
+                Emit.Load(new Register(2), baseRegister, new Register(0));
 
                 var jumpOnTrue = new Label();
                 var endLabel = new Label();
@@ -164,7 +166,7 @@ namespace Plotty.CodeGeneration
                 Emit.Label(endLabel);
 
                 Emit.Move(GetAddress(code.Target), new Register(0));
-                Emit.Store(new Register(1), new Register(0));
+                Emit.Store(new Register(1), baseRegister, new Register(0));
             }
         }
 
@@ -182,6 +184,7 @@ namespace Plotty.CodeGeneration
 
             var functionName = code.Function.Name;
             CurrentScope = GetFuntionScope(functionName);
+
             Emit.Label(new Label(functionName));                        
         }
 
@@ -190,22 +193,47 @@ namespace Plotty.CodeGeneration
             Emit.LogVisitFor(code);
 
             var continuationLabel = new Label();
+
+            var symbolsCount = CurrentScope.Symbols.Count;
+
+            Emit.Arithmetic(ArithmeticOperator.Add, baseRegister, new ImmediateSource(symbolsCount));
+
             PushAddressOfLabel(continuationLabel);
+            
             Emit.Jump(new Label(code.FunctionName));
             Emit.Label(continuationLabel);
 
-            if (code.FunctionName == "main")
+            Emit.Arithmetic(ArithmeticOperator.Substract, baseRegister, new ImmediateSource(symbolsCount));
+
+
+            if (code.Reference != null)
             {
-                Emit.Halt();
+                Emit.Move(GetAddress(code.Reference), 0);
+                Emit.Store(returnRegister, baseRegister, 0);
             }
         }
 
         public void Visit(ReturnCode code)
         {
             Emit.LogVisitFor(code);
-            PopTo(addressRegister);
-            Emit.Jump(addressRegister);
+
+            if (code.Reference != null)
+            {
+                Emit.Move(GetAddress(code.Reference), 0);
+                Emit.Load(returnRegister, baseRegister, 0);
+            }
+            
+            PopTo(0);
+            Emit.Jump(0);
+            
             CurrentScope = CurrentScope.Parent;
+        }
+
+        public void Visit(HaltCode code)
+        {
+            Emit.LogVisitFor(code);
+
+            Emit.Halt();
         }
 
         private Scope GetFuntionScope(string functionName)
@@ -218,21 +246,21 @@ namespace Plotty.CodeGeneration
             Emit.Move(-1, 0);
             var move = GetLast();
             fixups.Add(new PendingFixup(move, new ReplaceByLabelAddressFixup(label)));
-            Emit.Store(0, stackRegister);
-            Emit.Increment(stackRegister);
+            Emit.Store(0, baseRegister);
+            Emit.Increment(baseRegister);
         }
 
         private void Push(int value)
         {
             Emit.Move(value, 0);
-            Emit.Load(0, stackRegister);
-            Emit.Increment(stackRegister);
+            Emit.Load(0, baseRegister);
+            Emit.Increment(baseRegister);
         }
 
         private void PopTo(Register destination)
         {
-            Emit.Decrement(stackRegister);
-            Emit.Load(destination, stackRegister);            
+            Emit.Decrement(baseRegister);
+            Emit.Load(destination, baseRegister);            
         }
 
         private Line GetLast()

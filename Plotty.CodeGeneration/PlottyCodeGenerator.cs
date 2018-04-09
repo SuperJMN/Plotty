@@ -13,11 +13,11 @@ namespace Plotty.CodeGeneration
         {
             var generationVisitor = new PlottyCodeGenerationVisitor(scope);
             intermediateCodes.ForEach(x => x.Accept(generationVisitor));
-            var generateLines = generationVisitor.Lines.ToList();
+            var lines = generationVisitor.Lines.ToList();
 
-            PostProcess(generateLines, generationVisitor.Fixups);
+            PostProcess(lines, generationVisitor.Fixups);
             
-            return new GenerationResult(generateLines);
+            return new GenerationResult(lines);
         }
 
         private static void Fix(IList<Line> lines, IEnumerable<PendingFixup> generationVisitorFixups)

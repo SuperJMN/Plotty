@@ -1,10 +1,9 @@
 ﻿void main()
 {
-  suma();
-  return;
+	a=2+const();
 }
 
-void suma() 
+int const() 
 {
-  return;
+	return 3;
 }
