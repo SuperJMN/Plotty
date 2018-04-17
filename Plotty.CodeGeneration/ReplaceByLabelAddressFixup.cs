@@ -13,7 +13,7 @@ namespace Plotty.CodeGeneration
             Label = label;
         }
 
-        public override void Fix(Line toFix, IList<Line> compilationResult)
+        public override void Fix(ILine toFix, IList<ILine> compilationResult)
         {
             var instWithLabel = compilationResult.First(l => l.Label == Label);
             var index = compilationResult.IndexOf(instWithLabel);

@@ -1,6 +1,13 @@
 ﻿namespace Plotty.Model
 {
-    public class Line
+    public interface ILine
+    {
+        Label Label { get; }
+        Instruction Instruction { get; }
+        void Accept(ILineVisitor lineVisitor);
+    }
+
+    public class Line : ILine
     {
         public Label Label { get; }
         public Instruction Instruction { get; }

@@ -9,18 +9,22 @@ namespace Plotty.CodeGeneration
 {
     public class PlottyCodeGenerator
     {
-        public GenerationResult Generate(List<IntermediateCode> intermediateCodes, Scope scope)
+        public GenerationResult Generate(IEnumerable<IntermediateCode> intermediateCodes, Scope scope)
         {
             var generationVisitor = new PlottyCodeGenerationVisitor(scope);
-            intermediateCodes.ForEach(x => x.Accept(generationVisitor));
-            var lines = generationVisitor.Lines.ToList();
 
+            foreach (var x in intermediateCodes)
+            {
+                x.Accept(generationVisitor);
+            }
+
+            var lines = generationVisitor.Lines.ToList();
             PostProcess(lines, generationVisitor.Fixups);
-            
+
             return new GenerationResult(lines);
         }
 
-        private static void Fix(IList<Line> lines, IEnumerable<PendingFixup> generationVisitorFixups)
+        private static void Fix(IList<ILine> lines, IEnumerable<PendingFixup> generationVisitorFixups)
         {
             foreach (var fixup in generationVisitorFixups)
             {
@@ -28,14 +32,14 @@ namespace Plotty.CodeGeneration
             }
         }
 
-        private static void PostProcess(IList<Line> finalCode, ReadOnlyCollection<PendingFixup> fixups)
+        private static void PostProcess(IList<ILine> finalCode, ReadOnlyCollection<PendingFixup> fixups)
         {
             AttachLabelsToInstructions(finalCode);
             Fix(finalCode, fixups);
             GiveNameToUnnamedLabels(finalCode);
         }
 
-        private static void GiveNameToUnnamedLabels(IEnumerable<Line> finalCode)
+        private static void GiveNameToUnnamedLabels(IEnumerable<ILine> finalCode)
         {
             int count = 0;
             foreach (var line in finalCode)
@@ -47,7 +51,7 @@ namespace Plotty.CodeGeneration
             }
         }
 
-        private static void AttachLabelsToInstructions(IList<Line> finalCode)
+        private static void AttachLabelsToInstructions(IList<ILine> finalCode)
         {
             int i = 0;
 

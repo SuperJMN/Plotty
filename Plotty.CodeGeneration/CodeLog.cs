@@ -1,31 +1,12 @@
-using System.Collections.Generic;
-using System.Diagnostics;
-using CodeGen.Intermediate.Codes;
-using Plotty.Model;
+using System.Collections.ObjectModel;
 
 namespace Plotty.CodeGeneration
 {
-    [DebuggerDisplay("{ToString()}")]
-    internal class CodeLog
+    public class CodeLog : Collection<CodeLogItem>
     {
-        private readonly List<Line> lines = new List<Line>();
-
-        public CodeLog(IntermediateCode code)
-        {
-            Code = code;            
-        }
-
-        public void AddLine(Line l)
-        {
-            lines.Add(l);
-        }
-
-        public IntermediateCode Code { get; set; }
-        public ICollection<Line> Lines => lines.AsReadOnly();
-
         public override string ToString()
         {
-           return $"{Code}";
+            return string.Join("\n\n", Items);
         }
     }
 }

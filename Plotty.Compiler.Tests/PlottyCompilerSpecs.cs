@@ -1,5 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using CodeGen.Core;
+using CodeGen.Intermediate.Codes;
+using CodeGen.Parsing.Ast;
 using FluentAssertions;
 using Plotty.CodeGeneration;
 using Plotty.VirtualMachine;
@@ -9,6 +13,142 @@ namespace Plotty.Compiler.Tests
 {
     public class PlottyCompilerSpecs
     {
+        [Fact]
+        public void Add()
+        {
+            var source = "void main() {\r\n\tc=add(55);\r\n\treturn;\r\n}\r\n\r\nint add(int a) \r\n{\r\n\treturn a+1;\r\n}";
+
+            var expectations = new List<Expectation>()
+            {
+                new Expectation("a", 3),
+                new Expectation("b", 5),
+            };
+
+            AssertRunFull(source, expectations);
+        }
+
+        [Fact]
+        public void Assignments()
+        {
+            var source = "void main() { a = 123; b=80; }";
+
+            var expectations = new List<Expectation>()
+            {
+                new Expectation("a", 123),
+                new Expectation("b", 80),
+            };
+
+            AssertRunFull(source, expectations);
+        }
+
+        [Fact]
+        public void NestedCallsToReturn()
+        {
+            var source = "void main()  { a=func1(); }  int func1()  { return func2(); }  int func2()  { return func3(); }  int func3()  { return 1234; }";
+
+            var expectations = new List<Expectation>()
+            {
+                new Expectation("a", 1234),
+            };
+
+            AssertRunFull(source, expectations);
+        }
+
+        [Fact]
+        public void NestedCalls()
+        {
+            var source = "void main()  { jump1(); }  void jump1()  { jump2(); }  void jump2()  { jump3(); }  void jump3()  { jump4(); } void jump4() { jump5(); } void jump5() { }";
+
+            var expectations = new List<Expectation>()
+            {
+                new Expectation("a", 1234),
+            };
+
+            AssertRunFull(source, expectations);
+        }
+
+        [Fact]
+        public void Simple()
+        {
+            var source = "void main() { a = simple(); } int simple() { return 85; }";
+
+            //var expectations = new List<Expectation>()
+            //{
+            //    new Expectation("a", 85),
+            //};
+
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+        }
+
+        [Fact]
+        public void Simpler()
+        {
+            var source = "int main() { return 85; }";
+
+            //var expectations = new List<Expectation>()
+            //{
+            //    new Expectation("a", 85),
+            //};
+
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+        }
+
+        private class MachineFixture
+        {
+            public MachineFixture()
+            {
+                Machine = new PlottyMachine();
+            }
+
+            public void Run(string source)
+            {
+                var compiler = new PlottyCompiler();
+                var result = compiler.Compile(source);
+                
+                Machine.Load(result.GenerationResult.Lines);
+
+                while (Machine.CanExecute)
+                {
+                    Machine.Execute();
+                }
+            }
+
+            public PlottyMachine Machine { get; }
+        }
+
+        private void AssertRunFull(string source, IEnumerable<Expectation> expectations)
+        {
+            var sut = new PlottyCompiler();
+            var result = sut.Compile(source);
+
+            var machine = new PlottyMachine();
+
+            machine.Load(result.GenerationResult.Lines);
+
+            while (machine.CanExecute)
+            {
+                machine.Execute();
+            }
+
+            foreach (var expectation in expectations)
+            {
+                var resultScope = result.Scope.Children.Single(s => s.Owner is Function function && function.Name == "main");
+
+                var address = resultScope.Symbols.Keys.ToList().IndexOf(expectation.Reference);
+                var value = machine.Memory[address];
+                if (expectation.Operator == Operator.Equal)
+                {
+                    value.Should().Be(expectation.Value);
+                }
+                else
+                {
+                    value.Should().NotBe(expectation.Value);
+                }
+            }
+        }
+
         [Theory]
         [MemberData(nameof(TestData))]
         public void ReferencesHaveTheExpectedValues(string source, IEnumerable<Expectation> expectations)
@@ -65,7 +205,7 @@ namespace Plotty.Compiler.Tests
 
             //foreach (var expectation in expectations)
             //{
-            //    var address = result.AddressMap[new Reference(expectation.RefName)];
+            //    var address = result.AddressMap[new Reference(expectation.Reference)];
 
             //    if (expectation.Operator == Operator.Equal)
             //    {
@@ -110,7 +250,7 @@ namespace Plotty.Compiler.Tests
 
             //foreach (var expectation in expectations)
             //{
-            //    var address = result.AddressMap[new Reference(expectation.RefName)];
+            //    var address = result.AddressMap[new Reference(expectation.Reference)];
 
             //    if (expectation.Operator == Operator.Equal)
             //    {
@@ -125,14 +265,14 @@ namespace Plotty.Compiler.Tests
 
         public class Expectation
         {
-            public Expectation(string refName, int value, Operator @operator = Operator.Equal)
+            public Expectation(Reference reference, int value, Operator @operator = Operator.Equal)
             {
-                RefName = refName;
+                Reference = reference;
                 Value = value;
                 Operator = @operator;
             }
 
-            public string RefName { get; }
+            public Reference Reference { get; }
             public int Value { get; }
             public Operator Operator { get; }
         }
@@ -142,5 +282,5 @@ namespace Plotty.Compiler.Tests
             Equal,
             NotEqual,
         }
-    }    
+    }
 }

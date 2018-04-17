@@ -8,14 +8,14 @@ namespace Plotty.CodeGeneration
     {
         private class Emitter
         {
-            public Emitter(PlottyCodeGenerationVisitor visitor)
+            protected Emitter(PlottyCodeGenerationVisitor visitor)
             {
                 Visitor = visitor;
             }
 
-            private PlottyCodeGenerationVisitor Visitor { get; }
+            protected PlottyCodeGenerationVisitor Visitor { get; }
 
-            private void Add(Line line)
+            protected virtual void Add(Line line)
             {
                 Visitor.lines.Add(line);
                 Visitor.CodeLog.Last().AddLine(line);
@@ -48,15 +48,6 @@ namespace Plotty.CodeGeneration
                 }));
             }
 
-            public void Move(int immediate, Register destination)
-            {
-                Add(new Line(new MoveInstruction
-                {
-                    Destination = destination,
-                    Source = new ImmediateSource(immediate)
-                }));
-            }
-
             public void Load(Register subject, Register baseRegister, Register offset = null)
             {
                 Source source;
@@ -66,9 +57,9 @@ namespace Plotty.CodeGeneration
                 }
                 else
                 {
-                    source=new RegisterSource(offset);
+                    source = new RegisterSource(offset);
                 }
-                
+
                 Add(new Line(new LoadInstruction
                 {
                     Destination = subject,
@@ -87,12 +78,12 @@ namespace Plotty.CodeGeneration
                 }));
             }
 
-            public void Arithmetic(ArithmeticOperator @operator, Register register, Source registerSource,
+            public void Arithmetic(ArithmeticOperator op, Register register, Source registerSource,
                 Register destination = null)
             {
                 Add(new Line(new ArithmeticInstruction
                 {
-                    ArithmeticOperator = @operator,
+                    ArithmeticOperator = op,
                     Left = register,
                     Right = registerSource,
                     Destination = destination ?? register
@@ -101,12 +92,12 @@ namespace Plotty.CodeGeneration
 
             public void Increment(Register register)
             {
-                Arithmetic(ArithmeticOperator.Add, register, new ImmediateSource(1));
+                Add(1, register);
             }
 
             public void Decrement(Register register)
             {
-                Arithmetic(ArithmeticOperator.Substract, register, new ImmediateSource(1));
+                Substract(register, 1);
             }
 
             public void Jump(Register register)
@@ -122,13 +113,103 @@ namespace Plotty.CodeGeneration
 
             public void LogVisitFor(IntermediateCode code)
             {
-                Visitor.CodeLog.Add(new CodeLog(code));
+                Visitor.CodeLog.Add(new CodeLogItem(code));
             }
 
             public void Halt()
             {
                 Add(new Line(new HaltInstruction()));
             }
+
+            public void Pop(Register target)
+            {
+                Decrement(Visitor.stackRegister);
+                Load(target, Visitor.baseRegister, Visitor.stackRegister);
+            }
+
+            public void Push(Register source)
+            {
+                Store(source, Visitor.baseRegister, Visitor.stackRegister);
+                Increment(Visitor.stackRegister);
+            }
+
+            public void Push(Label label)
+            {
+                Move(0, -1);
+                var move = GetLast();
+                Visitor.fixups.Add(new PendingFixup(move, new ReplaceByLabelAddressFixup(label)));
+
+                Push(0);
+            }
+
+            private ILine GetLast()
+            {
+                return Visitor.lines.Last();
+            }
+
+            public void Add(Register register, Register second, Register destination = null)
+            {
+                Arithmetic(ArithmeticOperator.Add, register, new RegisterSource(second), destination);
+            }
+
+            public void Substract(Register first, Register second, Register destination = null)
+            {
+                Arithmetic(ArithmeticOperator.Substract, first, new RegisterSource(second), destination);
+            }
+
+            public void Add(int value, Register register, Register destination = null)
+            {
+                Arithmetic(ArithmeticOperator.Add, register, new ImmediateSource(value), destination);
+            }
+
+            public void Substract(Register first, int value, Register destination = null)
+            {
+                Arithmetic(ArithmeticOperator.Substract, first, new ImmediateSource(value), destination);
+            }
+
+            public void Arithmetic(ArithmeticOperator op, Register register, Register second,
+                Register destination = null)
+            {
+                Arithmetic(op, register, new RegisterSource(second), destination);
+            }
+
+            public void Arithmetic(ArithmeticOperator op, Register register, int value, Register destination = null)
+            {
+                Arithmetic(op, register, new ImmediateSource(value), destination);
+            }
+
+            public void Transfer(Register source, Register destination)
+            {
+                Add(new Line(new MoveInstruction
+                {
+                    Destination = destination,
+                    Source = new RegisterSource(source)
+                }));
+            }
+
+            public void Move(Register destination, int immediate)
+            {
+                Add(new Line(new MoveInstruction
+                {
+                    Destination = destination,
+                    Source = new ImmediateSource(immediate)
+                }));
+            }
+        }
+
+        private class ContextualizedEmitter : Emitter
+        {
+            public ContextualizedEmitter(PlottyCodeGenerationVisitor visitor) : base(visitor)
+            {
+            }
+
+            protected override void Add(Line line)
+            {
+                Visitor.lines.Add(new ContextualLine(line, CurrentCode, CurrentDescription));
+            }
+
+            public IntermediateCode CurrentCode { get; set; }
+            public string CurrentDescription { get; set; }
         }
     }
 }

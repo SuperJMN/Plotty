@@ -1,9 +1,10 @@
 ﻿void main()
 {
-	a=2+const();
+	c=add(55);
+	return;
 }
 
-int const() 
+int add(int a) 
 {
-	return 3;
+	return a+1;
 }

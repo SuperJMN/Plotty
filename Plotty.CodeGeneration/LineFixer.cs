@@ -5,6 +5,6 @@ namespace Plotty.CodeGeneration
 {
     public abstract class LineFixer
     {
-        public abstract void Fix(Line toFix, IList<Line> compilationResult);
+        public abstract void Fix(ILine toFix, IList<ILine> compilationResult);
     }
 }

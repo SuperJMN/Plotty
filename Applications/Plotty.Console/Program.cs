@@ -35,7 +35,7 @@ namespace Plotty.Console
             machine.Load(result.GenerationResult.Lines.ToList());
             while (machine.CanExecute)
             {
-                machine.Execute();
+                 machine.Execute();
             }
 
             System.Console.WriteLine();

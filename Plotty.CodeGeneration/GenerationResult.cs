@@ -5,9 +5,9 @@ namespace Plotty.CodeGeneration
 {
     public class GenerationResult
     {
-        public IList<Line> Lines { get; }
+        public List<ILine> Lines { get; }
 
-        public GenerationResult(IList<Line> lines)
+        public GenerationResult(List<ILine> lines)
         {
             Lines = lines;
         }

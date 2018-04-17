@@ -26,7 +26,7 @@ namespace Plotty.Uwp
             Console = new ConsoleHandler(PlottyMachine.Memory, 20, 20);
         }
 
-        public async Task Execute(IList<Line> lines, CancellationToken ct)
+        public async Task Execute(List<ILine> lines, CancellationToken ct)
         {
             History.Clear();
             PlottyMachine.Load(lines);

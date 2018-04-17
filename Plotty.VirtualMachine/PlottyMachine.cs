@@ -13,16 +13,16 @@ namespace Plotty.VirtualMachine
 
         public int[] Registers { get; } = new int[RegCount];
 
-        private List<Line> Instructions { get; set; }
+        private List<ILine> Instructions { get; set; }
 
-        public Line CurrentLine { get; set; }
+        public ILine CurrentLine { get; set; }
 
         public int LineNumber { get; private set; }
         public int[] Memory { get; } = new int[MemoryCount];
         public Status Status { get; set; } = Status.Running;
         public bool CanExecute => CurrentLine != null && Status != Status.Halted;
 
-        public void Load(IList<Line> cmds)
+        public void Load(List<ILine> cmds)
         {
             Instructions = cmds.ToList();
             LineNumber = 0;
