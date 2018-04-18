@@ -15,6 +15,8 @@ namespace Plotty.CodeGeneration
 {
     public partial class PlottyCodeGenerationVisitor : IIntermediateCodeVisitor
     {
+        public const int ReturnRegisterIndex = 5;
+
         private readonly Register baseRegister = new Register(7);
         private readonly Register returnRegister = new Register(5);
         private readonly Register stackRegister = new Register(6);
@@ -55,16 +57,16 @@ namespace Plotty.CodeGeneration
         {
             Emit.CurrentCode = code;
 
-            Emit.Move(new Register(0), GetAddress(code.Reference));
+            Emit.Move(GetAddress(code.Reference), new Register(0));
             Emit.Load(new Register(1), baseRegister, 0);
 
             var onFalseLabel = new Label();
 
             // Comparison with 0 (TRUE). If both values are 0, the conditions is true, so the code has to be executed.
             // So we emit
-            Emit.Move(new Register(0), 0);
+            Emit.Move(0, new Register(0));
             Emit.Branch(BooleanOperator.Equal, new Register(1), new Register(0), onFalseLabel);
-            Emit.Move(new Register(0), 0);
+            Emit.Move(0, new Register(0));
             Emit.Jump(new Label(code.Label.Name));
             Emit.Label(onFalseLabel);
         }
@@ -73,8 +75,8 @@ namespace Plotty.CodeGeneration
         {
             Emit.CurrentCode = code;
 
-            Emit.Move(new Register(0), GetAddress(code.Target));
-            Emit.Move(new Register(1), code.Value ? 0 : 1);
+            Emit.Move(GetAddress(code.Target), new Register(0));
+            Emit.Move(code.Value ? 0 : 1, new Register(1));
             Emit.Store(new Register(1), baseRegister, 0);
         }
 
@@ -89,8 +91,8 @@ namespace Plotty.CodeGeneration
         {
             Emit.CurrentCode = code;
 
-            Emit.Move(new Register(0), GetAddress(code.Target));
-            Emit.Move(new Register(1), code.Value);
+            Emit.Move(GetAddress(code.Target), new Register(0));
+            Emit.Move(code.Value, new Register(1));
             Emit.Store(new Register(1), baseRegister, 0);
         }
 
@@ -98,17 +100,17 @@ namespace Plotty.CodeGeneration
         {
             Emit.CurrentCode = code;
 
-            Emit.Move(0, GetAddress(code.Left));
+            Emit.Move(GetAddress(code.Left), 0);
             Emit.Load(new Register(1), baseRegister, 0);
 
-            Emit.Move(0, GetAddress(code.Right));
+            Emit.Move(GetAddress(code.Right), 0);
             Emit.Load(new Register(2), baseRegister, 0);
 
-            Emit.Move(0, GetAddress(code.Target));
+            Emit.Move(GetAddress(code.Target), 0);
 
             var op = GetOperator(code.Operation);
 
-            Emit.Arithmetic(op, 1, new RegisterSource(2));
+            Emit.Arithmetic(op, new RegisterSource(2), 1);
 
             Emit.Store(1, baseRegister, 0);
         }
@@ -117,9 +119,9 @@ namespace Plotty.CodeGeneration
         {
             Emit.CurrentCode = code;
 
-            Emit.Move(new Register(0), GetAddress(code.Origin));
+            Emit.Move(GetAddress(code.Origin), new Register(0));
             Emit.Load(new Register(1), baseRegister, 0);
-            Emit.Move(new Register(0), GetAddress(code.Target));
+            Emit.Move(GetAddress(code.Target), new Register(0));
             Emit.Store(new Register(1), baseRegister, 0);
         }
 
@@ -129,23 +131,23 @@ namespace Plotty.CodeGeneration
 
             if (code.Operation == BooleanOperation.IsEqual)
             {
-                Emit.Move(new Register(0), GetAddress(code.Left));
+                Emit.Move(GetAddress(code.Left), new Register(0));
                 Emit.Load(new Register(1), baseRegister, new Register(0));
 
-                Emit.Move(new Register(0), GetAddress(code.Right));
+                Emit.Move(GetAddress(code.Right), new Register(0));
                 Emit.Load(new Register(2), baseRegister, new Register(0));
 
-                Emit.Arithmetic(ArithmeticOperator.Substract, 1, new RegisterSource(2));
+                Emit.Arithmetic(ArithmeticOperator.Substract, new RegisterSource(2), 1);
 
-                Emit.Move(new Register(0), GetAddress(code.Target));
+                Emit.Move(GetAddress(code.Target), new Register(0));
                 Emit.Store(new Register(1), baseRegister, new Register(0));
             }
             else
             {
-                Emit.Move(new Register(0), GetAddress(code.Left));
+                Emit.Move(GetAddress(code.Left), new Register(0));
                 Emit.Load(new Register(1), baseRegister, new Register(0));
 
-                Emit.Move(new Register(0), GetAddress(code.Right));
+                Emit.Move(GetAddress(code.Right), new Register(0));
                 Emit.Load(new Register(2), baseRegister, new Register(0));
 
                 var jumpOnTrue = new Label();
@@ -154,17 +156,17 @@ namespace Plotty.CodeGeneration
                 Emit.Branch(code.Operation.ToOperator(), 1, 2, jumpOnTrue);
 
                 // Sets false
-                Emit.Move(new Register(1), 1);
+                Emit.Move(1, new Register(1));
                 Emit.Jump(endLabel);
                 Emit.Label(jumpOnTrue);
 
                 // Sets true
-                Emit.Move(new Register(1), 0);
+                Emit.Move(0, new Register(1));
 
                 // End
                 Emit.Label(endLabel);
 
-                Emit.Move(new Register(0), GetAddress(code.Target));
+                Emit.Move(GetAddress(code.Target), new Register(0));
                 Emit.Store(new Register(1), baseRegister, new Register(0));
             }
         }
@@ -191,7 +193,7 @@ namespace Plotty.CodeGeneration
 
             var continuationLabel = new Label();
 
-            GoToNewFrame(continuationLabel);
+            GoToNewFrame(code.FunctionName, continuationLabel);
 
             Emit.CurrentDescription = null;
 
@@ -204,7 +206,7 @@ namespace Plotty.CodeGeneration
 
             if (code.Reference != null)
             {
-                Emit.Move(0, GetAddress(code.Reference));
+                Emit.Move(GetAddress(code.Reference), 0);
                 Emit.Store(returnRegister, baseRegister, 0);
             }
         }
@@ -215,7 +217,7 @@ namespace Plotty.CodeGeneration
 
             if (code.Reference != null)
             {
-                Emit.Move(0, GetAddress(code.Reference));
+                Emit.Move(GetAddress(code.Reference), 0);
                 Emit.Load(returnRegister, baseRegister, 0);
             }
 
@@ -237,7 +239,7 @@ namespace Plotty.CodeGeneration
             Emit.CurrentCode = code;
         }
 
-        private void GoToNewFrame(Label label)
+        private void GoToNewFrame(string functionName, Label label)
         {
             Emit.CurrentDescription = "Go to new frame";
 
@@ -247,11 +249,11 @@ namespace Plotty.CodeGeneration
             Emit.Transfer(stackRegister, 1);
 
             // New base register
-            Emit.Add(baseRegister, symbolCount);
-            Emit.Add(baseRegister, stackRegister);
+            Emit.AddInt(symbolCount, baseRegister);
+            Emit.Add(stackRegister, baseRegister);
 
             // New stack register
-            Emit.Move(stackRegister, 0);
+            Emit.Move(GetFunctionScope(functionName).Symbols.Count, stackRegister);
             
             Emit.Push(0);   // Base Register
             Emit.Push(1);   // Stack Register

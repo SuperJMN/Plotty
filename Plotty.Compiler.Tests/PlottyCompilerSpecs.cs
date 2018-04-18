@@ -18,40 +18,32 @@ namespace Plotty.Compiler.Tests
         {
             var source = "void main() {\r\n\tc=add(55);\r\n\treturn;\r\n}\r\n\r\nint add(int a) \r\n{\r\n\treturn a+1;\r\n}";
 
-            var expectations = new List<Expectation>()
-            {
-                new Expectation("a", 3),
-                new Expectation("b", 5),
-            };
-
-            AssertRunFull(source, expectations);
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+            fixture.GetReferenceValue("a").Should().Be(3);
+            fixture.GetReferenceValue("b").Should().Be(5);
         }
 
         [Fact]
         public void Assignments()
         {
-            var source = "void main() { a = 123; b=80; }";
+            var source = "void main() { a = 123; b=80; }";          
 
-            var expectations = new List<Expectation>()
-            {
-                new Expectation("a", 123),
-                new Expectation("b", 80),
-            };
-
-            AssertRunFull(source, expectations);
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+            fixture.GetReferenceValue("a").Should().Be(123);
+            fixture.GetReferenceValue("b").Should().Be(80);
         }
 
         [Fact]
         public void NestedCallsToReturn()
         {
-            var source = "void main()  { a=func1(); }  int func1()  { return func2(); }  int func2()  { return func3(); }  int func3()  { return 1234; }";
+            var source = "void main()  { a = func1(); }  int func1()  { return func2(); }  int func2()  { return func3(); }  int func3()  { return 1234; }";
 
-            var expectations = new List<Expectation>()
-            {
-                new Expectation("a", 1234),
-            };
+            var fixture = new MachineFixture();
+            fixture.Run(source);
 
-            AssertRunFull(source, expectations);
+            fixture.GetReferenceValue("a").Should().Be(1234);
         }
 
         [Fact]
@@ -59,26 +51,30 @@ namespace Plotty.Compiler.Tests
         {
             var source = "void main()  { jump1(); }  void jump1()  { jump2(); }  void jump2()  { jump3(); }  void jump3()  { jump4(); } void jump4() { jump5(); } void jump5() { }";
 
-            var expectations = new List<Expectation>()
-            {
-                new Expectation("a", 1234),
-            };
-
-            AssertRunFull(source, expectations);
+            var fixture = new MachineFixture();
+            fixture.Run(source);
         }
 
         [Fact]
         public void Simple()
         {
-            var source = "void main() { a = simple(); } int simple() { return 85; }";
-
-            //var expectations = new List<Expectation>()
-            //{
-            //    new Expectation("a", 85),
-            //};
+            var source = "int main() { return simple(); } int simple() { return 85 + 5; }";
 
             var fixture = new MachineFixture();
             fixture.Run(source);
+
+            fixture.ReturnedValue.Should().Be(90);
+        }
+
+        [Fact]
+        public void SimpleWithAddition()
+        {
+            var source = "void main() { return simple() + 5; } int simple() { return 85; }";
+
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.ReturnedValue.Should().Be(90);
         }
 
         [Fact]
@@ -86,17 +82,38 @@ namespace Plotty.Compiler.Tests
         {
             var source = "int main() { return 85; }";
 
-            //var expectations = new List<Expectation>()
-            //{
-            //    new Expectation("a", 85),
-            //};
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.ReturnedValue.Should().Be(85);
+        }
+
+        [Fact]
+        public void TwoFuncsAdded()
+        {
+            var source = "int main() { return first() + second(); } int first() { return 3; } int second() { return 5; } }";
 
             var fixture = new MachineFixture();
             fixture.Run(source);
+
+            fixture.ReturnedValue.Should().Be(8);
         }
 
         private class MachineFixture
         {
+            private Scope mainScope;
+            public int ReturnedValue => Machine.Registers[PlottyCodeGenerationVisitor.ReturnRegisterIndex];
+            public int GetReferenceValue(Reference r)
+            {
+                var address = mainScope.Symbols.Keys.ToList().IndexOf(r);
+                if (address == -1)
+                {
+                    throw new InvalidOperationException($"The referece {r} doesn't exist in the 'main' scope");
+                }
+
+                return Machine.Memory[address];
+            }
+
             public MachineFixture()
             {
                 Machine = new PlottyMachine();
@@ -106,6 +123,7 @@ namespace Plotty.Compiler.Tests
             {
                 var compiler = new PlottyCompiler();
                 var result = compiler.Compile(source);
+                mainScope = result.Scope.Children.Single(x => x.Owner is Function f && f.Name == "main");
                 
                 Machine.Load(result.GenerationResult.Lines);
 
@@ -163,8 +181,10 @@ namespace Plotty.Compiler.Tests
             var n = 12;
             var result = 89;
 
-            var code = $"void main()\n {{int first;int second;int next;int c; int n; n = {n};\nfirst = 0;\nsecond = 1;\n \nfor (c = 0; c<n ;c=c+1)\n{{\n\tif ( c < 2 )\n\t{{\n    \tnext = c;\n\t}}\n\n    if ( c > 1)\n    {{\n\t\tnext = first + second;\n        first = second;\n\t\tsecond = next;\n\t}}      \n}}\n}}";
-            AssertRun(code, new[] { new Expectation("next", result), });
+            var source = $"void main()\n {{int first;int second;int next;int c; int n; n = {n};\nfirst = 0;\nsecond = 1;\n \nfor (c = 0; c<n ;c=c+1)\n{{\n\tif ( c < 2 )\n\t{{\n    \tnext = c;\n\t}}\n\n    if ( c > 1)\n    {{\n\t\tnext = first + second;\n        first = second;\n\t\tsecond = next;\n\t}}      \n}}\n}}";
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+            fixture.GetReferenceValue("next").Should().Be(result);
         }
 
         [Theory]

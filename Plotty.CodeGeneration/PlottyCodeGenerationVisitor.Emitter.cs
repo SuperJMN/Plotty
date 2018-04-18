@@ -78,26 +78,25 @@ namespace Plotty.CodeGeneration
                 }));
             }
 
-            public void Arithmetic(ArithmeticOperator op, Register register, Source registerSource,
-                Register destination = null)
+            public void Arithmetic(ArithmeticOperator op, Source source, Register destination, Register alternate = null)
             {
                 Add(new Line(new ArithmeticInstruction
                 {
                     ArithmeticOperator = op,
-                    Left = register,
-                    Right = registerSource,
-                    Destination = destination ?? register
+                    Left = destination,
+                    Right = source,
+                    Destination = alternate ?? destination
                 }));
             }
 
             public void Increment(Register register)
             {
-                Add(1, register);
+                AddInt(1, register);
             }
 
             public void Decrement(Register register)
             {
-                Substract(register, 1);
+                SubstractInt(1, register);
             }
 
             public void Jump(Register register)
@@ -135,7 +134,7 @@ namespace Plotty.CodeGeneration
 
             public void Push(Label label)
             {
-                Move(0, -1);
+                Move(-1, 0);
                 var move = GetLast();
                 Visitor.fixups.Add(new PendingFixup(move, new ReplaceByLabelAddressFixup(label)));
 
@@ -147,35 +146,35 @@ namespace Plotty.CodeGeneration
                 return Visitor.lines.Last();
             }
 
-            public void Add(Register register, Register second, Register destination = null)
+            public void Add(Register source, Register destination, Register alternateDestination = null)
             {
-                Arithmetic(ArithmeticOperator.Add, register, new RegisterSource(second), destination);
+                Arithmetic(ArithmeticOperator.Add, new RegisterSource(source), destination, alternateDestination);
             }
 
             public void Substract(Register first, Register second, Register destination = null)
             {
-                Arithmetic(ArithmeticOperator.Substract, first, new RegisterSource(second), destination);
+                Arithmetic(ArithmeticOperator.Substract, new RegisterSource(second), first, destination);
             }
 
-            public void Add(int value, Register register, Register destination = null)
+            public void AddInt(int value, Register destination, Register alternateDestination = null)
             {
-                Arithmetic(ArithmeticOperator.Add, register, new ImmediateSource(value), destination);
+                Arithmetic(ArithmeticOperator.Add, new ImmediateSource(value), destination, alternateDestination);
             }
 
-            public void Substract(Register first, int value, Register destination = null)
+            public void SubstractInt(int value, Register first, Register destination = null)
             {
-                Arithmetic(ArithmeticOperator.Substract, first, new ImmediateSource(value), destination);
+                Arithmetic(ArithmeticOperator.Substract, new ImmediateSource(value), first, destination);
             }
 
             public void Arithmetic(ArithmeticOperator op, Register register, Register second,
-                Register destination = null)
+                Register alternate = null)
             {
-                Arithmetic(op, register, new RegisterSource(second), destination);
+                Arithmetic(op, new RegisterSource(second), register, alternate);
             }
 
-            public void Arithmetic(ArithmeticOperator op, Register register, int value, Register destination = null)
+            public void Arithmetic(ArithmeticOperator op, Register register, int value, Register alternate = null)
             {
-                Arithmetic(op, register, new ImmediateSource(value), destination);
+                Arithmetic(op, new ImmediateSource(value), register, alternate);
             }
 
             public void Transfer(Register source, Register destination)
@@ -187,12 +186,12 @@ namespace Plotty.CodeGeneration
                 }));
             }
 
-            public void Move(Register destination, int immediate)
+            public void Move(int immediate, Register destination)
             {
                 Add(new Line(new MoveInstruction
                 {
+                    Source = new ImmediateSource(immediate),
                     Destination = destination,
-                    Source = new ImmediateSource(immediate)
                 }));
             }
         }
