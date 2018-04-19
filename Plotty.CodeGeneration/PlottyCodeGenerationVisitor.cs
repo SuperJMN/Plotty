@@ -196,7 +196,7 @@ namespace Plotty.CodeGeneration
             GoToNewFrame(code.FunctionName, continuationLabel);
 
             Emit.CurrentDescription = null;
-
+            
             Emit.Jump(new Label(code.FunctionName));
             Emit.Label(continuationLabel);
 
@@ -209,6 +209,16 @@ namespace Plotty.CodeGeneration
                 Emit.Move(GetAddress(code.Reference), 0);
                 Emit.Store(returnRegister, baseRegister, 0);
             }
+        }
+
+        private void PopParams(string functionName)
+        {
+            var func = GetFunction(functionName);
+            foreach (var argument in func.Arguments.Reverse())
+            {
+                Emit.Pop(0);
+                Emit.Store(0, GetAddress(argument.Reference));
+            }            
         }
 
         public void Visit(ReturnCode code)
@@ -234,13 +244,20 @@ namespace Plotty.CodeGeneration
             Emit.Halt();
         }
 
-        public void Visit(ReferenceParameterCode code)
+        public void Visit(ParameterCode code)
         {
             Emit.CurrentCode = code;
+            Emit.CurrentDescription = $"Pushing parameter {code.Reference}";
+            
+            Emit.Move(GetAddress(code.Reference), 0);
+            Emit.Load(0, baseRegister);
+            Emit.Push(0);
         }
 
         private void GoToNewFrame(string functionName, Label label)
         {
+            //PopParams(functionName);
+
             Emit.CurrentDescription = "Go to new frame";
 
             var symbolCount = CurrentScope.Symbols.Count;
@@ -269,6 +286,11 @@ namespace Plotty.CodeGeneration
 
             Emit.Transfer(0, stackRegister);
             Emit.Transfer(1, baseRegister);
+        }
+
+        private Function GetFunction(string functionName)
+        {
+            return RootScope.Children.Select(x => x.Owner).OfType<Function>().Single(x => x.Name == functionName);
         }
 
         private Scope GetFunctionScope(string functionName)
