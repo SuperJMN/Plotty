@@ -102,17 +102,18 @@ namespace Plotty.Compiler.Tests
         [Fact]
         public void FuncWithParams()
         {
-            var source = "int main() { return add(5, 4); } int add(int a, int b) { return a+b; }";
-
+            var source = "int main() { return add(5, 6, 7, 8, 9); } int add(int a, int b, int c, int d, int e) { return a+b; }";
+            
             var fixture = new MachineFixture();
             fixture.Run(source);
 
-            fixture.ReturnedValue.Should().Be(9);
+            fixture.ReturnedValue.Should().Be(11);
         }
 
         private class MachineFixture
         {
             private Scope mainScope;
+            public List<IntermediateCode> IntermediateCode { get; private set; }
             public int ReturnedValue => Machine.Registers[PlottyCodeGenerationVisitor.ReturnRegisterIndex];
             public int GetReferenceValue(Reference r)
             {
@@ -135,6 +136,7 @@ namespace Plotty.Compiler.Tests
                 var compiler = new PlottyCompiler();
                 var result = compiler.Compile(source);
                 mainScope = result.Scope.Children.Single(x => x.Owner is Function f && f.Name == "main");
+                IntermediateCode = result.IntermediateCode;
                 
                 Machine.Load(result.GenerationResult.Lines);
 

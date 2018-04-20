@@ -23,27 +23,32 @@ namespace Plotty.CodeGeneration
 
         private readonly List<PendingFixup> fixups = new List<PendingFixup>();
         private readonly List<ILine> lines = new List<ILine>();
-        private Scope currentScope;
         private Dictionary<Reference, int> localAddress;
-        
+
         public PlottyCodeGenerationVisitor(Scope scope)
         {
-            CurrentScope = scope;
+            PushScope(scope);
             RootScope = CurrentScope;
             Emit = new ContextualizedEmitter(this);
         }
 
         public IEnumerable<ILine> Lines => lines.AsReadOnly();
 
-        private Scope CurrentScope
+        private readonly Stack<Scope> scopes = new Stack<Scope>();
+
+        private void PushScope(Scope scope)
         {
-            get => currentScope;
-            set
-            {
-                currentScope = value;
-                Allocate(currentScope.Symbols);
-            }
+            scopes.Push(scope);
+            Allocate(scope.Symbols);
         }
+
+        private void PopScope()
+        {
+            scopes.Pop();
+            Allocate(CurrentScope.Symbols);
+        }
+
+        private Scope CurrentScope => scopes.Peek();
 
         public Scope RootScope { get; }
 
@@ -182,7 +187,7 @@ namespace Plotty.CodeGeneration
         {
             Emit.CurrentCode = code;
 
-            CurrentScope = GetFunctionScope(code.Function.Name);
+            PushScope(GetFunctionScope(code.Function.Name));
 
             Emit.Label(new Label(code.Function.Name));
         }
@@ -193,10 +198,12 @@ namespace Plotty.CodeGeneration
 
             var continuationLabel = new Label();
 
+            PopParamsToFunctionSpace(code.FunctionName);
+
             GoToNewFrame(code.FunctionName, continuationLabel);
 
             Emit.CurrentDescription = null;
-            
+
             Emit.Jump(new Label(code.FunctionName));
             Emit.Label(continuationLabel);
 
@@ -211,14 +218,30 @@ namespace Plotty.CodeGeneration
             }
         }
 
-        private void PopParams(string functionName)
+        private void PopParamsToFunctionSpace(string functionName)
         {
+            Emit.CurrentDescription = "Popping arguments";
+
+            var param = new Register(0);
+            var funcBase = new Register(1);
+            var offset = new Register(2);
+
             var func = GetFunction(functionName);
+
+            Emit.Transfer(baseRegister, funcBase);
+            Emit.AddInt(CurrentScope.Symbols.Count, funcBase);
+            Emit.AddRegister(stackRegister, funcBase);
+
+            PushScope(GetFunctionScope(functionName));
+
             foreach (var argument in func.Arguments.Reverse())
             {
-                Emit.Pop(0);
-                Emit.Store(0, GetAddress(argument.Reference));
-            }            
+                Emit.Pop(param);
+                Emit.Move(GetAddress(argument.Reference), offset);
+                Emit.Store(param, funcBase, offset);
+            }
+
+            PopScope();
         }
 
         public void Visit(ReturnCode code)
@@ -234,7 +257,7 @@ namespace Plotty.CodeGeneration
             Emit.Pop(0);
             Emit.Jump(0);
 
-            CurrentScope = CurrentScope.Parent;
+            PopScope();
         }
 
         public void Visit(HaltCode code)
@@ -246,18 +269,19 @@ namespace Plotty.CodeGeneration
 
         public void Visit(ParameterCode code)
         {
+            var offset = new Register(0);
+            var destination = new Register(1);
+            
             Emit.CurrentCode = code;
             Emit.CurrentDescription = $"Pushing parameter {code.Reference}";
-            
-            Emit.Move(GetAddress(code.Reference), 0);
-            Emit.Load(0, baseRegister);
-            Emit.Push(0);
+
+            Emit.Move(GetAddress(code.Reference), offset);
+            Emit.Load(destination, baseRegister, offset);
+            Emit.Push(destination);
         }
 
         private void GoToNewFrame(string functionName, Label label)
         {
-            //PopParams(functionName);
-
             Emit.CurrentDescription = "Go to new frame";
 
             var symbolCount = CurrentScope.Symbols.Count;
@@ -267,11 +291,11 @@ namespace Plotty.CodeGeneration
 
             // New base register
             Emit.AddInt(symbolCount, baseRegister);
-            Emit.Add(stackRegister, baseRegister);
+            Emit.AddRegister(stackRegister, baseRegister);
 
             // New stack register
             Emit.Move(GetFunctionScope(functionName).Symbols.Count, stackRegister);
-            
+
             Emit.Push(0);   // Base Register
             Emit.Push(1);   // Stack Register
             Emit.Push(label);
@@ -300,7 +324,7 @@ namespace Plotty.CodeGeneration
 
         private void Allocate(IReadOnlyDictionary<Reference, Symbol> currentScopeSymbols)
         {
-            localAddress = currentScopeSymbols.Select((x, i) => new {x, i}).ToDictionary(x => x.x.Key, x => x.i);
+            localAddress = currentScopeSymbols.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Key, x => x.i);
         }
 
         private int GetAddress(Reference reference)

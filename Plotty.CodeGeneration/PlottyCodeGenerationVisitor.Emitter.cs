@@ -15,7 +15,7 @@ namespace Plotty.CodeGeneration
 
             protected PlottyCodeGenerationVisitor Visitor { get; }
 
-            protected virtual void Add(Line line)
+            protected virtual void AddLine(Line line)
             {
                 Visitor.lines.Add(line);
                 Visitor.CodeLog.Last().AddLine(line);
@@ -23,12 +23,12 @@ namespace Plotty.CodeGeneration
 
             public void Label(Label label)
             {
-                Add(new Line(label, null));
+                AddLine(new Line(label, null));
             }
 
             public void Jump(Label label)
             {
-                Add(new Line(new BranchInstruction
+                AddLine(new Line(new BranchInstruction
                 {
                     Operator = BooleanOperator.Equal,
                     One = new Register(0),
@@ -41,7 +41,7 @@ namespace Plotty.CodeGeneration
             {
                 var source = offset == null ? (Source) new ImmediateSource(0) : new RegisterSource(offset);
 
-                Add(new Line(new StoreInstruction
+                AddLine(new Line(new StoreInstruction
                 {
                     Source = new RegisterSource(subject),
                     MemoryAddress = new IndexedAddress(baseRegister, source)
@@ -60,7 +60,7 @@ namespace Plotty.CodeGeneration
                     source = new RegisterSource(offset);
                 }
 
-                Add(new Line(new LoadInstruction
+                AddLine(new Line(new LoadInstruction
                 {
                     Destination = subject,
                     MemoryAddress = new IndexedAddress(baseRegister, source)
@@ -69,7 +69,7 @@ namespace Plotty.CodeGeneration
 
             public void Branch(BooleanOperator op, Register r1, Register r2, Label label)
             {
-                Add(new Line(new BranchInstruction
+                AddLine(new Line(new BranchInstruction
                 {
                     Operator = op,
                     One = r1,
@@ -80,7 +80,7 @@ namespace Plotty.CodeGeneration
 
             public void Arithmetic(ArithmeticOperator op, Source source, Register destination, Register alternate = null)
             {
-                Add(new Line(new ArithmeticInstruction
+                AddLine(new Line(new ArithmeticInstruction
                 {
                     ArithmeticOperator = op,
                     Left = destination,
@@ -101,7 +101,7 @@ namespace Plotty.CodeGeneration
 
             public void Jump(Register register)
             {
-                Add(new Line(new BranchInstruction
+                AddLine(new Line(new BranchInstruction
                 {
                     Operator = BooleanOperator.Equal,
                     One = new Register(0),
@@ -117,7 +117,7 @@ namespace Plotty.CodeGeneration
 
             public void Halt()
             {
-                Add(new Line(new HaltInstruction()));
+                AddLine(new Line(new HaltInstruction()));
             }
 
             public void Pop(Register target)
@@ -146,7 +146,7 @@ namespace Plotty.CodeGeneration
                 return Visitor.lines.Last();
             }
 
-            public void Add(Register source, Register destination, Register alternateDestination = null)
+            public void AddRegister(Register source, Register destination, Register alternateDestination = null)
             {
                 Arithmetic(ArithmeticOperator.Add, new RegisterSource(source), destination, alternateDestination);
             }
@@ -179,7 +179,7 @@ namespace Plotty.CodeGeneration
 
             public void Transfer(Register source, Register destination)
             {
-                Add(new Line(new MoveInstruction
+                AddLine(new Line(new MoveInstruction
                 {
                     Destination = destination,
                     Source = new RegisterSource(source)
@@ -188,7 +188,7 @@ namespace Plotty.CodeGeneration
 
             public void Move(int immediate, Register destination)
             {
-                Add(new Line(new MoveInstruction
+                AddLine(new Line(new MoveInstruction
                 {
                     Source = new ImmediateSource(immediate),
                     Destination = destination,
@@ -202,7 +202,7 @@ namespace Plotty.CodeGeneration
             {
             }
 
-            protected override void Add(Line line)
+            protected override void AddLine(Line line)
             {
                 Visitor.lines.Add(new ContextualLine(line, CurrentCode, CurrentDescription));
             }
