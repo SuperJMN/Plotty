@@ -17,13 +17,13 @@ namespace Plotty.CodeGeneration
     {
         public const int ReturnRegisterIndex = 5;
 
-        private readonly Register baseRegister = new Register(7);
-        private readonly Register returnRegister = new Register(5);
-        private readonly Register stackRegister = new Register(6);
+        private readonly Register returnRegister = new Register(ReturnRegisterIndex);
+        private readonly Register baseRegister = new Register(6);
+        private readonly Register stackRegister = new Register(7);
 
         private readonly List<PendingFixup> fixups = new List<PendingFixup>();
         private readonly List<ILine> lines = new List<ILine>();
-        private Dictionary<Reference, int> localAddress;
+        private Dictionary<Reference, int> localAddresses;
 
         public PlottyCodeGenerationVisitor(Scope scope)
         {
@@ -190,6 +190,8 @@ namespace Plotty.CodeGeneration
             PushScope(GetFunctionScope(code.Function.Name));
 
             Emit.Label(new Label(code.Function.Name));
+
+            PopParamsToFunctionSpace(code.Function.Arguments);
         }
 
         public void Visit(CallCode code)
@@ -198,8 +200,6 @@ namespace Plotty.CodeGeneration
 
             var continuationLabel = new Label();
 
-            PopParamsToFunctionSpace(code.FunctionName);
-
             GoToNewFrame(code.FunctionName, continuationLabel);
 
             Emit.CurrentDescription = null;
@@ -207,8 +207,9 @@ namespace Plotty.CodeGeneration
             Emit.Jump(new Label(code.FunctionName));
             Emit.Label(continuationLabel);
 
-            RestoreAndGoToPreviousFrame();
+            RestoreAndGoToPreviousFrame(code.FunctionName);
 
+          
             Emit.CurrentDescription = null;
 
             if (code.Reference != null)
@@ -218,30 +219,34 @@ namespace Plotty.CodeGeneration
             }
         }
 
-        private void PopParamsToFunctionSpace(string functionName)
+        private void PopParamsToFunctionSpace(ICollection<Argument> arguments)
         {
             Emit.CurrentDescription = "Popping arguments";
-
-            var param = new Register(0);
-            var funcBase = new Register(1);
-            var offset = new Register(2);
-
-            var func = GetFunction(functionName);
-
-            Emit.Transfer(baseRegister, funcBase);
-            Emit.AddInt(CurrentScope.Symbols.Count, funcBase);
-            Emit.AddRegister(stackRegister, funcBase);
-
-            PushScope(GetFunctionScope(functionName));
-
-            foreach (var argument in func.Arguments.Reverse())
+            
+            if (!arguments.Any())
             {
-                Emit.Pop(param);
-                Emit.Move(GetAddress(argument.Reference), offset);
-                Emit.Store(param, funcBase, offset);
+                Emit.CurrentDescription = null;
+                return;
             }
 
-            PopScope();
+            var @base = new Register(0);
+            var offset = new Register(1);
+            var parameter = new Register(2);
+            var localAddress = new Register(3);
+
+            Emit.Move(0, offset);
+            Emit.Transfer(baseRegister, @base);
+            Emit.SubstractInt(arguments.Count, @base);
+
+            foreach (var argument in arguments)
+            {
+                Emit.Load(parameter, @base, offset);
+                Emit.Move(GetAddress(argument.Reference), localAddress);
+                Emit.Store(parameter, baseRegister, localAddress);
+                Emit.Increment(offset);
+            }
+
+            Emit.CurrentDescription = null;
         }
 
         public void Visit(ReturnCode code)
@@ -290,7 +295,7 @@ namespace Plotty.CodeGeneration
             Emit.Transfer(stackRegister, 1);
 
             // New base register
-            Emit.AddInt(symbolCount, baseRegister);
+            //Emit.AddInt(symbolCount, baseRegister);
             Emit.AddRegister(stackRegister, baseRegister);
 
             // New stack register
@@ -301,7 +306,7 @@ namespace Plotty.CodeGeneration
             Emit.Push(label);
         }
 
-        private void RestoreAndGoToPreviousFrame()
+        private void RestoreAndGoToPreviousFrame(string codeFunctionName)
         {
             Emit.CurrentDescription = "Restoring previous frame";
 
@@ -310,6 +315,13 @@ namespace Plotty.CodeGeneration
 
             Emit.Transfer(0, stackRegister);
             Emit.Transfer(1, baseRegister);
+
+            var argumentsCount = GetFunction(codeFunctionName).Arguments.Count;
+            if (argumentsCount > 0)
+            {
+                Emit.SubstractInt(argumentsCount, stackRegister);
+            }
+
         }
 
         private Function GetFunction(string functionName)
@@ -324,12 +336,12 @@ namespace Plotty.CodeGeneration
 
         private void Allocate(IReadOnlyDictionary<Reference, Symbol> currentScopeSymbols)
         {
-            localAddress = currentScopeSymbols.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Key, x => x.i);
+            localAddresses = currentScopeSymbols.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Key, x => x.i);
         }
 
         private int GetAddress(Reference reference)
         {
-            return localAddress[reference];
+            return localAddresses[reference];
         }
 
         private ArithmeticOperator GetOperator(CodeGen.Intermediate.Codes.Common.ArithmeticOperator codeOperation)

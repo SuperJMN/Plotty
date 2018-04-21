@@ -151,9 +151,9 @@ namespace Plotty.CodeGeneration
                 Arithmetic(ArithmeticOperator.Add, new RegisterSource(source), destination, alternateDestination);
             }
 
-            public void Substract(Register first, Register second, Register destination = null)
+            public void Substract(Register source, Register destination, Register alternate = null)
             {
-                Arithmetic(ArithmeticOperator.Substract, new RegisterSource(second), first, destination);
+                Arithmetic(ArithmeticOperator.Substract, new RegisterSource(source), destination, alternate);
             }
 
             public void AddInt(int value, Register destination, Register alternateDestination = null)
@@ -161,9 +161,9 @@ namespace Plotty.CodeGeneration
                 Arithmetic(ArithmeticOperator.Add, new ImmediateSource(value), destination, alternateDestination);
             }
 
-            public void SubstractInt(int value, Register first, Register destination = null)
+            public void SubstractInt(int value, Register destination, Register alternate = null)
             {
-                Arithmetic(ArithmeticOperator.Substract, new ImmediateSource(value), first, destination);
+                Arithmetic(ArithmeticOperator.Substract, new ImmediateSource(value), destination, alternate);
             }
 
             public void Arithmetic(ArithmeticOperator op, Register register, Register second,

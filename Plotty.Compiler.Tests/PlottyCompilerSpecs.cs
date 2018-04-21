@@ -47,6 +47,17 @@ namespace Plotty.Compiler.Tests
         }
 
         [Fact]
+        public void NestedCallsCombined()
+        {
+            var source = "int func5() \n{\n\treturn 2;\n}\n\nint func4() \n{\n\treturn 5;\n}\n\nint func3() \n{\n\treturn 3+4;\n}\n\n\nint func2() \n{\n\treturn func3() + func4() + func5();\n}\n\n\nint func1() \n{\n\treturn 1;\n}\n\n\nint main() \n{\n\treturn func1() + func2();\n}\n";
+
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.ReturnedValue.Should().Be(15);
+        }
+
+        [Fact]
         public void NestedCalls()
         {
             var source = "void main()  { jump1(); }  void jump1()  { jump2(); }  void jump2()  { jump3(); }  void jump3()  { jump4(); } void jump4() { jump5(); } void jump5() { }";
@@ -102,12 +113,23 @@ namespace Plotty.Compiler.Tests
         [Fact]
         public void FuncWithParams()
         {
-            var source = "int main() { return add(5, 6, 7, 8, 9); } int add(int a, int b, int c, int d, int e) { return a+b; }";
+            var source = "int main() { return add(123); } int add(int a) { return a+555; }";
             
             var fixture = new MachineFixture();
             fixture.Run(source);
 
-            fixture.ReturnedValue.Should().Be(11);
+            fixture.ReturnedValue.Should().Be(678);
+        }
+
+        [Fact]
+        public void AddWithParams()
+        {
+            var source = "int main() { return add(3, 4); } int add(int a, int b) { return a+b; }";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.ReturnedValue.Should().Be(7);
         }
 
         private class MachineFixture
