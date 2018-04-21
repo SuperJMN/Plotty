@@ -13,17 +13,6 @@ namespace Plotty.Compiler.Tests
 {
     public class PlottyCompilerSpecs
     {
-        [Fact(Skip = "No funciona")]
-        public void Add()
-        {
-            var source = "void main() {\r\n\tc=add(55);\r\n\treturn;\r\n}\r\n\r\nint add(int a) \r\n{\r\n\treturn a+1;\r\n}";
-
-            var fixture = new MachineFixture();
-            fixture.Run(source);
-            fixture.GetReferenceValue("a").Should().Be(3);
-            fixture.GetReferenceValue("b").Should().Be(5);
-        }
-
         [Fact]
         public void Assignments()
         {
@@ -38,7 +27,7 @@ namespace Plotty.Compiler.Tests
         [Fact]
         public void NestedCallsToReturn()
         {
-            var source = "void main()  { a = func1(); }  int func1()  { return func2(); }  int func2()  { return func3(); }  int func3()  { return 1234; }";
+            var source = "void main()  { a = func1(); }  int func1()  { return func2(); } int func2() { return func3(); } int func3()  { return 1234; }";
 
             var fixture = new MachineFixture();
             fixture.Run(source);
@@ -49,7 +38,7 @@ namespace Plotty.Compiler.Tests
         [Fact]
         public void NestedCallsCombined()
         {
-            var source = "int func5() \n{\n\treturn 2;\n}\n\nint func4() \n{\n\treturn 5;\n}\n\nint func3() \n{\n\treturn 3+4;\n}\n\n\nint func2() \n{\n\treturn func3() + func4() + func5();\n}\n\n\nint func1() \n{\n\treturn 1;\n}\n\n\nint main() \n{\n\treturn func1() + func2();\n}\n";
+            var source = "int func5()  {  return 2; }  int func4()  {  return 5; }  int func3()  {  return 3+4; }   int func2()  {  return func3() + func4() + func5(); }   int func1()  {  return 1; }   int main()  {  return func1() + func2(); } ";
 
             var fixture = new MachineFixture();
             fixture.Run(source);
@@ -135,7 +124,7 @@ namespace Plotty.Compiler.Tests
         [Fact]
         public void TwoReturns()
         {
-            var source = "int main() \r\n{ \r\n\ta=3; \r\n\r\n\tif (a==3) \r\n\t{\r\n\t\treturn 5; \r\n\t}\r\n\telse \r\n\t{\r\n\t\treturn 2; \r\n\t}\r\n}";
+            var source = "int main() { a=3; if (a==3) { return 5; } else { return 2; } }";
             
             var fixture = new MachineFixture();
             fixture.Run(source);
@@ -147,7 +136,7 @@ namespace Plotty.Compiler.Tests
         [Fact]
         public void Recursive()
         {
-            var source = "int main() \r\n{ \r\n\treturn rec(1);\r\n}\r\n\r\nint rec(int n)\r\n{\r\n\tif (n > 10)\r\n\t{\r\n\t\treturn 0;\r\n\t}\r\n\r\n\treturn n+rec(n+1);\r\n}";
+            var source = "int main() { return rec(1); } int rec(int n) { if (n > 10) { return 0; } return n+rec(n+1); }";
             
             var fixture = new MachineFixture();
             fixture.Run(source);
@@ -158,14 +147,13 @@ namespace Plotty.Compiler.Tests
         [Fact]
         public void FibonacciRecursive()
         {
-            var source = "int main() \r\n{\r\n\treturn fib(10);\r\n}\r\n\r\nint fib(int n)\r\n{\r\n  if (n == 0)\r\n    return n;\r\n\r\n  if (n == 1)\r\n    return n;\r\n\r\n    return (fib(n-1) + fib(n-2));\r\n}";
+            var source = "int main() { return fib(10); } int fib(int n)  { if (n == 0) return n; if (n == 1) return n; return (fib(n-1) + fib(n-2)); }";
             
             var fixture = new MachineFixture();
             fixture.Run(source);
 
             fixture.ReturnedValue.Should().Be(55);
         }
-
 
         private class MachineFixture
         {
@@ -220,7 +208,7 @@ namespace Plotty.Compiler.Tests
             var n = 12;
             var result = 89;
 
-            var source = $"void main()\n {{int first;int second;int next;int c; int n; n = {n};\nfirst = 0;\nsecond = 1;\n \nfor (c = 0; c<n ;c=c+1)\n{{\n\tif ( c < 2 )\n\t{{\n    \tnext = c;\n\t}}\n\n    if ( c > 1)\n    {{\n\t\tnext = first + second;\n        first = second;\n\t\tsecond = next;\n\t}}      \n}}\n}}";
+            var source = $"void main()  {{int first;int second;int next;int c; int n; n = {n}; first = 0; second = 1;   for (c = 0; c<n ;c=c+1) {{  if ( c < 2 )  {{      next = c;  }}      if ( c > 1)     {{   next = first + second;         first = second;   second = next;  }}       }} }}";
             var fixture = new MachineFixture();
             fixture.Run(source);
             fixture.GetReferenceValue("next").Should().Be(result);

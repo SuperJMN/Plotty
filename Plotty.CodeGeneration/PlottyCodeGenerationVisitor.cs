@@ -24,31 +24,31 @@ namespace Plotty.CodeGeneration
         private readonly List<PendingFixup> fixups = new List<PendingFixup>();
         private readonly List<ILine> lines = new List<ILine>();
         private Dictionary<Reference, int> localAddresses;
+        private Scope currentScope;
 
         public PlottyCodeGenerationVisitor(Scope scope)
         {
-            PushScope(scope);
+            CurrentScope = scope;
             RootScope = CurrentScope;
             Emit = new ContextualizedEmitter(this);
         }
 
         public IEnumerable<ILine> Lines => lines.AsReadOnly();
 
-        private readonly Stack<Scope> scopes = new Stack<Scope>();
-
         private void PushScope(Scope scope)
         {
-            scopes.Push(scope);
-            Allocate(scope.Symbols);
+            CurrentScope = scope;           
         }
 
-        private void PopScope()
+        private Scope CurrentScope
         {
-            scopes.Pop();
-            Allocate(CurrentScope.Symbols);
+            get => currentScope;
+            set
+            {
+                currentScope = value;
+                Allocate(currentScope.Symbols);
+            }
         }
-
-        private Scope CurrentScope => scopes.Peek();
 
         public Scope RootScope { get; }
 
@@ -200,16 +200,15 @@ namespace Plotty.CodeGeneration
 
             var continuationLabel = new Label();
 
-            GoToNewFrame(code.FunctionName, continuationLabel);
+            CreateFrame(code.FunctionName, continuationLabel);
 
             Emit.CurrentDescription = null;
 
             Emit.Jump(new Label(code.FunctionName));
             Emit.Label(continuationLabel);
 
-            RestoreAndGoToPreviousFrame(code.FunctionName);
-
-          
+            RestorePreviousFrame(code.FunctionName);
+            
             Emit.CurrentDescription = null;
 
             if (code.Reference != null)
@@ -283,11 +282,9 @@ namespace Plotty.CodeGeneration
             Emit.Push(destination);
         }
 
-        private void GoToNewFrame(string functionName, Label label)
+        private void CreateFrame(string functionName, Label label)
         {
             Emit.CurrentDescription = "Go to new frame";
-
-            var symbolCount = CurrentScope.Symbols.Count;
 
             Emit.Transfer(baseRegister, 0);
             Emit.Transfer(stackRegister, 1);
@@ -304,7 +301,7 @@ namespace Plotty.CodeGeneration
             Emit.Push(label);
         }
 
-        private void RestoreAndGoToPreviousFrame(string codeFunctionName)
+        private void RestorePreviousFrame(string codeFunctionName)
         {
             Emit.CurrentDescription = "Restoring previous frame";
 
