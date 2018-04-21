@@ -132,6 +132,41 @@ namespace Plotty.Compiler.Tests
             fixture.ReturnedValue.Should().Be(7);
         }
 
+        [Fact]
+        public void TwoReturns()
+        {
+            var source = "int main() \r\n{ \r\n\ta=3; \r\n\r\n\tif (a==3) \r\n\t{\r\n\t\treturn 5; \r\n\t}\r\n\telse \r\n\t{\r\n\t\treturn 2; \r\n\t}\r\n}";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.ReturnedValue.Should().Be(5);
+        }
+
+        
+        [Fact]
+        public void Recursive()
+        {
+            var source = "int main() \r\n{ \r\n\treturn rec(1);\r\n}\r\n\r\nint rec(int n)\r\n{\r\n\tif (n > 10)\r\n\t{\r\n\t\treturn 0;\r\n\t}\r\n\r\n\treturn n+rec(n+1);\r\n}";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.ReturnedValue.Should().Be(55);
+        }
+
+        [Fact]
+        public void FibonacciRecursive()
+        {
+            var source = "int main() \r\n{\r\n\treturn fib(10);\r\n}\r\n\r\nint fib(int n)\r\n{\r\n  if (n == 0)\r\n    return n;\r\n\r\n  if (n == 1)\r\n    return n;\r\n\r\n    return (fib(n-1) + fib(n-2));\r\n}";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.ReturnedValue.Should().Be(55);
+        }
+
+
         private class MachineFixture
         {
             private Scope mainScope;

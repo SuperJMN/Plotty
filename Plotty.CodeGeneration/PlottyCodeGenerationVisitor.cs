@@ -261,8 +261,6 @@ namespace Plotty.CodeGeneration
 
             Emit.Pop(0);
             Emit.Jump(0);
-
-            PopScope();
         }
 
         public void Visit(HaltCode code)
