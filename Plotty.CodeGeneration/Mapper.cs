@@ -23,6 +23,12 @@ namespace Plotty.CodeGeneration
             if (op == BooleanOperation.IsLessOrEqual)
                 return BooleanOperator.LessThanOrEqual;
 
+            if (op == BooleanOperation.And)
+                return BooleanOperator.And;
+
+            if (op == BooleanOperation.Or)
+                return BooleanOperator.Or;
+
             throw new ArgumentOutOfRangeException();
         }
     }

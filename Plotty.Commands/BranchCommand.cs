@@ -59,6 +59,16 @@ namespace Plotty.Commands
                 return a <= b;
             }
 
+            if (op == BooleanOperator.And)
+            {
+                return a == 0 && b  == 0;
+            }
+
+            if (op == BooleanOperator.Or)
+            {
+                return a == 0 || b  == 0;
+            }
+
             throw new ArgumentOutOfRangeException(nameof(op));
         }
     }

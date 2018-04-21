@@ -122,6 +122,28 @@ namespace Plotty.Compiler.Tests
         }
 
         [Fact]
+        public void OrOperation1()
+        {
+            var source = "void main()\n{\n\ta=12;\n\tif (a==12 || a==5) \n\t{\n\t\tb=3;\n\t}\n}";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.GetReferenceValue("b").Should().Be(3);
+        }
+
+        [Fact]
+        public void OrOperation2()
+        {
+            var source = "void main()\n{\n\ta=5;\n\tif (a==12 || a==5) \n\t{\n\t\tb=3;\n\t}\n}";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.GetReferenceValue("b").Should().Be(3);
+        }
+
+        [Fact]
         public void TwoReturns()
         {
             var source = "int main() { a=3; if (a==3) { return 5; } else { return 2; } }";

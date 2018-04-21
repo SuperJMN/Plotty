@@ -52,6 +52,16 @@ namespace Plotty.Compiler
                 return "BGE";
             }
 
+            if (op == BooleanOperator.Or)
+            {
+                return "BOR";
+            }
+
+            if (op == BooleanOperator.And)
+            {
+                return "BAND";
+            }
+
             throw new ArgumentOutOfRangeException(nameof(op));
         }
 
