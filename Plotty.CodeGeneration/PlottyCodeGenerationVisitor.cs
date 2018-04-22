@@ -13,7 +13,7 @@ using Label = Plotty.Model.Label;
 
 namespace Plotty.CodeGeneration
 {
-    public partial class PlottyCodeGenerationVisitor : IIntermediateCodeVisitor
+    public class PlottyCodeGenerationVisitor : IIntermediateCodeVisitor
     {
         public const int ReturnRegisterIndex = 5;
 
@@ -26,19 +26,16 @@ namespace Plotty.CodeGeneration
         private Dictionary<Reference, int> localAddresses;
         private Scope currentScope;
 
-        public PlottyCodeGenerationVisitor(Scope scope)
+        public PlottyCodeGenerationVisitor(Scope scope, Func<ICollection<ILine>, ICollection<PendingFixup>, Register, Register, Emitter> emitterFactory)
         {
             CurrentScope = scope;
             RootScope = CurrentScope;
-            Emit = new ContextualizedEmitter(this);
+            Emit = emitterFactory(lines, fixups, stackRegister, baseRegister);
         }
+
+        private Emitter Emit { get; }
 
         public IEnumerable<ILine> Lines => lines.AsReadOnly();
-
-        private void PushScope(Scope scope)
-        {
-            CurrentScope = scope;           
-        }
 
         private Scope CurrentScope
         {
@@ -52,22 +49,15 @@ namespace Plotty.CodeGeneration
 
         public Scope RootScope { get; }
 
-        private ContextualizedEmitter Emit { get; }
-
-        public CodeLog CodeLog { get; } = new CodeLog();
-
         public ReadOnlyCollection<PendingFixup> Fixups => fixups.AsReadOnly();
 
         public void Visit(JumpIfFalse code)
         {
-            Emit.CurrentCode = code;
-
-            Emit.Move(GetAddress(code.Reference), new Register(0));
-            Emit.Load(new Register(1), baseRegister, 0);
+            LoadReference(code.Reference, 1);
 
             var onFalseLabel = new Label();
 
-            // Comparison with 0 (TRUE). If both values are 0, the conditions is true, so the code has to be executed.
+            // Comparison with 0 (TRUE). If both values are 0, the condition is true, so the code has to be executed.
             // So we emit
             Emit.Move(0, new Register(0));
             Emit.Branch(BooleanOperator.Equal, new Register(1), new Register(0), onFalseLabel);
@@ -78,83 +68,65 @@ namespace Plotty.CodeGeneration
 
         public void Visit(BoolConstantAssignment code)
         {
-            Emit.CurrentCode = code;
-
-            Emit.Move(GetAddress(code.Target), new Register(0));
             Emit.Move(code.Value ? 0 : 1, new Register(1));
-            Emit.Store(new Register(1), baseRegister, 0);
+            StoreReference(code.Target, 1);
         }
 
         public void Visit(LabelCode code)
         {
-            Emit.LogVisitFor(code);
-
             Emit.Label(new Label(code.Label.Name));
         }
 
         public void Visit(IntegerConstantAssignment code)
         {
-            Emit.CurrentCode = code;
-
-            Emit.Move(GetAddress(code.Target), new Register(0));
             Emit.Move(code.Value, new Register(1));
-            Emit.Store(new Register(1), baseRegister, 0);
+
+            StoreReference(code.Target, 1);
         }
 
         public void Visit(ArithmeticAssignment code)
         {
-            Emit.CurrentCode = code;
+            LoadReference(code.Left, 1);
+            LoadReference(code.Right, 2);
 
-            Emit.Move(GetAddress(code.Left), 0);
-            Emit.Load(new Register(1), baseRegister, 0);
+            Emit.Arithmetic(GetOperator(code.Operation), new RegisterSource(2), 1);
+            
+            StoreReference(code.Target, 1);
+        }
 
-            Emit.Move(GetAddress(code.Right), 0);
-            Emit.Load(new Register(2), baseRegister, 0);
+        private void LoadReference(Reference reference, Register register, Register addressRegister = null)
+        {
+            addressRegister = addressRegister ?? new Register(0);
+            Emit.Move(GetAddress(reference), addressRegister);
+            Emit.Load(register, baseRegister, addressRegister);
+        }
 
-            Emit.Move(GetAddress(code.Target), 0);
-
-            var op = GetOperator(code.Operation);
-
-            Emit.Arithmetic(op, new RegisterSource(2), 1);
-
-            Emit.Store(1, baseRegister, 0);
+        private void StoreReference(Reference reference, Register register, Register addressRegister = null)
+        {
+            addressRegister = addressRegister ?? new Register(0);
+            Emit.Move(GetAddress(reference), addressRegister);
+            Emit.Store(register, baseRegister, addressRegister);
         }
 
         public void Visit(ReferenceAssignment code)
         {
-            Emit.CurrentCode = code;
-
-            Emit.Move(GetAddress(code.Origin), new Register(0));
-            Emit.Load(new Register(1), baseRegister, 0);
-            Emit.Move(GetAddress(code.Target), new Register(0));
-            Emit.Store(new Register(1), baseRegister, 0);
+            LoadReference(code.Origin, 1);
+            StoreReference(code.Target, 1);
         }
 
         public void Visit(BoolExpressionAssignment code)
         {
-            Emit.CurrentCode = code;
+            LoadReference(code.Left, 1);
+            LoadReference(code.Right, 2);
 
             if (code.Operation == BooleanOperation.IsEqual)
-            {
-                Emit.Move(GetAddress(code.Left), new Register(0));
-                Emit.Load(new Register(1), baseRegister, new Register(0));
-
-                Emit.Move(GetAddress(code.Right), new Register(0));
-                Emit.Load(new Register(2), baseRegister, new Register(0));
-
+            {               
                 Emit.Arithmetic(ArithmeticOperator.Substract, new RegisterSource(2), 1);
 
-                Emit.Move(GetAddress(code.Target), new Register(0));
-                Emit.Store(new Register(1), baseRegister, new Register(0));
+                StoreReference(code.Target, 1);
             }
             else
             {
-                Emit.Move(GetAddress(code.Left), new Register(0));
-                Emit.Load(new Register(1), baseRegister, new Register(0));
-
-                Emit.Move(GetAddress(code.Right), new Register(0));
-                Emit.Load(new Register(2), baseRegister, new Register(0));
-
                 var jumpOnTrue = new Label();
                 var endLabel = new Label();
 
@@ -171,23 +143,18 @@ namespace Plotty.CodeGeneration
                 // End
                 Emit.Label(endLabel);
 
-                Emit.Move(GetAddress(code.Target), new Register(0));
-                Emit.Store(new Register(1), baseRegister, new Register(0));
+                StoreReference(code.Target, 1);
             }
         }
 
         public void Visit(Jump code)
         {
-            Emit.CurrentCode = code;
-
             Emit.Jump(new Label(code.Label.Name));
         }
 
         public void Visit(FunctionDefinitionCode code)
         {
-            Emit.CurrentCode = code;
-
-            PushScope(GetFunctionScope(code.Function.Name));
+            CurrentScope = GetFunctionScope(code.Function.Name);
 
             Emit.Label(new Label(code.Function.Name));
 
@@ -196,35 +163,25 @@ namespace Plotty.CodeGeneration
 
         public void Visit(CallCode code)
         {
-            Emit.CurrentCode = code;
-
             var continuationLabel = new Label();
 
             CreateFrame(code.FunctionName, continuationLabel);
-
-            Emit.CurrentDescription = null;
 
             Emit.Jump(new Label(code.FunctionName));
             Emit.Label(continuationLabel);
 
             RestorePreviousFrame(code.FunctionName);
             
-            Emit.CurrentDescription = null;
-
             if (code.Reference != null)
             {
-                Emit.Move(GetAddress(code.Reference), 0);
-                Emit.Store(returnRegister, baseRegister, 0);
+                StoreReference(code.Reference, returnRegister);
             }
         }
 
         private void PopParamsToFunctionSpace(ICollection<Argument> arguments)
         {
-            Emit.CurrentDescription = "Popping arguments";
-            
             if (!arguments.Any())
             {
-                Emit.CurrentDescription = null;
                 return;
             }
 
@@ -240,22 +197,16 @@ namespace Plotty.CodeGeneration
             foreach (var argument in arguments)
             {
                 Emit.Load(parameter, @base, offset);
-                Emit.Move(GetAddress(argument.Reference), localAddress);
-                Emit.Store(parameter, baseRegister, localAddress);
+                StoreReference(argument.Reference, parameter, localAddress);
                 Emit.Increment(offset);
             }
-
-            Emit.CurrentDescription = null;
         }
 
         public void Visit(ReturnCode code)
         {
-            Emit.CurrentCode = code;
-
             if (code.Reference != null)
             {
-                Emit.Move(GetAddress(code.Reference), 0);
-                Emit.Load(returnRegister, baseRegister, 0);
+                LoadReference(code.Reference, returnRegister);                
             }
 
             Emit.Pop(0);
@@ -264,33 +215,23 @@ namespace Plotty.CodeGeneration
 
         public void Visit(HaltCode code)
         {
-            Emit.CurrentCode = code;
-
             Emit.Halt();
         }
 
         public void Visit(ParameterCode code)
         {
-            var offset = new Register(0);
             var destination = new Register(1);
             
-            Emit.CurrentCode = code;
-            Emit.CurrentDescription = $"Pushing parameter {code.Reference}";
-
-            Emit.Move(GetAddress(code.Reference), offset);
-            Emit.Load(destination, baseRegister, offset);
+            LoadReference(code.Reference, destination);
             Emit.Push(destination);
         }
 
         private void CreateFrame(string functionName, Label label)
         {
-            Emit.CurrentDescription = "Go to new frame";
-
             Emit.Transfer(baseRegister, 0);
             Emit.Transfer(stackRegister, 1);
 
             // New base register
-            //Emit.AddInt(symbolCount, baseRegister);
             Emit.AddRegister(stackRegister, baseRegister);
 
             // New stack register
@@ -303,8 +244,6 @@ namespace Plotty.CodeGeneration
 
         private void RestorePreviousFrame(string codeFunctionName)
         {
-            Emit.CurrentDescription = "Restoring previous frame";
-
             Emit.Pop(0);    // Stack Register
             Emit.Pop(1);    // Base Register
 
@@ -316,7 +255,6 @@ namespace Plotty.CodeGeneration
             {
                 Emit.SubstractInt(argumentsCount, stackRegister);
             }
-
         }
 
         private Function GetFunction(string functionName)

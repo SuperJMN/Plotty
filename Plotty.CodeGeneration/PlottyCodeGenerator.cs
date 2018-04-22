@@ -11,17 +11,17 @@ namespace Plotty.CodeGeneration
     {
         public GenerationResult Generate(IEnumerable<IntermediateCode> intermediateCodes, Scope scope)
         {
-            var generationVisitor = new PlottyCodeGenerationVisitor(scope);
+            var generationVisitor = new PlottyCodeGenerationVisitor(scope, (lines, fixups, sr, br) =>  new Emitter(lines, fixups, sr, br));
 
             foreach (var x in intermediateCodes)
             {
                 x.Accept(generationVisitor);
             }
 
-            var lines = generationVisitor.Lines.ToList();
-            PostProcess(lines, generationVisitor.Fixups);
+            var generatedLines = generationVisitor.Lines.ToList();
+            PostProcess(generatedLines, generationVisitor.Fixups);
 
-            return new GenerationResult(lines);
+            return new GenerationResult(generatedLines);
         }
 
         private static void Fix(IList<ILine> lines, IEnumerable<PendingFixup> generationVisitorFixups)
