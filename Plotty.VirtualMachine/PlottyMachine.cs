@@ -73,6 +73,10 @@ namespace Plotty.VirtualMachine
                         cmd = new LoadCommand(this);
                         break;
 
+                    case NoOperation _:
+                        cmd = new NoCommand(this);
+                        break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

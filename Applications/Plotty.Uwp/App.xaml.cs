@@ -5,16 +5,16 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace Plotty.Uwp
+namespace Plotty.Uwp.Reloaded
 {
     /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
+    /// Proporciona un comportamiento específico de la aplicación para complementar la clase Application predeterminada.
     /// </summary>
     sealed partial class App : Application
     {
         /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
+        /// Inicializa el objeto de aplicación Singleton. Esta es la primera línea de código creado
+        /// ejecutado y, como tal, es el equivalente lógico de main() o WinMain().
         /// </summary>
         public App()
         {
@@ -23,29 +23,29 @@ namespace Plotty.Uwp
         }
 
         /// <summary>
-        /// Invoked when the application is launched normally by the end user.  Other entry points
-        /// will be used such as when the application is launched to open a specific file.
+        /// Se invoca cuando el usuario final inicia la aplicación normalmente. Se usarán otros puntos
+        /// de entrada cuando la aplicación se inicie para abrir un archivo específico, por ejemplo.
         /// </summary>
-        /// <param name="e">Details about the launch request and process.</param>
+        /// <param name="e">Información detallada acerca de la solicitud y el proceso de inicio.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
 
-            // Do not repeat app initialization when the Window already has content,
-            // just ensure that the window is active
+            // No repetir la inicialización de la aplicación si la ventana tiene contenido todavía,
+            // solo asegurarse de que la ventana está activa.
             if (rootFrame == null)
             {
-                // Create a Frame to act as the navigation context and navigate to the first page
+                // Crear un marco para que actúe como contexto de navegación y navegar a la primera página.
                 rootFrame = new Frame();
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    //TODO: Move state from previously suspended application
+                    //TODO: Cargar el estado de la aplicación suspendida previamente
                 }
 
-                // Place the frame in the current Window
+                // Poner el marco en la ventana actual.
                 Window.Current.Content = rootFrame;
             }
 
@@ -53,37 +53,37 @@ namespace Plotty.Uwp
             {
                 if (rootFrame.Content == null)
                 {
-                    // When the navigation stack isn't restored navigate to the first page,
-                    // configuring the new page by passing required information as a navigation
-                    // parameter
+                    // Cuando no se restaura la pila de navegación, navegar a la primera página,
+                    // configurando la nueva página pasándole la información requerida como
+                    //parámetro de navegación
                     rootFrame.Navigate(typeof(MainPage), e.Arguments);
                 }
-                // Ensure the current window is active
+                // Asegurarse de que la ventana actual está activa.
                 Window.Current.Activate();
             }
         }
 
         /// <summary>
-        /// Invoked when Navigation to a certain page fails
+        /// Se invoca cuando la aplicación la inicia normalmente el usuario final. Se usarán otros puntos
         /// </summary>
-        /// <param name="sender">The Frame which failed navigation</param>
-        /// <param name="e">Details about the navigation failure</param>
+        /// <param name="sender">Marco que produjo el error de navegación</param>
+        /// <param name="e">Detalles sobre el error de navegación</param>
         void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
 
         /// <summary>
-        /// Invoked when application execution is being suspended.  Application state is saved
-        /// without knowing whether the application will be terminated or resumed with the contents
-        /// of memory still intact.
+        /// Se invoca al suspender la ejecución de la aplicación. El estado de la aplicación se guarda
+        /// sin saber si la aplicación se terminará o se reanudará con el contenido
+        /// de la memoria aún intacto.
         /// </summary>
-        /// <param name="sender">The source of the suspend request.</param>
-        /// <param name="e">Details about the suspend request.</param>
+        /// <param name="sender">Origen de la solicitud de suspensión.</param>
+        /// <param name="e">Detalles sobre la solicitud de suspensión.</param>
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+            //TODO: Guardar el estado de la aplicación y detener toda actividad en segundo plano
             deferral.Complete();
         }
     }

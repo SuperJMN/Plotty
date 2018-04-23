@@ -34,7 +34,6 @@ namespace Plotty.CodeGeneration
 
         private static void PostProcess(IList<ILine> finalCode, ReadOnlyCollection<PendingFixup> fixups)
         {
-            AttachLabelsToInstructions(finalCode);
             Fix(finalCode, fixups);
             GiveNameToUnnamedLabels(finalCode);
         }

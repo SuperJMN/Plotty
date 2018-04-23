@@ -54,5 +54,10 @@ namespace Plotty.Compiler
             var instructionName = instruction.ArithmeticOperator == ArithmeticOperator.Add ? "ADD" : "SUB";
             lines.Add($"{label}\t{instructionName} {instruction.Left.GetAssemblySymbol()},{instruction.Right.GetAssemblySymbol()},{instruction.Destination.GetAssemblySymbol()}");           
         }
+
+        public void Visit(NoOperation instruction)
+        {
+            lines.Add("NOOP");
+        }
     }
 }

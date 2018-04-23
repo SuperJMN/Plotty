@@ -28,7 +28,7 @@ namespace Plotty.CodeGeneration
 
         public void Label(Label label)
         {
-            AddLine(new Line(label, null));
+            AddLine(new Line(label, new NoOperation()));
         }
 
         public void Jump(Label label)

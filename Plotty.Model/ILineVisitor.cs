@@ -9,5 +9,6 @@
         void Visit(BranchInstruction instruction);
         void Visit(Line line);
         void Visit(ArithmeticInstruction instruction);
+        void Visit(NoOperation instruction);
     }
 }

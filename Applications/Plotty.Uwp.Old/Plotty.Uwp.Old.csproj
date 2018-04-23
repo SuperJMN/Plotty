@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{3A13FAB8-9F5B-4228-BA0F-309429406D51}</ProjectGuid>
+    <ProjectGuid>{A5AFF469-9164-4567-A199-14FAC90049DC}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Plotty.Uwp.Reloaded</RootNamespace>
-    <AssemblyName>Plotty.Uwp.Reloaded</AssemblyName>
-    <DefaultLanguage>es-ES</DefaultLanguage>
+    <RootNamespace>Plotty.Uwp</RootNamespace>
+    <AssemblyName>Plotty.Uwp</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16299.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
@@ -17,7 +17,8 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>Plotty.Uwp.Reloaded_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Plotty.Uwp_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>66DBA7CAB40880B73062AB7179A05E41E1337C6A</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -95,26 +96,53 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EditorViewModel.cs" />
-    <Compile Include="FileCommands.cs" />
-    <Compile Include="MachineContext.cs" />
-    <Compile Include="MachineState.cs" />
+    <Compile Include="AssemblyCodingViewModel.cs" />
+    <Compile Include="CLangCodingViewModel.cs" />
+    <Compile Include="CodingViewTemplateSelector.cs" />
+    <Compile Include="ConsoleHandler.cs" />
+    <Compile Include="Views\ConsoleControl.xaml.cs">
+      <DependentUpon>ConsoleControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PlottyMachineViewModel.cs" />
+    <Compile Include="CurrentLineBehavior.cs" />
+    <Compile Include="IsNullConverter.cs" />
+    <Compile Include="LineViewModel.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Parts\MenuControl.xaml.cs">
-      <DependentUpon>MenuControl.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="CodingViewModelBase.cs" />
+    <Compile Include="MainViewModel.cs" />
+    <Compile Include="MemoryViewModel.cs" />
+    <Compile Include="NullToEmptyStringConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UwpNotificationService.cs" />
+    <Compile Include="RegisterViewModel.cs" />
+    <Compile Include="Views\StatusControl.xaml.cs">
+      <DependentUpon>StatusControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AsmView.xaml.cs">
+      <DependentUpon>AsmView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CLangView.xaml.cs">
+      <DependentUpon>CLangView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CodeAreaControl.xaml.cs">
+      <DependentUpon>CodeAreaControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MemoryViewControl.xaml.cs">
+      <DependentUpon>MemoryViewControl.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Plotty.Uwp.Reloaded_TemporaryKey.pfx" />
+    <None Include="Plotty.Uwp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="play.png" />
+    <Content Include="Samples in ASM\ASCII print.txt" />
+    <Content Include="Samples in ASM\Multiplication.txt" />
+    <Content Include="Samples in ASM\Subroutine.txt" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -123,17 +151,38 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Samples in C\fibonacci.c" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Views\ConsoleControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Parts\MenuControl.xaml">
+    <Page Include="Views\StatusControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AsmView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CLangView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CodeAreaControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MemoryViewControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -151,22 +200,40 @@
     <PackageReference Include="ReactiveUI">
       <Version>8.0.0-alpha0117</Version>
     </PackageReference>
+    <PackageReference Include="Superpower">
+      <Version>2.0.0-dev-00091</Version>
+    </PackageReference>
+    <PackageReference Include="Win2D.uwp">
+      <Version>1.21.0</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CodeGeneration\CodeGen.Core\CodeGen.Core.csproj">
+      <Project>{218896F7-8149-4322-AF9A-5CEC02F9C3B9}</Project>
+      <Name>CodeGen.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Plotty.CodeGeneration\Plotty.CodeGeneration.csproj">
       <Project>{307fac61-bb9d-417a-a887-18e1e3c854f3}</Project>
       <Name>Plotty.CodeGeneration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plotty.Commands\Plotty.Commands.csproj">
+      <Project>{817789ae-766f-48e0-915a-e71d55103d72}</Project>
+      <Name>Plotty.Commands</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plotty.Compiler\Plotty.Compiler.csproj">
       <Project>{ED437E95-1249-4A7A-94B3-E1546EB98CBA}</Project>
       <Name>Plotty.Compiler</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Plotty.Model\Plotty.Model.csproj">
-      <Project>{2953CB7E-7692-4D36-9D66-CC1FCE165D9B}</Project>
+      <Project>{2953cb7e-7692-4d36-9d66-cc1fce165d9b}</Project>
       <Name>Plotty.Model</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Plotty.Parser\Plotty.Parser.csproj">
+      <Project>{ae0d23c6-31e7-4f8c-8325-e3d5ed696a2f}</Project>
+      <Name>Plotty.Parser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Plotty.VirtualMachine\Plotty.VirtualMachine.csproj">
-      <Project>{25553E47-8408-402C-A4B5-B6537070594A}</Project>
+      <Project>{25553e47-8408-402c-a4b5-b6537070594a}</Project>
       <Name>Plotty.VirtualMachine</Name>
     </ProjectReference>
   </ItemGroup>
