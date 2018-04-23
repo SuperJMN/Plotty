@@ -13,14 +13,15 @@ namespace Plotty.CodeGeneration.Tests
         [Fact(Skip = "Ignore")]
         public void Call()
         {
-            var func = new Function("func", VariableType.Void, new List<Argument>(), new Block());
+            var functionFirm = new FunctionFirm("func", VariableType.Void, new List<Argument>());
+            var func = new Function(functionFirm, new Block());
 
             var scope = new Scope();
             scope.AddReferences(10);
             var child = scope.CreateChildScope(func);
             child.AddReferences(5);
 
-            var intermediateCodes = new List<IntermediateCode> { new CallCode(func.Name), new HaltCode(), new FunctionDefinitionCode(func), new ReturnCode() };
+            var intermediateCodes = new List<IntermediateCode> { new CallCode(func.Name), new HaltCode(), new FunctionDefinitionCode(functionFirm), new ReturnCode() };
 
             var fixture = new MachineFixture();
             fixture.Run(intermediateCodes, scope, new Dictionary<int, int> { { 6, 10 }, { 7, 50 } }, new Dictionary<int, int>());
