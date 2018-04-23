@@ -16,10 +16,16 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
             <parts:MenuControl />
-            <StackPanel Grid.Row="1"  Orientation="Horizontal" HorizontalAlignment="Left" Margin="8">
+
+            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="8">
                 <Button Command="{Binding PlayCommand}">
 
                     <StackPanel Orientation="Horizontal">
@@ -36,10 +42,10 @@
                 </Button>
             </StackPanel>
 
-            <monaco:CodeEditor Grid.Row="2" CodeLanguage="c" Text="{Binding Source, Mode=TwoWay}" />
+            <monaco:CodeEditor Grid.Row="2" Grid.Column="0" CodeLanguage="c" Text="{Binding Source, Mode=TwoWay}" />
 
-            <controls:Expander  Grid.Row="3" MaxHeight="150" Header="Results History">
-                <ListView  ItemsSource="{Binding Results}" />
+            <controls:Expander Header="Execution" ExpandDirection="Right" VerticalContentAlignment="Stretch" MaxWidth="250" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3">
+                <ListView Header="Result History" ItemsSource="{Binding Results}" />
             </controls:Expander>
 
         </Grid>
@@ -48,66 +54,4 @@
 
     </Grid>
 </Page>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

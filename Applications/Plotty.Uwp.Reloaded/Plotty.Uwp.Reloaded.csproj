@@ -96,6 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="EditorViewModel.cs" />
+    <Compile Include="FileCommands.cs" />
     <Compile Include="MachineContext.cs" />
     <Compile Include="MachineState.cs" />
     <Compile Include="MainPage.xaml.cs">

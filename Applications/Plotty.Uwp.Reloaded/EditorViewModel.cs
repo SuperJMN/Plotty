@@ -5,10 +5,8 @@ using System.IO;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 using ReactiveUI;
 
 namespace Plotty.Uwp.Reloaded
@@ -22,39 +20,15 @@ namespace Plotty.Uwp.Reloaded
         {
             Source = "";
 
-            NewFileCommand = ReactiveCommand.Create(() => "" );
-
-            OpenFileCommand = ReactiveCommand.CreateFromTask(PickFileToOpen);
-
-            OpenFileCommand
-                .Where(file => file != null)
-                .SelectMany(LoadFile)
-                .Merge(NewFileCommand)
-                .ObserveOnDispatcher()
-                .Subscribe(s => Source = s);
-
-            OpenFileCommand.ThrownExceptions.Subscribe(exception => { });
-            
-            SaveFileCommand = ReactiveCommand.CreateFromTask(async () =>
+            var saveExtensions = new List<KeyValuePair<string, IList<string>>>
             {
-                var pickFileToSave = await PickFileToSave();
-                if (pickFileToSave != null)
-                {
-                    await SaveFile(pickFileToSave);
-                }
-            }, this.WhenAnyValue(x => x.Source, s => !string.IsNullOrEmpty(s)));
+                new KeyValuePair<string, IList<string>>(".c", new List<string> {".c"})
+            };
 
-            SaveFileCommand.ThrownExceptions.Subscribe(exception => { });
+            FileCommands = new FileCommands<string>(() => "", LoadFile, SaveFile, new[] { ".c" }, saveExtensions);
+            FileCommands.Objects.Subscribe(s => Source = s);
 
-
-            var scheduler = new EventLoopScheduler();
-
-            var machineLoop = Observable.Using(() => new MachineContext(source), context => Observable
-                    .Generate(0, x => context.CanExecute, x => x, x =>
-                    {
-                        context.Execute();
-                        return context.State;
-                    }, scheduler));
+            var machineLoop = CreateMachineLoop();
 
             PlayCommand = ReactiveCommand.CreateFromObservable(() => machineLoop
                 .ObserveOnDispatcher().TakeUntil(StopCommand));
@@ -75,11 +49,34 @@ namespace Plotty.Uwp.Reloaded
             });
         }
 
-        public ReactiveCommand<Unit, IStorageFile> OpenFileCommand { get; }
+        private IObservable<MachineState> CreateMachineLoop()
+        {
+            var scheduler = new EventLoopScheduler();
+            return Observable.Using(() => new MachineContext(source), context => Observable
+                .Generate(0, x => context.CanExecute, x => x, x =>
+                {
+                    context.Execute();
+                    return context.State;
+                }, scheduler));
+        }
 
-        public ReactiveCommand<Unit, Unit> SaveFileCommand { get; set; }
+        public FileCommands<string> FileCommands { get; }
 
-        public ReactiveCommand<Unit, string> NewFileCommand { get; set; }
+        private static async Task<string> LoadFile(IStorageFile arg)
+        {
+            using (var reader = new StreamReader(await arg.OpenStreamForReadAsync()))
+            {
+                return await reader.ReadToEndAsync();
+            }
+        }
+
+        private async Task SaveFile(IStorageFile arg)
+        {
+            using (var reader = new StreamWriter(await arg.OpenStreamForWriteAsync()))
+            {
+                await reader.WriteAsync(source);
+            }
+        }
 
         public int ReturnedValue
         {
@@ -87,18 +84,8 @@ namespace Plotty.Uwp.Reloaded
             set => this.RaiseAndSetIfChanged(ref returnedValue, value);
         }
 
-        public ReactiveCommand<Unit, int> AnotherCommand { get; set; }
-
         public ReactiveCommand<Unit, Unit> StopCommand { get; }
 
-        private async Task SaveFile(IStorageFile file)
-        {          
-            using (var stream = new StreamWriter(await file.OpenStreamForWriteAsync()))
-            {          
-                stream.Write(source);
-            }
-        }
-        
         public string Source
         {
             get => source;
@@ -108,41 +95,9 @@ namespace Plotty.Uwp.Reloaded
         public ReactiveCommand<Unit, MachineState> PlayCommand { get; }
 
         public ObservableCollection<int> Results { get; } = new ObservableCollection<int>();
+    }
 
-        private async Task<string> LoadFile(IStorageFile file)
-        {
-            using (var stream = new StreamReader(await file.OpenStreamForReadAsync()))
-            {
-                return stream.ReadToEnd();
-            }
-        }
-
-        private async Task<IStorageFile> PickFileToOpen()
-        {          
-            var picker = new FileOpenPicker
-            {
-                CommitButtonText = "Open",
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary
-            };
-
-            picker.FileTypeFilter.Add(".c");
-            picker.FileTypeFilter.Add(".txt");
-
-            return await picker.PickSingleFileAsync();
-        }
-
-        private async Task<IStorageFile> PickFileToSave()
-        {
-
-            var picker = new FileSavePicker
-            {
-                CommitButtonText = "Save",
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary
-            };
-
-            picker.FileTypeChoices.Add(new KeyValuePair<string, IList<string>>(".c", new List<string>() { ".c" }));
-
-            return await picker.PickSaveFileAsync();
-        }
+    public class LoadFacade<T>
+    {
     }
 }

@@ -13,10 +13,10 @@
 
     <controls:Menu>
         <controls:MenuItem Header="File">
-            <MenuFlyoutItem Text="New" Command="{Binding NewFileCommand}" />
+            <MenuFlyoutItem Text="New" Command="{Binding FileCommands.CreateNewCommand}" />
             <MenuFlyoutSeparator />
-            <MenuFlyoutItem Text="Open" Command="{Binding OpenFileCommand}" />
-            <MenuFlyoutItem Text="Save" Command="{Binding SaveFileCommand}" />
+            <MenuFlyoutItem Text="Open" Command="{Binding FileCommands.CreateFromExistingCommand}" />
+            <MenuFlyoutItem Text="Save" Command="{Binding FileCommands.SaveFileCommand}" />
         </controls:MenuItem>        
     </controls:Menu>
 </UserControl>
