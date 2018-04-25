@@ -7,17 +7,17 @@ namespace Plotty.Compiler
 {
     public class CompilationResult
     {
-        public CompilationResult(GenerationResult generationResult, IReadOnlyCollection<string> code, Scope scope,
+        public CompilationResult(GenerationResult generationResult, IReadOnlyCollection<string> code, SymbolTable symbolTable,
             List<IntermediateCode> intermediateCode)
         {
             Code = code;
-            Scope = scope;
+            SymbolTable = symbolTable;
             IntermediateCode = intermediateCode;
             GenerationResult = generationResult;
         }
 
         public IReadOnlyCollection<string> Code { get;  }
-        public Scope Scope { get; }
+        public SymbolTable SymbolTable { get; }
         public List<IntermediateCode> IntermediateCode { get; }
         public GenerationResult GenerationResult { get; }
     }

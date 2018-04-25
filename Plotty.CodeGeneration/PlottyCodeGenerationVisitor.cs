@@ -24,12 +24,12 @@ namespace Plotty.CodeGeneration
         private readonly List<PendingFixup> fixups = new List<PendingFixup>();
         private readonly List<ILine> lines = new List<ILine>();
         private Dictionary<Reference, int> localAddresses;
-        private Scope currentScope;
+        private SymbolTable currentSymbolTable;
 
-        public PlottyCodeGenerationVisitor(Scope scope, Func<ICollection<ILine>, ICollection<PendingFixup>, Register, Register, Emitter> emitterFactory)
+        public PlottyCodeGenerationVisitor(SymbolTable symbolTable, Func<ICollection<ILine>, ICollection<PendingFixup>, Register, Register, Emitter> emitterFactory)
         {
-            CurrentScope = scope;
-            RootScope = CurrentScope;
+            CurrentSymbolTable = symbolTable;
+            RootSymbolTable = CurrentSymbolTable;
             Emit = emitterFactory(lines, fixups, stackRegister, baseRegister);
         }
 
@@ -37,17 +37,17 @@ namespace Plotty.CodeGeneration
 
         public IEnumerable<ILine> Lines => lines.AsReadOnly();
 
-        private Scope CurrentScope
+        private SymbolTable CurrentSymbolTable
         {
-            get => currentScope;
+            get => currentSymbolTable;
             set
             {
-                currentScope = value;
-                Allocate(currentScope.Symbols);
+                currentSymbolTable = value;
+                Allocate(currentSymbolTable.Symbols);
             }
         }
 
-        public Scope RootScope { get; }
+        public SymbolTable RootSymbolTable { get; }
 
         public ReadOnlyCollection<PendingFixup> Fixups => fixups.AsReadOnly();
 
@@ -165,7 +165,7 @@ namespace Plotty.CodeGeneration
 
         public void Visit(FunctionDefinitionCode code)
         {
-            CurrentScope = GetFunctionScope(code.Firm.Name);
+            CurrentSymbolTable = GetFunctionScope(code.Firm.Name);
 
             Emit.Label(new Label(code.Firm.Name));
 
@@ -276,15 +276,15 @@ namespace Plotty.CodeGeneration
 
         private Function GetFunction(string functionName)
         {
-            return RootScope.Children.Select(x => x.Owner).OfType<Function>().Single(x => x.Name == functionName);
+            return RootSymbolTable.Children.Select(x => x.Owner).OfType<Function>().Single(x => x.Name == functionName);
         }
 
-        private Scope GetFunctionScope(string functionName)
+        private SymbolTable GetFunctionScope(string functionName)
         {
-            return RootScope.Children.Single(s => (s.Owner as Function)?.Name == functionName);
+            return RootSymbolTable.Children.Single(s => (s.Owner as Function)?.Name == functionName);
         }
 
-        private void Allocate(IReadOnlyDictionary<Reference, Symbol> currentScopeSymbols)
+        private void Allocate(IReadOnlyDictionary<Reference, Properties> currentScopeSymbols)
         {
             localAddresses = currentScopeSymbols.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Key, x => x.i);
         }

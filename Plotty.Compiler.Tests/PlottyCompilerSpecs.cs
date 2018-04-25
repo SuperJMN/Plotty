@@ -143,6 +143,54 @@ namespace Plotty.Compiler.Tests
             fixture.GetReferenceValue("b").Should().Be(3);
         }
 
+        
+        [Fact]
+        public void DoWhile()
+        {
+            var source = "void main() { int a=0; do { b = 123; a=a+1; } while (a < 2); }";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.GetReferenceValue("a").Should().Be(2);
+            fixture.GetReferenceValue("b").Should().Be(123);
+
+        }
+
+        [Fact]
+        public void DoWhile_SentenceIsExecutedOnce()
+        {
+            var source = "void main() { int a=0; do { b = 123; } while (a < 0); }";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.GetReferenceValue("a").Should().Be(0);
+            fixture.GetReferenceValue("b").Should().Be(123);
+        }
+
+        [Fact]
+        public void WhileStatement_WhenConditionNotMet_BlockIsNotExecuted()
+        {
+            var source = "void main() { int a=0; while (a>5) { b = 123; } }";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.GetReferenceValue("b").Should().NotBe(123);
+        }
+
+        [Fact]
+        public void WhileStatement_WhenConditionIsMet_BlockIsExecuted()
+        {
+            var source = "void main() { int a=0; while (a==0) { b = 123; a=a+1; } }";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.GetReferenceValue("b").Should().Be(123);
+        }
+
         [Fact]
         public void TwoReturns()
         {
@@ -179,15 +227,15 @@ namespace Plotty.Compiler.Tests
 
         private class MachineFixture
         {
-            private Scope mainScope;
+            private SymbolTable mainSymbolTable;
             public List<IntermediateCode> IntermediateCode { get; private set; }
             public int ReturnedValue => Machine.Registers[PlottyCodeGenerationVisitor.ReturnRegisterIndex];
             public int GetReferenceValue(Reference r)
             {
-                var address = mainScope.Symbols.Keys.ToList().IndexOf(r);
+                var address = mainSymbolTable.Symbols.Keys.ToList().IndexOf(r);
                 if (address == -1)
                 {
-                    throw new InvalidOperationException($"The referece {r} doesn't exist in the 'main' scope");
+                    throw new InvalidOperationException($"The referece {r} doesn't exist in the 'main' symbolTable");
                 }
 
                 return Machine.Memory[address];
@@ -202,7 +250,7 @@ namespace Plotty.Compiler.Tests
             {
                 var compiler = new PlottyCompiler();
                 var result = compiler.Compile(source);
-                mainScope = result.Scope.Children.Single(x => x.Owner is Function f && f.Name == "main");
+                mainSymbolTable = result.SymbolTable.Children.Single(x => x.Owner is Function f && f.Name == "main");
                 IntermediateCode = result.IntermediateCode;
                 
                 Machine.Load(result.GenerationResult.Lines);

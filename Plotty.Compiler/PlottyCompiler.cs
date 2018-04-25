@@ -32,11 +32,11 @@ namespace Plotty.Compiler
             nameAssigner.AssignNames(ast);
         }
 
-        private Scope GetScope(ICodeUnit ast)
+        private SymbolTable GetScope(ICodeUnit ast)
         {
             var scanner = new ScopeScanner();
             ast.Accept(scanner);
-            return scanner.Scope;
+            return scanner.SymbolTable;
         }
 
         private static IReadOnlyCollection<string> GenerateAssemblyCode(GenerationResult result)
@@ -51,11 +51,11 @@ namespace Plotty.Compiler
             return plottyAssemblyVisitor.Lines;
         }
 
-        private static GenerationResult GeneratePlottyCode(IEnumerable<IntermediateCode> intermediateCode, Scope scope)
+        private static GenerationResult GeneratePlottyCode(IEnumerable<IntermediateCode> intermediateCode, SymbolTable symbolTable)
         {
             var plottyGenerator = new PlottyCodeGenerator();
 
-            var generationResult = plottyGenerator.Generate(intermediateCode.ToList(), scope);
+            var generationResult = plottyGenerator.Generate(intermediateCode.ToList(), symbolTable);
             return generationResult;
         }
 

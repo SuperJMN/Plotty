@@ -9,9 +9,9 @@ namespace Plotty.CodeGeneration
 {
     public class PlottyCodeGenerator
     {
-        public GenerationResult Generate(IEnumerable<IntermediateCode> intermediateCodes, Scope scope)
+        public GenerationResult Generate(IEnumerable<IntermediateCode> intermediateCodes, SymbolTable symbolTable)
         {
-            var generationVisitor = new PlottyCodeGenerationVisitor(scope, (lines, fixups, sr, br) =>  new Emitter(lines, fixups, sr, br));
+            var generationVisitor = new PlottyCodeGenerationVisitor(symbolTable, (lines, fixups, sr, br) =>  new Emitter(lines, fixups, sr, br));
 
             foreach (var x in intermediateCodes)
             {
