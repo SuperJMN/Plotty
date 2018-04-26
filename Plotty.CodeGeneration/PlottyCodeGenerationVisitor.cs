@@ -237,6 +237,25 @@ namespace Plotty.CodeGeneration
             Emit.Push(destination);
         }
 
+        public void Visit(AddressOf code)
+        {
+            var addressOfReg = new Register(1);
+            
+            Emit.Move(GetAddress(code.Source), addressOfReg);
+            StoreReference(code.Target, addressOfReg);
+        }
+
+        public void Visit(ContentOf code)
+        {
+            var addressReg = new Register(1);
+            var contentReg = new Register(2);
+
+            LoadReference(code.Source, addressReg);
+            Emit.Load(contentReg, baseRegister, addressReg);
+
+            StoreReference(code.Target, contentReg);
+        }
+
         private void CreateFrame(string functionName, Label label)
         {
             var baseBackup = new Register(0);

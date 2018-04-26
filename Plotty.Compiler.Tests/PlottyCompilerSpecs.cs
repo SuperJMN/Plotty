@@ -67,6 +67,17 @@ namespace Plotty.Compiler.Tests
         }
 
         [Fact]
+        public void Pointer()
+        {
+            var source = "int main() { int a=14; int* b=&a; return *b; }";
+
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.ReturnedValue.Should().Be(14);
+        }
+
+        [Fact]
         public void SimpleWithAddition()
         {
             var source = "void main() { return simple() + 5; } int simple() { return 85; }";
