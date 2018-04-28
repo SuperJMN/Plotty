@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-
+<NoWarn>$(NoWarn);NU1605</NoWarn>
+  
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
