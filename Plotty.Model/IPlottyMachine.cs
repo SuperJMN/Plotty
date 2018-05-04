@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Plotty.Model
+﻿namespace Plotty.Model
 {
     public interface IPlottyMachine
     {

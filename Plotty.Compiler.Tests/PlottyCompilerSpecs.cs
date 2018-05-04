@@ -154,11 +154,21 @@ namespace Plotty.Compiler.Tests
             fixture.GetReferenceValue("b").Should().Be(3);
         }
 
+        [Fact]
+        public void Add()
+        {
+            var source = "void main() { int a=4; b=a+1; }";
+            
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+
+            fixture.GetReferenceValue("b").Should().Be(5);
+        }
         
         [Fact]
         public void DoWhile()
         {
-            var source = "void main() { int a=0; do { b = 123; a=a+1; } while (a < 2); }";
+            var source = "void main() { int a=0; do { int b = 123; a=a+1; } while (a < 2); }";
             
             var fixture = new MachineFixture();
             fixture.Run(source);

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using CodeGen.Core;
+﻿using CodeGen.Core;
 using ReactiveUI;
 
 namespace Plotty.Uwp

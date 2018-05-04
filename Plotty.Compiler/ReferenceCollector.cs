@@ -75,8 +75,13 @@ namespace Plotty.Compiler
         {            
         }
 
-        public void Visit(VariableDeclaration expressionNode)
+        public void Visit(ListInitialization unit)
         {            
+        }
+
+        public void Visit(DirectInitialization unit)
+        {
+            unit.Expression.Accept(this);
         }
 
         public void Visit(Program program)

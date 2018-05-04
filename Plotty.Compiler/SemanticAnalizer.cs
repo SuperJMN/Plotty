@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CodeGen.Core;
-using CodeGen.Parsing;
 using CodeGen.Parsing.Ast;
-using CodeGen.Parsing.Ast.Statements;
 
 namespace Plotty.Compiler
 {
@@ -29,15 +26,16 @@ namespace Plotty.Compiler
 
         private void CheckReferences(IEnumerable<DeclarationStatement> declarations, IEnumerable<Reference> references)
         {
-            var declarationsSet = new HashSet<Reference>(declarations.SelectMany(s => s.Declarations.Select(a => a.Reference)));
-            var referencesSet = new HashSet<Reference>(references.Where(r => !r.IsUnknown));
-            referencesSet.ExceptWith(declarationsSet);
+            // TODO:
+            //var declarationsSet = new HashSet<Reference>(declarations.SelectMany(s => s..Select(a => a.Reference)));
+            //var referencesSet = new HashSet<Reference>(references.Where(r => !r.IsUnknown));
+            //referencesSet.ExceptWith(declarationsSet);
 
-            if (referencesSet.Any())
-            {
-                var variables = string.Join(",", referencesSet);
-                throw new SemanticException($"Undeclared variable: {variables}");
-            }
+            //if (referencesSet.Any())
+            //{
+            //    var variables = string.Join(",", referencesSet);
+            //    throw new SemanticException($"Undeclared variable: {variables}");
+            //}
         }
     }
 }
