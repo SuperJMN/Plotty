@@ -208,7 +208,7 @@ namespace Plotty.CodeGeneration
             foreach (var argument in arguments)
             {
                 Emit.Load(parameter, @base, offset);
-                StoreReference(argument.Reference, parameter, localAddress);
+                StoreReference(argument.Item.Reference, parameter, localAddress);
                 Emit.Increment(offset);
             }
         }
