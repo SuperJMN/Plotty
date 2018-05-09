@@ -6,6 +6,7 @@ using CodeGen.Core;
 using CodeGen.Intermediate;
 using CodeGen.Intermediate.Codes;
 using CodeGen.Intermediate.Codes.Common;
+using CodeGen.Parsing;
 using CodeGen.Parsing.Ast;
 using Plotty.Model;
 using ArithmeticOperator = Plotty.Model.ArithmeticOperator;
@@ -206,8 +207,19 @@ namespace Plotty.CodeGeneration
 
             foreach (var argument in arguments)
             {
-                Emit.Load(parameter, @base, offset);
-                StoreReference(argument.Item.Reference, parameter, localAddress);
+                if (argument.Item is ArrayReferenceItem)
+                {
+                    var fullAddress = new Register(4);
+                    Emit.Move(GetAddress(argument.Item.Reference), fullAddress);
+                    Emit.AddRegister(baseRegister, fullAddress);
+                    Emit.Store(fullAddress, baseRegister, offset);
+                }
+                else
+                {
+                    Emit.Load(parameter, @base, offset);
+                    StoreReference(argument.Item.Reference, parameter, localAddress);
+                }
+                
                 Emit.Increment(offset);
             }
         }
@@ -230,10 +242,26 @@ namespace Plotty.CodeGeneration
 
         public void Visit(ParameterCode code)
         {
-            var destination = new Register(1);
+            if (IsRefType(code.Reference))
+            {
+                var address = new Register(1);
             
-            LoadReference(code.Reference, destination);
-            Emit.Push(destination);
+                Emit.Move(GetAddress(code.Reference), address);
+                Emit.AddRegister(baseRegister, address);
+                Emit.Push(address);
+            }
+            else
+            {
+                var destination = new Register(1);
+            
+                LoadReference(code.Reference, destination);
+                Emit.Push(destination);
+            }            
+        }
+
+        private bool IsRefType(Reference reference)
+        {
+            return CurrentSymbolTable.Symbols[reference].Size > 1;
         }
 
         public void Visit(AddressOf code)
