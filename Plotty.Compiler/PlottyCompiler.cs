@@ -19,11 +19,11 @@ namespace Plotty.Compiler
 
             GiveNameToImplicitReferences(ast);
 
-            var scope = GetScope(ast);
+            var symbolTable = CreateSymbolTable(ast);
             var intermediateCode = GenerateIntermediateCode(ast);
-            var result = GeneratePlottyCode(intermediateCode, scope);            
+            var result = GeneratePlottyCode(intermediateCode, symbolTable);            
             var assemblyCode = GenerateAssemblyCode(result);
-            return new CompilationResult(result, assemblyCode, scope, intermediateCode);
+            return new CompilationResult(result, assemblyCode, symbolTable, intermediateCode);
         }
 
         private static void GiveNameToImplicitReferences(ICodeUnit ast)
@@ -32,9 +32,9 @@ namespace Plotty.Compiler
             nameAssigner.AssignNames(ast);
         }
 
-        private SymbolTable GetScope(ICodeUnit ast)
+        private SymbolTable CreateSymbolTable(ICodeUnit ast)
         {
-            var scanner = new ScopeScanner();
+            var scanner = new SymbolTableVisitor();
             ast.Accept(scanner);
             return scanner.SymbolTable;
         }

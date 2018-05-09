@@ -66,7 +66,7 @@ namespace Plotty.Compiler.Tests
             fixture.ReturnedValue.Should().Be(90);
         }
 
-        [Fact]
+        [Fact(Skip = "Not implemented yet")]
         public void Pointer()
         {
             var source = "int main() { int a=14; int* b=&a; return *b; }";
@@ -246,45 +246,6 @@ namespace Plotty.Compiler.Tests
             fixture.ReturnedValue.Should().Be(55);
         }
 
-        private class MachineFixture
-        {
-            private SymbolTable mainSymbolTable;
-            public List<IntermediateCode> IntermediateCode { get; private set; }
-            public int ReturnedValue => Machine.Registers[PlottyCodeGenerationVisitor.ReturnRegisterIndex];
-            public int GetReferenceValue(Reference r)
-            {
-                var address = mainSymbolTable.Symbols.Keys.ToList().IndexOf(r);
-                if (address == -1)
-                {
-                    throw new InvalidOperationException($"The referece {r} doesn't exist in the 'main' symbolTable");
-                }
-
-                return Machine.Memory[address];
-            }
-
-            public MachineFixture()
-            {
-                Machine = new PlottyMachine();
-            }
-
-            public void Run(string source)
-            {
-                var compiler = new PlottyCompiler();
-                var result = compiler.Compile(source);
-                mainSymbolTable = result.SymbolTable.Children.Single(x => x.Owner is Function f && f.Name == "main");
-                IntermediateCode = result.IntermediateCode;
-                
-                Machine.Load(result.GenerationResult.Lines);
-
-                while (Machine.CanExecute)
-                {
-                    Machine.Execute();
-                }
-            }
-
-            public PlottyMachine Machine { get; }
-        }
-
         [Theory]
         [MemberData(nameof(TestData))]
         public void ReferencesHaveTheExpectedValues(string source, IEnumerable<Expectation> expectations)
@@ -303,7 +264,7 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
             fixture.GetReferenceValue("next").Should().Be(result);
-        }
+        }    
 
         [Theory]
         [InlineData(5, 3, Operator.NotEqual)]

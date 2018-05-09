@@ -9,7 +9,7 @@ namespace Plotty.VirtualMachine
     public class PlottyMachine : IPlottyMachine
     {
         private const int RegCount = 8;
-        private const int MemoryCount = 4 * 1024;
+        private const int MemoryCount = 8 * 1024;
 
         public int[] Registers { get; } = new int[RegCount];
 

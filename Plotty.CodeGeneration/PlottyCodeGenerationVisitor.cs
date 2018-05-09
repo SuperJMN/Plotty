@@ -23,7 +23,6 @@ namespace Plotty.CodeGeneration
 
         private readonly List<PendingFixup> fixups = new List<PendingFixup>();
         private readonly List<ILine> lines = new List<ILine>();
-        private Dictionary<Reference, int> localAddresses;
         private SymbolTable currentSymbolTable;
 
         public PlottyCodeGenerationVisitor(SymbolTable symbolTable, Func<ICollection<ILine>, ICollection<PendingFixup>, Register, Register, Emitter> emitterFactory)
@@ -256,6 +255,39 @@ namespace Plotty.CodeGeneration
             StoreReference(code.Target, contentReg);
         }
 
+        public void Visit(LoadFromArray code)
+        {
+            // a = b[index]
+
+            var index = new Register(1);
+            LoadReference(code.Index, index);
+
+            var bReg = new Register(2);
+            Emit.Move(GetAddress(code.Source), bReg);
+
+            Emit.AddRegister(index, bReg);
+
+            var data = new Register(3);
+            Emit.Load(data, baseRegister, bReg);
+            
+            StoreReference(code.Target, data);
+        }
+
+        public void Visit(StoreToArray code)
+        {
+            var localAddr = new Register(1);
+            var offset = new Register(2);
+            var data = new Register(3);
+
+            LoadReference(code.Source, data);
+            
+            Emit.Move(GetAddress(code.Target), localAddr);
+            LoadReference(code.Index, offset);
+            Emit.AddRegister(offset, localAddr);
+
+            Emit.Store(data, baseRegister, localAddr);            
+        }
+        
         private void CreateFrame(string functionName, Label label)
         {
             var baseBackup = new Register(0);
@@ -268,7 +300,9 @@ namespace Plotty.CodeGeneration
             Emit.AddRegister(stackRegister, baseRegister);
 
             // New stack register
-            Emit.Move(GetFunctionScope(functionName).Symbols.Count, stackRegister);
+            var functionScope = GetFunctionScope(functionName);
+
+            Emit.Move(functionScope.Size, stackRegister);
 
             Emit.Push(baseBackup);   // Base Register
             Emit.Push(stackBackup);   // Stack Register
@@ -305,12 +339,17 @@ namespace Plotty.CodeGeneration
 
         private void Allocate(IReadOnlyDictionary<Reference, Properties> currentScopeSymbols)
         {
-            localAddresses = currentScopeSymbols.Select((x, i) => new { x, i }).ToDictionary(x => x.x.Key, x => x.i);
+            var offset = 0;
+            foreach (var pair in currentScopeSymbols)
+            {
+                pair.Value.Offset = offset;
+                offset += pair.Value.Size;
+            }
         }
 
         private int GetAddress(Reference reference)
         {
-            return localAddresses[reference];
+            return CurrentSymbolTable.Symbols[reference].Offset;
         }
 
         private ArithmeticOperator GetOperator(CodeGen.Intermediate.Codes.Common.ArithmeticOperator codeOperation)
