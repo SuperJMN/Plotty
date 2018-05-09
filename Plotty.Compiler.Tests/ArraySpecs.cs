@@ -59,8 +59,7 @@ namespace Plotty.Compiler.Tests
             fixture.Run(source);
             fixture.ReturnedValue.Should().Be(11);
         }
-
-        
+      
         [Fact]
         public void SumShort()
         {
@@ -86,6 +85,47 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
             fixture.ReturnedValue.Should().Be(55);
+        }
+
+        [Fact]
+        public void FunctionWithZeroItemsArrayDoesNothingSkeleton()
+        {
+            var source = "void main() { int array; writer(array); } void writer(int array) { }";
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+        }
+
+        [Fact]
+        public void FunctionWithZeroItemsArrayDoesNothing()
+        {
+            var source = "void main() { int array[0]; writer(array); } void writer(int array[0]) { }";
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+        }
+
+        [Fact]
+        public void FunctionWithArrayDoesNothing()
+        {
+            var source = "void main() { int array[100]; writer(array); } void writer(int array[100]) {  }";
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+        }
+
+        [Fact]
+        public void FunctionWithArrayArgumentOneItem()
+        {
+            var source = "void main() int array[1]; writer(array); } void writer(int array[1]) { array[0]=1; }";
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+        }
+
+        [Fact]
+        public void FunctionWithArrayArgumentMultipleItems()
+        {
+            var source = "void main() { int array[3]; writer(array); } void writer(int array[3]) { array[0]=1; array[1]=2; array[2]=3; }";
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+            fixture.GetArray("array", 3).Should().Equal(1, 2, 3);
         }
     }
 }

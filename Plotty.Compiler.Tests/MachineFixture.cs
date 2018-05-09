@@ -45,5 +45,15 @@ namespace Plotty.Compiler.Tests
         }
 
         public PlottyMachine Machine { get; }
+
+        public int[] GetArray(Reference r, int lenght)
+        {
+            if (mainSymbolTable.Symbols.TryGetValue(r, out var props))
+            {
+                return Machine.Memory.Skip(props.Offset).Take(lenght).ToArray();
+            }
+
+            throw new InvalidOperationException($"The referece {r} doesn't exist in the 'main' symbolTable");
+        }
     }
 }

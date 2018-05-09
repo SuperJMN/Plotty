@@ -264,7 +264,31 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
             fixture.GetReferenceValue("next").Should().Be(result);
-        }    
+        }  
+        
+        [Fact]
+        public void IntFuntionThatDoesNothing()
+        {
+            var source = "int main() { int a; nothing(a); return 2; } void nothing(int n) { }";
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+        }
+
+        [Fact]
+        public void FuntionThatDoesNothing()
+        {
+            var source = "void main() { do_nothing(); } void do_nothing() { }";
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+        }
+
+        [Fact]
+        public void FuntionThatDoesNothingWithDeclaration()
+        {
+            var source = "void main() { int n; do_nothing(n); } void do_nothing(int n) { }";
+            var fixture = new MachineFixture();
+            fixture.Run(source);
+        }
 
         [Theory]
         [InlineData(5, 3, Operator.NotEqual)]
