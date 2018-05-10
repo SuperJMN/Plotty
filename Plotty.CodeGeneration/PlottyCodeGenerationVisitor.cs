@@ -291,7 +291,7 @@ namespace Plotty.CodeGeneration
             LoadReference(code.Index, index);
 
             var bReg = new Register(2);
-            Emit.Move(GetAddress(code.Source), bReg);
+            Emit.Move(GetAddress(code.Source.Base), bReg);
 
             Emit.AddRegister(index, bReg);
 
@@ -309,8 +309,8 @@ namespace Plotty.CodeGeneration
 
             LoadReference(code.Source, data);
             
-            Emit.Move(GetAddress(code.Target), localAddr);
-            LoadReference(code.Index, offset);
+            Emit.Move(GetAddress(code.Target.Base), localAddr);
+            LoadReference(code.Target.Index, offset);
             Emit.AddRegister(offset, localAddr);
 
             Emit.Store(data, baseRegister, localAddr);            

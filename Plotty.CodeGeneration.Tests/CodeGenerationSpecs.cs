@@ -24,7 +24,7 @@ namespace Plotty.CodeGeneration.Tests
             symbolTable.Annotate("index", PrimitiveType.Int);
             symbolTable.Annotate("b", PrimitiveType.Int);
 
-            var generationResult = sut.Generate(new List<IntermediateCode> { new LoadFromArray("a", "b", "index") },
+            var generationResult = sut.Generate(new List<IntermediateCode> { new LoadFromArray("a", new IndexedReference("b", "index")) },
                 symbolTable);
 
             var machine = new PlottyMachine();
@@ -53,7 +53,7 @@ namespace Plotty.CodeGeneration.Tests
             symbolTable.Annotate("index", PrimitiveType.Int);
             symbolTable.Annotate("a", PrimitiveType.Int);
 
-            var generationResult = sut.Generate(new List<IntermediateCode> { new StoreToArray("a", "index", "b") },
+            var generationResult = sut.Generate(new List<IntermediateCode> { new StoreToArray(new IndexedReference("a", "index"), "b") },
                 symbolTable);
 
             var machine = new PlottyMachine();
