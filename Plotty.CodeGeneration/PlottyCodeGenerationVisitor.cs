@@ -40,11 +40,7 @@ namespace Plotty.CodeGeneration
         private SymbolTable CurrentSymbolTable
         {
             get => currentSymbolTable;
-            set
-            {
-                currentSymbolTable = value;
-                Allocate(currentSymbolTable.Symbols);
-            }
+            set => currentSymbolTable = value;
         }
 
         public SymbolTable RootSymbolTable { get; }
@@ -97,7 +93,7 @@ namespace Plotty.CodeGeneration
             LoadReference(code.Right, right);
 
             Emit.Arithmetic(GetOperator(code.Operation), new RegisterSource(right), left);
-            
+
             StoreReference(code.Target, left);
         }
 
@@ -131,7 +127,7 @@ namespace Plotty.CodeGeneration
             LoadReference(code.Right, right);
 
             if (code.Operation == BooleanOperation.IsEqual)
-            {               
+            {
                 Emit.Arithmetic(ArithmeticOperator.Substract, new RegisterSource(right), left);
 
                 StoreReference(code.Target, left);
@@ -182,7 +178,7 @@ namespace Plotty.CodeGeneration
             Emit.Label(continuationLabel);
 
             RestorePreviousFrame(code.FunctionName);
-            
+
             if (code.Reference != null)
             {
                 StoreReference(code.Reference, returnRegister);
@@ -219,7 +215,7 @@ namespace Plotty.CodeGeneration
                     Emit.Load(parameter, @base, offset);
                     StoreReference(argument.Item.Reference, parameter, localAddress);
                 }
-                
+
                 Emit.Increment(offset);
             }
         }
@@ -228,7 +224,7 @@ namespace Plotty.CodeGeneration
         {
             if (code.Reference != null)
             {
-                LoadReference(code.Reference, returnRegister);                
+                LoadReference(code.Reference, returnRegister);
             }
 
             Emit.Pop(0);
@@ -242,32 +238,16 @@ namespace Plotty.CodeGeneration
 
         public void Visit(ParameterCode code)
         {
-            if (IsRefType(code.Reference))
-            {
-                var address = new Register(1);
-            
-                Emit.Move(GetAddress(code.Reference), address);
-                Emit.AddRegister(baseRegister, address);
-                Emit.Push(address);
-            }
-            else
-            {
-                var destination = new Register(1);
-            
-                LoadReference(code.Reference, destination);
-                Emit.Push(destination);
-            }            
-        }
+            var destination = new Register(1);
 
-        private bool IsRefType(Reference reference)
-        {
-            return CurrentSymbolTable.Symbols[reference].Size > 1;
+            LoadReference(code.Reference, destination);
+            Emit.Push(destination);
         }
 
         public void Visit(AddressOf code)
         {
             var addressOfReg = new Register(1);
-            
+
             Emit.Move(GetAddress(code.Source), addressOfReg);
             StoreReference(code.Target, addressOfReg);
         }
@@ -287,35 +267,36 @@ namespace Plotty.CodeGeneration
         {
             // a = b[index]
 
-            var index = new Register(1);
-            LoadReference(code.Index, index);
+            var addr = new Register(1);
+            var index = new Register(2);
+            LoadReference(code.Source.Base, addr);
+            LoadReference(code.Source.Index, index);
 
-            var bReg = new Register(2);
-            Emit.Move(GetAddress(code.Source.Base), bReg);
-
-            Emit.AddRegister(index, bReg);
+            Emit.AddRegister(index, addr);
 
             var data = new Register(3);
-            Emit.Load(data, baseRegister, bReg);
-            
+            Emit.Load(data, addr);
+
             StoreReference(code.Target, data);
         }
 
         public void Visit(StoreToArray code)
         {
-            var localAddr = new Register(1);
-            var offset = new Register(2);
+            // a[index] = b
+
+            var addr = new Register(1);
+            var index = new Register(2);
+
+            LoadReference(code.Target.Base, addr);
+            LoadReference(code.Target.Index, index);
+            Emit.AddRegister(index, addr);
+
             var data = new Register(3);
-
             LoadReference(code.Source, data);
-            
-            Emit.Move(GetAddress(code.Target.Base), localAddr);
-            LoadReference(code.Target.Index, offset);
-            Emit.AddRegister(offset, localAddr);
 
-            Emit.Store(data, baseRegister, localAddr);            
+            Emit.Store(data, addr);
         }
-        
+
         private void CreateFrame(string functionName, Label label)
         {
             var baseBackup = new Register(0);

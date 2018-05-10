@@ -34,9 +34,7 @@ namespace Plotty.Compiler
 
         private SymbolTable CreateSymbolTable(ICodeUnit ast)
         {
-            var scanner = new SymbolTableVisitor();
-            ast.Accept(scanner);
-            return scanner.SymbolTable;
+            return new SymbolTableCreator().Create(ast);
         }
 
         private static IReadOnlyCollection<string> GenerateAssemblyCode(GenerationResult result)
