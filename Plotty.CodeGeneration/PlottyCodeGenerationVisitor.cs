@@ -24,7 +24,6 @@ namespace Plotty.CodeGeneration
 
         private readonly List<PendingFixup> fixups = new List<PendingFixup>();
         private readonly List<ILine> lines = new List<ILine>();
-        private SymbolTable currentSymbolTable;
 
         public PlottyCodeGenerationVisitor(SymbolTable symbolTable, Func<ICollection<ILine>, ICollection<PendingFixup>, Register, Register, Emitter> emitterFactory)
         {
@@ -37,11 +36,7 @@ namespace Plotty.CodeGeneration
 
         public IEnumerable<ILine> Lines => lines.AsReadOnly();
 
-        private SymbolTable CurrentSymbolTable
-        {
-            get => currentSymbolTable;
-            set => currentSymbolTable = value;
-        }
+        private SymbolTable CurrentSymbolTable { get; set; }
 
         public SymbolTable RootSymbolTable { get; }
 
@@ -100,14 +95,14 @@ namespace Plotty.CodeGeneration
         private void LoadReference(Reference reference, Register register, Register addressRegister = null)
         {
             addressRegister = addressRegister ?? new Register(0);
-            Emit.Move(GetAddress(reference), addressRegister);
+            Emit.Move(GetLocalAddress(reference), addressRegister);
             Emit.Load(register, baseRegister, addressRegister);
         }
 
         private void StoreReference(Reference reference, Register register, Register addressRegister = null)
         {
             addressRegister = addressRegister ?? new Register(0);
-            Emit.Move(GetAddress(reference), addressRegister);
+            Emit.Move(GetLocalAddress(reference), addressRegister);
             Emit.Store(register, baseRegister, addressRegister);
         }
 
@@ -206,7 +201,7 @@ namespace Plotty.CodeGeneration
                 if (argument.Item is ArrayReferenceItem)
                 {
                     var fullAddress = new Register(4);
-                    Emit.Move(GetAddress(argument.Item.Reference), fullAddress);
+                    Emit.Move(GetLocalAddress(argument.Item.Reference), fullAddress);
                     Emit.AddRegister(baseRegister, fullAddress);
                     Emit.Store(fullAddress, baseRegister, offset);
                 }
@@ -248,7 +243,8 @@ namespace Plotty.CodeGeneration
         {
             var addressOfReg = new Register(1);
 
-            Emit.Move(GetAddress(code.Source), addressOfReg);
+            Emit.Move(GetLocalAddress(code.Source), addressOfReg);
+            Emit.AddRegister(baseRegister, addressOfReg);
             StoreReference(code.Target, addressOfReg);
         }
 
@@ -258,7 +254,7 @@ namespace Plotty.CodeGeneration
             var contentReg = new Register(2);
 
             LoadReference(code.Source, addressReg);
-            Emit.Load(contentReg, baseRegister, addressReg);
+            Emit.Load(contentReg, addressReg);
 
             StoreReference(code.Target, contentReg);
         }
@@ -267,16 +263,15 @@ namespace Plotty.CodeGeneration
         {
             // a = b[index]
 
-            var addr = new Register(1);
-            var index = new Register(2);
-            LoadReference(code.Source.Base, addr);
-            LoadReference(code.Source.Index, index);
-
-            Emit.AddRegister(index, addr);
-
+            var addrReg = new Register(1);
+            var offset = new Register(2);
+            LoadReference(code.Source.Index, offset);
+            LoadReference(code.Source.Base, addrReg);
+            Emit.AddRegister(offset, addrReg);
+            
             var data = new Register(3);
-            Emit.Load(data, addr);
-
+            Emit.Load(data, addrReg);
+            
             StoreReference(code.Target, data);
         }
 
@@ -284,17 +279,16 @@ namespace Plotty.CodeGeneration
         {
             // a[index] = b
 
-            var addr = new Register(1);
-            var index = new Register(2);
-
-            LoadReference(code.Target.Base, addr);
-            LoadReference(code.Target.Index, index);
-            Emit.AddRegister(index, addr);
+            var addrReg = new Register(1);
+            var offset = new Register(2);
+            LoadReference(code.Target.Index, offset);
+            LoadReference(code.Target.Base, addrReg);
+            Emit.AddRegister(offset, addrReg);
 
             var data = new Register(3);
             LoadReference(code.Source, data);
 
-            Emit.Store(data, addr);
+            Emit.Store(data, addrReg);
         }
 
         private void CreateFrame(string functionName, Label label)
@@ -356,7 +350,7 @@ namespace Plotty.CodeGeneration
             }
         }
 
-        private int GetAddress(Reference reference)
+        private int GetLocalAddress(Reference reference)
         {
             return CurrentSymbolTable.Symbols[reference].Offset;
         }

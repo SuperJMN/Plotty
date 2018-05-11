@@ -14,14 +14,9 @@ namespace Plotty.Compiler.Tests
         private SymbolTable mainSymbolTable;
         public List<IntermediateCode> IntermediateCode { get; private set; }
         public int ReturnedValue => Machine.Registers[PlottyCodeGenerationVisitor.ReturnRegisterIndex];
-        public int GetReferenceValue(Reference r)
+        public int GetValue(Reference r)
         {
-            if (mainSymbolTable.Symbols.TryGetValue(r, out var props))
-            {
-                return Machine.Memory[props.Offset];
-            }
-           
-            throw new InvalidOperationException($"The referece {r} doesn't exist in the 'main' symbolTable");           
+            return r.GetValue(mainSymbolTable, Machine.Memory);
         }
 
         public MachineFixture()
@@ -29,7 +24,14 @@ namespace Plotty.Compiler.Tests
             Machine = new PlottyMachine();
         }
 
-        public void Run(string source)
+        public PlottyMachine Machine { get; }
+
+        public int[] GetArray(Reference r, int lenght)
+        {
+            return r.GetArray(mainSymbolTable, Machine.Memory, lenght);
+        }
+
+        public void Run(string source, Action<ExecutionCore> action = null)
         {
             var compiler = new PlottyCompiler();
             var result = compiler.Compile(source);
@@ -38,22 +40,12 @@ namespace Plotty.Compiler.Tests
                 
             Machine.Load(result.GenerationResult.Lines);
 
+            action?.Invoke(new ExecutionCore(mainSymbolTable, Machine.Registers, Machine.Memory));
+
             while (Machine.CanExecute)
             {
                 Machine.Execute();
             }
-        }
-
-        public PlottyMachine Machine { get; }
-
-        public int[] GetArray(Reference r, int lenght)
-        {
-            if (mainSymbolTable.Symbols.TryGetValue(r, out var props))
-            {
-                return Machine.Memory.Skip(props.Offset).Take(lenght).ToArray();
-            }
-
-            throw new InvalidOperationException($"The referece {r} doesn't exist in the 'main' symbolTable");
         }
     }
 }

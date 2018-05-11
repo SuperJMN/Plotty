@@ -20,8 +20,8 @@ namespace Plotty.Compiler.Tests
 
             var fixture = new MachineFixture();
             fixture.Run(source);
-            fixture.GetReferenceValue("a").Should().Be(123);
-            fixture.GetReferenceValue("b").Should().Be(80);
+            fixture.GetValue("a").Should().Be(123);
+            fixture.GetValue("b").Should().Be(80);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
 
-            fixture.GetReferenceValue("a").Should().Be(1234);
+            fixture.GetValue("a").Should().Be(1234);
         }
 
         [Fact]
@@ -140,7 +140,7 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
 
-            fixture.GetReferenceValue("b").Should().Be(3);
+            fixture.GetValue("b").Should().Be(3);
         }
 
         [Fact]
@@ -151,7 +151,7 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
 
-            fixture.GetReferenceValue("b").Should().Be(3);
+            fixture.GetValue("b").Should().Be(3);
         }
 
         [Fact]
@@ -162,7 +162,7 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
 
-            fixture.GetReferenceValue("b").Should().Be(5);
+            fixture.GetValue("b").Should().Be(5);
         }
         
         [Fact]
@@ -173,8 +173,8 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
 
-            fixture.GetReferenceValue("a").Should().Be(2);
-            fixture.GetReferenceValue("b").Should().Be(123);
+            fixture.GetValue("a").Should().Be(2);
+            fixture.GetValue("b").Should().Be(123);
 
         }
 
@@ -186,8 +186,8 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
 
-            fixture.GetReferenceValue("a").Should().Be(0);
-            fixture.GetReferenceValue("b").Should().Be(123);
+            fixture.GetValue("a").Should().Be(0);
+            fixture.GetValue("b").Should().Be(123);
         }
 
         [Fact]
@@ -198,7 +198,7 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
 
-            fixture.GetReferenceValue("b").Should().NotBe(123);
+            fixture.GetValue("b").Should().NotBe(123);
         }
 
         [Fact]
@@ -209,7 +209,7 @@ namespace Plotty.Compiler.Tests
             var fixture = new MachineFixture();
             fixture.Run(source);
 
-            fixture.GetReferenceValue("b").Should().Be(123);
+            fixture.GetValue("b").Should().Be(123);
         }
 
         [Fact]
@@ -263,7 +263,7 @@ namespace Plotty.Compiler.Tests
             var source = $"void main()  {{int first;int second;int next;int c; int n; n = {n}; first = 0; second = 1;   for (c = 0; c<n ;c=c+1) {{  if ( c < 2 )  {{      next = c;  }}      if ( c > 1)     {{   next = first + second;         first = second;   second = next;  }}       }} }}";
             var fixture = new MachineFixture();
             fixture.Run(source);
-            fixture.GetReferenceValue("next").Should().Be(result);
+            fixture.GetValue("next").Should().Be(result);
         }  
         
         [Fact]

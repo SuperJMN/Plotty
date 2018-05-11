@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using CodeGen.Core;
+using CodeGen.Parsing.Ast;
+using FluentAssertions;
 using Xunit;
 
 namespace Plotty.Compiler.Tests
@@ -6,27 +8,23 @@ namespace Plotty.Compiler.Tests
     public class ArraySpecs
     {
         [Fact]
+        public void ReadFromArray()
+        {
+            var source = "int main()  { int array[10]; return array[10]; }";
+            var fixture = new MachineFixture();
+
+            fixture.Run(source, core =>
+                {
+                    ((Reference) "array").SetValue(123, core.MainSymbolTable, core.MachineMemory, 10);
+                });
+
+            fixture.ReturnedValue.Should().Be(123);
+        }
+
+        [Fact]
         public void FirstElement()
         {
             var source = "int main()  { int array[1]; array[0] = 123; return array[0]; }";
-            var fixture = new MachineFixture();
-            fixture.Run(source);
-            fixture.ReturnedValue.Should().Be(123);
-        }
-
-        [Fact]
-        public void SecondElement()
-        {
-            var source = "void main()  { int array[2]; array[1] = 123; return array[1]; }";
-            var fixture = new MachineFixture();
-            fixture.Run(source);
-            fixture.ReturnedValue.Should().Be(123);
-        }
-
-        [Fact]
-        public void AssignAndSet()
-        {
-            var source = "int main()  { int array[2], a; array[1] = 123; a=array[1]; return a; }";
             var fixture = new MachineFixture();
             fixture.Run(source);
             fixture.ReturnedValue.Should().Be(123);
@@ -47,8 +45,8 @@ namespace Plotty.Compiler.Tests
             var source = "int main()  { int array[2], a, b; array[0] = 3; array[1] = 5; a=array[0]; b=array[1]; return a+b; }";
             var fixture = new MachineFixture();
             fixture.Run(source);
-            fixture.GetReferenceValue("a").Should().Be(3);
-            fixture.GetReferenceValue("b").Should().Be(5);
+            fixture.GetValue("a").Should().Be(3);
+            fixture.GetValue("b").Should().Be(5);
         }
 
         [Fact]
