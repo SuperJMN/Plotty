@@ -22,6 +22,17 @@ namespace Plotty.Compiler.Tests
         }
 
         [Fact]
+        public void StoreToArray()
+        {
+            var source = "int main()  { int array[10]; array[5]=123; }";
+            var fixture = new MachineFixture();
+
+            fixture.Run(source);            
+
+            var v = fixture.GetValue("array", 5);
+        }
+
+        [Fact]
         public void FirstElement()
         {
             var source = "int main()  { int array[1]; array[0] = 123; return array[0]; }";

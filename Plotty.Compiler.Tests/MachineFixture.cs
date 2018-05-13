@@ -14,9 +14,9 @@ namespace Plotty.Compiler.Tests
         private SymbolTable mainSymbolTable;
         public List<IntermediateCode> IntermediateCode { get; private set; }
         public int ReturnedValue => Machine.Registers[PlottyCodeGenerationVisitor.ReturnRegisterIndex];
-        public int GetValue(Reference r)
+        public int GetValue(Reference r, int index = 0)
         {
-            return r.GetValue(mainSymbolTable, Machine.Memory);
+            return r.GetValue(mainSymbolTable, Machine.Memory, index);
         }
 
         public MachineFixture()

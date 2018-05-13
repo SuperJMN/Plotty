@@ -11,6 +11,7 @@ using CodeGen.Parsing.Ast;
 using Plotty.Model;
 using ArithmeticOperator = Plotty.Model.ArithmeticOperator;
 using Label = Plotty.Model.Label;
+using Reference = CodeGen.Core.Reference;
 
 namespace Plotty.CodeGeneration
 {
@@ -198,18 +199,18 @@ namespace Plotty.CodeGeneration
 
             foreach (var argument in arguments)
             {
-                if (argument.Item is ArrayReferenceItem)
-                {
-                    var fullAddress = new Register(4);
-                    Emit.Move(GetLocalAddress(argument.Item.Reference), fullAddress);
-                    Emit.AddRegister(baseRegister, fullAddress);
-                    Emit.Store(fullAddress, baseRegister, offset);
-                }
-                else
-                {
+                //if (argument.AccessItem is ArrayReferenceItem)
+                //{
+                //    var fullAddress = new Register(4);
+                //    Emit.Move(GetLocalAddress(argument.AccessItem.Reference), fullAddress);
+                //    Emit.AddRegister(baseRegister, fullAddress);
+                //    Emit.Store(fullAddress, baseRegister, offset);
+                //}
+                //else
+                //{
                     Emit.Load(parameter, @base, offset);
-                    StoreReference(argument.Item.Reference, parameter, localAddress);
-                }
+                    StoreReference(argument.AccessItem.Reference, parameter, localAddress);
+                //}
 
                 Emit.Increment(offset);
             }
@@ -263,15 +264,13 @@ namespace Plotty.CodeGeneration
         {
             // a = b[index]
 
-            var addrReg = new Register(1);
-            var offset = new Register(2);
-            LoadReference(code.Source.Index, offset);
-            LoadReference(code.Source.Base, addrReg);
-            Emit.AddRegister(offset, addrReg);
-            
-            var data = new Register(3);
-            Emit.Load(data, addrReg);
-            
+            var destination = new Register(1);
+            var index = new Register(3);
+            LoadReference(code.Source.Index, index);
+            Emit.Move(GetLocalAddress(code.Source.Base), destination);
+            Emit.AddRegister(baseRegister, destination);
+            var data = new Register(2);
+            Emit.Load(data, destination, index);
             StoreReference(code.Target, data);
         }
 
@@ -352,7 +351,12 @@ namespace Plotty.CodeGeneration
 
         private int GetLocalAddress(Reference reference)
         {
-            return CurrentSymbolTable.Symbols[reference].Offset;
+            if (CurrentSymbolTable.Symbols.TryGetValue(reference, out var add))
+            {
+                return add.Offset;
+            }
+
+            throw new KeyNotFoundException($"Cannot find {reference} in {CurrentSymbolTable.Owner}");
         }
 
         private ArithmeticOperator GetOperator(CodeGen.Intermediate.Codes.Common.ArithmeticOperator codeOperation)

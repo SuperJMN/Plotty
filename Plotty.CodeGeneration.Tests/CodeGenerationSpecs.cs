@@ -16,10 +16,10 @@ namespace Plotty.CodeGeneration.Tests
         public void AddressOf()
         {
             var builder = new SymbolTableBuilder();
-            builder.AddAppearance("a", PrimitiveType.Int);
-            builder.AddAppearance("b", PrimitiveType.Int);
-            builder.AddAppearance("c", PrimitiveType.Int);
-            builder.AddAppearance("T1", PrimitiveType.Int);
+            builder.AddAppearance("a", ReturnType.Int);
+            builder.AddAppearance("b", ReturnType.Int);
+            builder.AddAppearance("c", ReturnType.Int);
+            builder.AddAppearance("T1", ReturnType.Int);
 
             var sut = new PlottyCodeGenerator();
 
@@ -41,10 +41,10 @@ namespace Plotty.CodeGeneration.Tests
         public void ContentsOf()
         {
             var builder = new SymbolTableBuilder();
-            builder.AddAppearance("a", PrimitiveType.Int);
-            builder.AddAppearance("b", PrimitiveType.Int);
-            builder.AddAppearance("c", PrimitiveType.Int);
-            builder.AddAppearance("T1", PrimitiveType.Int);
+            builder.AddAppearance("a", ReturnType.Int);
+            builder.AddAppearance("b", ReturnType.Int);
+            builder.AddAppearance("c", ReturnType.Int);
+            builder.AddAppearance("T1", ReturnType.Int);
 
             var sut = new PlottyCodeGenerator();
 
@@ -74,9 +74,9 @@ namespace Plotty.CodeGeneration.Tests
             var sut = new PlottyCodeGenerator();
 
             var builder = new SymbolTableBuilder();
-            builder.AddAppearance("a", PrimitiveType.Int);
-            builder.AddAppearance("index", PrimitiveType.Int);
-            builder.AddAppearance("array", PrimitiveType.Int, 4);
+            builder.AddAppearance("a", ReturnType.Int);
+            builder.AddAppearance("index", ReturnType.Int);
+            builder.AddAppearance("array", ReturnType.Int, 4);
 
             var symbolTable = builder.Build();
             var generationResult = sut.Generate(new List<IntermediateCode> { new LoadFromArray("a", new IndexedReference("array", "index")) }, symbolTable);
@@ -104,9 +104,9 @@ namespace Plotty.CodeGeneration.Tests
             var sut = new PlottyCodeGenerator();
             var symbolTableBuilder = new SymbolTableBuilder();
 
-            symbolTableBuilder.AddAppearance("b", PrimitiveType.Int);
-            symbolTableBuilder.AddAppearance("index", PrimitiveType.Int);
-            symbolTableBuilder.AddAppearance("a", PrimitiveType.Int);
+            symbolTableBuilder.AddAppearance("b", ReturnType.Int);
+            symbolTableBuilder.AddAppearance("index", ReturnType.Int);
+            symbolTableBuilder.AddAppearance("a", ReturnType.Int);
 
             var symbolTable = symbolTableBuilder.Build();
 
@@ -136,10 +136,10 @@ namespace Plotty.CodeGeneration.Tests
             var sut = new PlottyCodeGenerator();
             var symbolTableBuilder = new SymbolTableBuilder();
 
-            symbolTableBuilder.AddAppearance("a", PrimitiveType.Int);
-            symbolTableBuilder.AddAppearance("b", PrimitiveType.Int);
-            symbolTableBuilder.AddAppearance("c", PrimitiveType.Int);
-            symbolTableBuilder.AddAppearance("d", PrimitiveType.Int);
+            symbolTableBuilder.AddAppearance("a", ReturnType.Int);
+            symbolTableBuilder.AddAppearance("b", ReturnType.Int);
+            symbolTableBuilder.AddAppearance("c", ReturnType.Int);
+            symbolTableBuilder.AddAppearance("d", ReturnType.Int);
 
             var symbolTable = symbolTableBuilder.Build();
 
@@ -167,10 +167,10 @@ namespace Plotty.CodeGeneration.Tests
             var sut = new PlottyCodeGenerator();
             var symbolTableBuilder = new SymbolTableBuilder();
 
-            symbolTableBuilder.AddAppearance("a", PrimitiveType.Int);
-            symbolTableBuilder.AddAppearance("b", PrimitiveType.Int);
-            symbolTableBuilder.AddAppearance("c", PrimitiveType.Int);
-            symbolTableBuilder.AddAppearance("array", PrimitiveType.Int, 3);
+            symbolTableBuilder.AddAppearance("a", ReturnType.Int);
+            symbolTableBuilder.AddAppearance("b", ReturnType.Int);
+            symbolTableBuilder.AddAppearance("c", ReturnType.Int);
+            symbolTableBuilder.AddAppearance("array", ReturnType.Int, 3);
 
             var symbolTable = symbolTableBuilder.Build();
 

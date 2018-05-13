@@ -175,7 +175,6 @@ namespace Plotty.Compiler.Tests
 
             fixture.GetValue("a").Should().Be(2);
             fixture.GetValue("b").Should().Be(123);
-
         }
 
         [Fact]
