@@ -6,7 +6,7 @@ This is **Plotty**, a side-project that I've made just for **The Fun Of Learning
 It features a custom architeture (Plotty) that can be programmed using the C language. 
 
 ## It has Compiler!
-The compiler is the star of this programmed. It's coded from scratch in C#. The AST is generated with the help of [Superpower](https://github.com/nblumhardt/superpower).
+The compiler is the star of this project. It's coded from scratch in C#. The AST is generated with the help of [Superpower](https://github.com/nblumhardt/superpower).
 
 ## Superpower? What's that?
 
